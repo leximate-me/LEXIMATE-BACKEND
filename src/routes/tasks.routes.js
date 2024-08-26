@@ -12,20 +12,20 @@ import { createTaskSchema, updateTaskSchema } from '../schemas/task.schemas.js';
 
 const taskRouter = Router();
 
-taskRouter.get('/tasks', authRequired, getTasks);
+taskRouter.get('/', authRequired, getTasks);
 taskRouter.post(
-  '/tasks',
+  '/',
   authRequired,
   validateSchema(createTaskSchema),
   createTask
 );
-taskRouter.get('/tasks/:id', authRequired, getTask);
+taskRouter.get('/:id', authRequired, getTask);
 taskRouter.put(
-  '/tasks/:id',
+  '/:id',
   authRequired,
   validateSchema(updateTaskSchema),
   updateTask
 );
-taskRouter.delete('/tasks/:id', authRequired, deleteTask);
+taskRouter.delete('/:id', authRequired, deleteTask);
 
 export { taskRouter };

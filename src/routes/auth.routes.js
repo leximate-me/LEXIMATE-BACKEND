@@ -16,6 +16,6 @@ authRouter.post('/register', validateSchema(registerSchema), register);
 authRouter.post('/login', validateSchema(loginSchema), login);
 authRouter.post('/logout', logout);
 authRouter.get('/profile', authRequired, profile);
-authRouter.get('/verify-token', authRequired, verifyToken);
+authRouter.get('/verify-token', verifyToken);
 
 export { authRouter };

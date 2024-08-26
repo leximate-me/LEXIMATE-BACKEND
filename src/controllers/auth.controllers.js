@@ -122,15 +122,15 @@ const verifyToken = async (req, res) => {
     return res.status(401).json({ error: ['No autorizado'] });
   }
   try {
-    jwt.verify(token, JWT_SECRET, (err, user) => {
+    jwt.verify(token, JWT_SECRET, async (err, user) => {
       if (err) {
         return res.status(401).json({ error: ['No autorizado'] });
       }
-      const userFound = userModel.findById(user.id);
+      const userFound = await userModel.findById(user.id);
       if (!userFound) {
         return res.status(404).json({ error: ['Usuario no encontrado'] });
       }
-      res.status(200).json({
+      return res.status(200).json({
         id: userFound._id,
         name: userFound.name,
         lastname: userFound,

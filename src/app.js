@@ -28,6 +28,6 @@ app.use(
 
 //routes
 app.use('/api/auth', authRouter);
-app.use('/api/task', taskRouter);
+app.use('/api/tasks', taskRouter);
 
 export { app };
