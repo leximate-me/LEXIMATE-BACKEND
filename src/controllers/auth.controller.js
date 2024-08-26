@@ -24,7 +24,7 @@ const register = async (req, res) => {
         birthdate,
         country,
         email,
-        password: hashedPassword,
+        password: hash,
         role,
       });
       const savedUser = await newUser.save();

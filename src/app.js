@@ -2,6 +2,7 @@ import express from 'express';
 import cors from 'cors';
 import morgan from 'morgan';
 import cookieParser from 'cookie-parser';
+import { authRouter } from './routes/auth.routes.js';
 
 //init
 const app = express();
@@ -13,5 +14,6 @@ app.use(morgan('dev'));
 app.use(cookieParser());
 
 //routes
+app.use('/api', authRouter);
 
 export { app };
