@@ -3,39 +3,43 @@ import { z } from 'zod';
 const registerSchema = z.object({
   name: z
     .string()
-    .min(3, 'Name is required and must be at least 3 characters long')
+    .min(3, 'El nombre es obligatorio y debe tener al menos 3 caracteres')
     .regex(
       /^[a-zA-Z]+$/,
-      'Name must not contain numbers or special characters'
+      'El nombre no debe contener números ni caracteres especiales'
     ),
   lastname: z
     .string()
-    .min(3, 'Lastname is required and must be at least 3 characters long')
+    .min(3, 'El apellido es obligatorio y debe tener al menos 3 caracteres')
     .regex(
       /^[a-zA-Z]+$/,
-      'Lastname must not contain numbers or special characters'
+      'El apellido no debe contener números ni caracteres especiales'
     ),
   gender: z
     .string()
-    .min(4, 'Gender is required and must be at least 4 characters long'),
-  birthdate: z
-    .string(
-      'Birthdate is required and must be a valid date in the format YYYY-MM-DD'
-    )
-    .datetime()
-    .optional(),
+    .min(4, 'El género es obligatorio y debe tener al menos 4 caracteres'),
+
+  birthdate: z.string().optional(),
+  // birthdate: z
+  //   .string(
+  //     'La fecha de nacimiento es obligatoria y debe ser una fecha válida en el formato YYYY-MM-DD'
+  //   )
+  //   .datetime()
+  //   .optional(),
   country: z
     .string()
-    .min(3, 'Country is required and must be at least 3 characters long'),
+    .min(3, 'El país es obligatorio y debe tener al menos 3 caracteres'),
   email: z
     .string()
-    .email('Email is required and must be a valid email address'),
+    .email(
+      'El correo electrónico es obligatorio y debe ser una dirección de correo válida'
+    ),
   password: z
     .string()
-    .min(8, 'Password is required and must be at least 8 characters long')
+    .min(8, 'La contraseña es obligatoria y debe tener al menos 8 caracteres')
     .regex(
       /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&_-])[A-Za-z\d@$!%*?&_-]{8,}$/,
-      'Password must contain at least 8 characters, one uppercase letter, one lowercase letter, one number and one special character'
+      'La contraseña debe contener al menos 8 caracteres, una letra mayúscula, una letra minúscula, un número y un carácter especial'
     ),
   role: z.string().optional(),
 });
@@ -43,13 +47,15 @@ const registerSchema = z.object({
 const loginSchema = z.object({
   email: z
     .string()
-    .email('Email is required and must be a valid email address'),
+    .email(
+      'El correo electrónico es obligatorio y debe ser una dirección de correo válida'
+    ),
   password: z
     .string()
-    .min(8, 'Password is required and must be at least 8 characters long')
+    .min(8, 'La contraseña es obligatoria y debe tener al menos 8 caracteres')
     .regex(
       /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&_-])[A-Za-z\d@$!%*?&_-]{8,}$/,
-      'Password must contain at least 8 characters, one uppercase letter, one lowercase letter, one number and one special character'
+      'La contraseña debe contener al menos 8 caracteres, una letra mayúscula, una letra minúscula, un número y un carácter especial'
     ),
 });
 

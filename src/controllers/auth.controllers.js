@@ -29,7 +29,7 @@ const register = async (req, res) => {
       });
       const savedUser = await newUser.save();
       const token = await createAccessToken({ id: savedUser._id });
-      res.coookie('token', token);
+      res.cookie('token', token);
       res.status(201).json({
         id: savedUser._id,
         name: savedUser.name,
@@ -95,7 +95,7 @@ const logout = async (req, res) => {
 
 const profile = async (req, res) => {
   try {
-    const userFound = await userModel.findById(req.userId);
+    const userFound = await userModel.findById(req.user.id);
     if (!userFound) {
       return res.status(404).json({ error: ['Usuario no encontrado'] });
     }
