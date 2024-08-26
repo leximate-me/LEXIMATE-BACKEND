@@ -2,6 +2,7 @@ import express from 'express';
 import cors from 'cors';
 import morgan from 'morgan';
 import cookieParser from 'cookie-parser';
+import fileUpload from 'express-fileupload';
 import { authRouter } from './routes/auth.routes.js';
 import { taskRouter } from './routes/tasks.routes.js';
 
@@ -18,6 +19,12 @@ app.use(
 );
 app.use(morgan('dev'));
 app.use(cookieParser());
+app.use(
+  fileUpload({
+    useTempFiles: true,
+    tempFileDir: './uploads/',
+  })
+);
 
 //routes
 app.use('/api/auth', authRouter);
