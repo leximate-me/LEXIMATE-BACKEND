@@ -1,0 +1,17 @@
+import mongoose from 'mongoose';
+import { MONGODB_URI } from '../configs/envConfig.js';
+
+const connectDB = async () => {
+  try {
+    const connnect = await mongoose.connect(MONGODB_URI);
+    console.log(
+      `💻 Conexión exitosa a la base de datos: ${connnect.connection.name} 💻`
+    );
+    return connnect;
+  } catch (error) {
+    console.error('Error connecting to MongoDB:', error.message);
+    process.exit(1);
+  }
+};
+
+export { connectDB };
