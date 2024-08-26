@@ -18,14 +18,12 @@ const registerSchema = z.object({
   gender: z
     .string()
     .min(4, 'El género es obligatorio y debe tener al menos 4 caracteres'),
-
-  birthdate: z.string().optional(),
-  // birthdate: z
-  //   .string(
-  //     'La fecha de nacimiento es obligatoria y debe ser una fecha válida en el formato YYYY-MM-DD'
-  //   )
-  //   .datetime()
-  //   .optional(),
+  birthdate: z
+    .string(
+      'La fecha de nacimiento es obligatoria y debe ser una fecha válida en el formato YYYY-MM-DD'
+    )
+    .datetime()
+    .optional(),
   country: z
     .string()
     .min(3, 'El país es obligatorio y debe tener al menos 3 caracteres'),
