@@ -21,9 +21,8 @@ const createTask = async (req, res) => {
 };
 
 const getTasks = async (req, res) => {
-  const { user } = req.user.id;
   try {
-    const tasks = await taskModel.find(user).populate('user');
+    const tasks = await taskModel.find({ user: req.user.id }).populate('user');
     if (!tasks) {
       return res.status(404).json({ error: ['No hay tareas para mostrar'] });
     }
@@ -34,9 +33,8 @@ const getTasks = async (req, res) => {
 };
 
 const getTask = async (req, res) => {
-  const id = req.params.id;
   try {
-    const task = await taskModel.findById(id);
+    const task = await taskModel.findById(req.params.id);
     if (!task) {
       return res.status(404).json({ error: ['Tarea no encontrada'] });
     }

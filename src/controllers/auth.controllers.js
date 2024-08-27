@@ -12,7 +12,6 @@ const register = async (req, res) => {
     if (existUser) {
       return res.status(400).json({ error: ['El usuario ya existe'] });
     }
-    const hashedPassword = await bcrypt.hash(password, 10);
     bcrypt.hash(password, 10, async (err, hash) => {
       if (err) {
         return res.status(500).json({ error: ['Error en el servidor'] });
@@ -133,7 +132,7 @@ const verifyToken = async (req, res) => {
       return res.status(200).json({
         id: userFound._id,
         name: userFound.name,
-        lastname: userFound,
+        lastname: userFound.lastname,
         gender: userFound.gender,
         birthdate: userFound.birthdate,
         country: userFound.country,

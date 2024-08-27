@@ -36,7 +36,7 @@ const registerSchema = z.object({
     .string()
     .min(8, 'La contraseña es obligatoria y debe tener al menos 8 caracteres')
     .regex(
-      /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&_-])[A-Za-z\d@$!%*?&_-]{8,}$/,
+      /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$+!%*?&_-])[A-Za-z\d@$!%*?&_-]{8,}$/,
       'La contraseña debe contener al menos 8 caracteres, una letra mayúscula, una letra minúscula, un número y un carácter especial'
     ),
   role: z.string().optional(),
