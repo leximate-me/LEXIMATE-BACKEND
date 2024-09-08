@@ -5,23 +5,31 @@ const taskSchema = new Schema(
     title: {
       type: String,
       required: true,
+      trim: true,
     },
     description: {
       type: String,
       required: true,
+      trim: true,
     },
-    date: {
+    dueDate: {
       type: Date,
-      default: Date.now,
-    },
-    completed: {
-      type: Boolean,
-      default: false,
-    },
-    user: {
-      type: Schema.Types.ObjectId,
-      ref: 'User',
       required: true,
+    },
+    class: {
+      type: Schema.Types.ObjectId,
+      ref: 'Class',
+      required: true,
+    },
+    createdBy: {
+      type: Schema.Types.ObjectId,
+      ref: 'Teacher',
+      required: true,
+    },
+    status: {
+      type: String,
+      enum: ['Pendiente', 'Completada'],
+      default: 'Pendiente',
     },
   },
   { timestamps: true }

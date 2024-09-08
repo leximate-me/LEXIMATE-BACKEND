@@ -1,10 +1,11 @@
 import bcrypt from 'bcryptjs';
 import { teacherModel } from '../models/teacher.model.js';
+import { classModel } from '../models/class.model.js';
 import { createAccessToken } from '../libs/jwt.js';
 import jwt from 'jsonwebtoken';
 import { JWT_SECRET } from '../configs/env.config.js';
 
-const register = async (req, res) => {
+const registerTeacher = async (req, res) => {
   const { firstName, lastName, institution, email, password } = req.body;
 
   try {
@@ -45,7 +46,7 @@ const register = async (req, res) => {
   }
 };
 
-const login = async (req, res) => {
+const loginTeacher = async (req, res) => {
   const { email, password } = req.body;
   try {
     const teacherFound = await teacherModel.findOne({ email });
@@ -79,7 +80,7 @@ const login = async (req, res) => {
   }
 };
 
-const logout = async (req, res) => {
+const logoutTeacher = async (req, res) => {
   try {
     res.clearCookie('token', '', {
       expires: new Date(0),
@@ -90,7 +91,7 @@ const logout = async (req, res) => {
   }
 };
 
-const profile = async (req, res) => {
+const getTeacherProfile = async (req, res) => {
   try {
     const teacherFound = await teacherModel.findById(req.user.id);
     if (!teacherFound) {
@@ -114,7 +115,7 @@ const profile = async (req, res) => {
   }
 };
 
-const verifyToken = async (req, res) => {
+const verifyTeacherToken = async (req, res) => {
   const { token } = req.cookies;
   console.log(req.cookies);
 
@@ -149,4 +150,49 @@ const verifyToken = async (req, res) => {
   }
 };
 
-export { register, login, logout, profile, verifyToken };
+const generateStudentToken = async (req, res) => {
+  const { classId } = req.body;
+
+  try {
+    const foundTeacher = await teacherModel.findById(req.user.id);
+
+    if (!foundTeacher) {
+      return res.status(404).json({ error: ['Usuario no encontrado'] });
+    }
+
+    const token = await foundTeacher.generateToken(classId);
+
+    foundTeacher.generatedTokens.push({
+      token,
+      class: classId,
+      expiresOn: new Date(Date.now() + 2 * 24 * 60 * 60 * 1000),
+    });
+
+    await foundTeacher.save();
+
+    // Actualizar el array de estudiantes en la clase
+    await classModel.findByIdAndUpdate(
+      classId,
+      {
+        $addToSet: { students: req.body.studentId }, // Asegúrate de que req.body.studentId contenga el ID del estudiante
+      },
+      { new: true }
+    );
+
+    return res
+      .status(201)
+      .json({ message: 'Token generado exitosamente', token });
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({ error: ['Error en el servidor'] });
+  }
+};
+
+export {
+  registerTeacher,
+  loginTeacher,
+  logoutTeacher,
+  getTeacherProfile,
+  verifyTeacherToken,
+  generateStudentToken,
+};

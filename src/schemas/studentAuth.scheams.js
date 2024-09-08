@@ -1,6 +1,6 @@
 import { z } from 'zod';
 
-const registerTeacherSchema = z.object({
+const registerStudentSchema = z.object({
   firstName: z
     .string()
     .min(3, 'El nombre es obligatorio y debe tener al menos 3 caracteres')
@@ -15,9 +15,6 @@ const registerTeacherSchema = z.object({
       /^[a-zA-Z]+$/,
       'El apellido no debe contener números ni caracteres especiales'
     ),
-  institution: z
-    .string()
-    .min(3, 'La institución es obligatoria y debe tener al menos 3 caracteres'),
   email: z
     .string()
     .email(
@@ -33,7 +30,7 @@ const registerTeacherSchema = z.object({
   role: z.string().optional(),
 });
 
-const loginTeacherSchema = z.object({
+const loginStudentSchema = z.object({
   email: z
     .string()
     .email(
@@ -48,4 +45,4 @@ const loginTeacherSchema = z.object({
     ),
 });
 
-export { registerTeacherSchema, loginTeacherSchema };
+export { registerStudentSchema, loginStudentSchema };

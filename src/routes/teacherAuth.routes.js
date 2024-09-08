@@ -1,21 +1,38 @@
 import { Router } from 'express';
 import {
-  login,
-  logout,
-  profile,
-  register,
-  verifyToken,
-} from '../controllers/teacherAuth.controllers.js';
+  loginTeacher,
+  registerTeacher,
+  logoutTeacher,
+  getTeacherProfile,
+  verifyTeacherToken,
+  generateStudentToken,
+} from '../controllers/teacherAuth.controller.js';
 import { authRequired } from '../middlewares/validator.token.js';
 import { validateSchema } from '../middlewares/validator.middleware.js';
-import { loginSchema, registerSchema } from '../schemas/teacherAuth.schemas.js';
+import {
+  loginTeacherSchema,
+  registerTeacherSchema,
+} from '../schemas/teacherAuth.schemas.js';
 
-const authRouter = Router();
+const teacherAuthRouter = Router();
 
-authRouter.post('/register', validateSchema(registerSchema), register);
-authRouter.post('/login', validateSchema(loginSchema), login);
-authRouter.post('/logout', logout);
-authRouter.get('/profile', authRequired, profile);
-authRouter.get('/verify-token', verifyToken);
+teacherAuthRouter.post(
+  '/register',
+  validateSchema(registerTeacherSchema),
+  registerTeacher
+);
+teacherAuthRouter.post(
+  '/login',
+  validateSchema(loginTeacherSchema),
+  loginTeacher
+);
+teacherAuthRouter.post('/logout', logoutTeacher);
+teacherAuthRouter.get('/profile', authRequired, getTeacherProfile);
+teacherAuthRouter.get('/verify-token', verifyTeacherToken);
+teacherAuthRouter.post(
+  '/generate-student-token',
+  authRequired,
+  generateStudentToken
+);
 
-export { authRouter };
+export { teacherAuthRouter };
