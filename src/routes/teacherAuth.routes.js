@@ -5,10 +5,10 @@ import {
   profile,
   register,
   verifyToken,
-} from '../controllers/auth.controllers.js';
+} from '../controllers/teacherAuth.controllers.js';
 import { authRequired } from '../middlewares/validator.token.js';
 import { validateSchema } from '../middlewares/validator.middleware.js';
-import { loginSchema, registerSchema } from '../schemas/auth.schemas.js';
+import { loginSchema, registerSchema } from '../schemas/teacherAuth.schemas.js';
 
 const authRouter = Router();
 

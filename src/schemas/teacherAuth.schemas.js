@@ -1,32 +1,23 @@
 import { z } from 'zod';
 
 const registerSchema = z.object({
-  name: z
+  firstName: z
     .string()
     .min(3, 'El nombre es obligatorio y debe tener al menos 3 caracteres')
     .regex(
       /^[a-zA-Z]+$/,
       'El nombre no debe contener números ni caracteres especiales'
     ),
-  lastname: z
+  lastName: z
     .string()
     .min(3, 'El apellido es obligatorio y debe tener al menos 3 caracteres')
     .regex(
       /^[a-zA-Z]+$/,
       'El apellido no debe contener números ni caracteres especiales'
     ),
-  gender: z
+  institution: z
     .string()
-    .min(4, 'El género es obligatorio y debe tener al menos 4 caracteres'),
-  birthdate: z
-    .string(
-      'La fecha de nacimiento es obligatoria y debe ser una fecha válida en el formato YYYY-MM-DD'
-    )
-    .datetime()
-    .optional(),
-  country: z
-    .string()
-    .min(3, 'El país es obligatorio y debe tener al menos 3 caracteres'),
+    .min(3, 'La institución es obligatoria y debe tener al menos 3 caracteres'),
   email: z
     .string()
     .email(

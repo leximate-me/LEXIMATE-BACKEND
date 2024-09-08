@@ -1,4 +1,4 @@
-import { JWT_SECRET } from '../configs/envConfig.js';
+import { JWT_SECRET } from '../configs/env.config.js';
 import jwt from 'jsonwebtoken';
 
 const authRequired = async (req, res, next) => {

@@ -1,5 +1,5 @@
 import express from 'express';
-import { authRouter } from './routes/auth.routes.js';
+import { authRouter } from './routes/teacherAuth.routes.js';
 import { taskRouter } from './routes/tasks.routes.js';
 import { applyMiddlewares } from './middlewares/app.middlewares.js';
 
