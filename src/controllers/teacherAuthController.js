@@ -1,6 +1,6 @@
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
-import { teacherModel } from '../models/teacher.model';
+import { teacherModel } from '../models/teacher.model.js';
 import { createAccessToken } from '../libs/jwt.js';
 import { JWT_SECRET } from '../configs/envConfig.js';
 

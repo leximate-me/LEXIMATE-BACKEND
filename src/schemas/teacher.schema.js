@@ -20,12 +20,14 @@ const registerTeacherSchema = z.object({
     .string()
     .min(3, 'El DNI es obligatorio y debe tener al menos 3 caracteres')
     .regex(/^[a-zA-Z0-9]+$/, 'El DNI no debe contener caracteres especiales'),
-
   birthdate: z
-    .string(
-      'La fecha de nacimiento es obligatoria y debe ser una fecha válida en el formato YYYY-MM-DD'
+    .string({
+      required_error: 'La fecha de nacimiento es obligatoria',
+    })
+    .regex(
+      /^\d{4}-\d{2}-\d{2}$/,
+      'Debe ser una fecha válida en el formato YYYY-MM-DD'
     )
-    .datetime()
     .optional(),
   email: z
     .string()
@@ -34,7 +36,7 @@ const registerTeacherSchema = z.object({
     ),
   phone: z
     .string()
-    .min(8, 'El teléfono es obligatorio y debe tener al menos 8 caracteres')
+    .min(10, 'El teléfono es obligatorio y debe tener al menos 10 caracteres')
     .regex(
       /^\+?\d{1,3}[-\s]?\d{1,4}[-\s]?\d{1,4}[-\s]?\d{1,9}$/,
       'El teléfono no debe contener letras ni caracteres especiales'
@@ -46,7 +48,7 @@ const registerTeacherSchema = z.object({
     .string()
     .min(8, 'La contraseña es obligatoria y debe tener al menos 8 caracteres')
     .regex(
-      /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#%&])(?=.{8,})/,
+      /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$+!%*?&_-])[A-Za-z\d@$!%*?&_-]{8,}$/,
       'La contraseña debe tener al menos una letra mayúscula, una letra minúscula, un número y un caracter especial'
     ),
 });
