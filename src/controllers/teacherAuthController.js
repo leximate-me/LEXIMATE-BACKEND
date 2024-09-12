@@ -38,7 +38,7 @@ const registerTeacher = async (req, res) => {
 
     const savedTeacher = await newTeacher.save();
 
-    const token = createAccessToken({ id: savedTeacher._id });
+    const token = await createAccessToken({ id: savedTeacher._id });
 
     res.cookie('token', token);
     console.log(res.cookie);
