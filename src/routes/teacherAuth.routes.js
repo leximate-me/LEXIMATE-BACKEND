@@ -28,7 +28,7 @@ teacherAuthRouter.post(
   loginTeacher
 );
 teacherAuthRouter.post('/logout', authRequired, logoutTeacher);
-teacherAuthRouter.post('/verify-token', verifyToken);
+teacherAuthRouter.get('/verify-token', verifyToken);
 teacherAuthRouter.post('/generate-token', authRequired, generateToken);
 
 export { teacherAuthRouter };

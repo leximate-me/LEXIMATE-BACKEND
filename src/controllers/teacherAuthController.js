@@ -41,6 +41,7 @@ const registerTeacher = async (req, res) => {
     const token = createAccessToken({ id: savedTeacher._id });
 
     res.cookie('token', token);
+    console.log(res.cookie);
     res.status(201).json(savedTeacher);
   } catch (error) {
     console.log(error);
@@ -71,7 +72,7 @@ const loginTeacher = async (req, res) => {
         .json({ error: ['Correo o contraseña incorrectos'] });
     }
 
-    const token = createAccessToken({ id: existingTeacher._id });
+    const token = await createAccessToken({ id: existingTeacher._id });
 
     res.cookie('token', token);
 
@@ -109,7 +110,7 @@ const logoutTeacher = async (req, res) => {
 };
 
 const verifyToken = async (req, res) => {
-  const { token } = req.body;
+  const { token } = req.cookies;
   console.log(req.cookies);
 
   if (!token) {
