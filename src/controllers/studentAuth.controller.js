@@ -1,6 +1,7 @@
 import bcrypt from 'bcryptjs';
 import { studentModel } from '../models/student.model.js';
 import { teacherModel } from '../models/teacher.model.js';
+import { classModel } from '../models/class.model.js';
 import { createAccessToken } from '../libs/jwt.js';
 import jwt from 'jsonwebtoken';
 import { JWT_SECRET } from '../configs/env.config.js';
@@ -41,6 +42,13 @@ const registerStudent = async (req, res) => {
       teacher: teacherToken._id,
     });
 
+    const updateClass = await classModel.updateOne(
+      { teacher: teacherToken._id },
+      { $push: { students: newStudent._id } }
+    );
+
+    console.log(updateClass);
+
     const savedStudent = await newStudent.save();
 
     const accesToken = await createAccessToken({ id: savedStudent._id });
@@ -75,6 +83,14 @@ const loginStudent = async (req, res) => {
     const validPassword = await bcrypt.compare(password, studentFound.password);
     if (!validPassword) {
       return res.status(400).json({ error: ['Contraseña incorrecta'] });
+    }
+
+    if (studentFound.expiresAt < new Date()) {
+      const deleteStudent = await studentFound.deleteOne({
+        _id: studentFound._id,
+      });
+      res.json({ error: ['Te fuiste banado papu'] });
+      return deleteStudent;
     }
 
     const accesToken = await createAccessToken({ id: studentFound._id });
