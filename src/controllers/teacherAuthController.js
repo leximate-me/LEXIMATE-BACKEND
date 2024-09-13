@@ -1,165 +1,81 @@
-import bcrypt from 'bcryptjs';
-import jwt from 'jsonwebtoken';
-import { teacherModel } from '../models/teacher.model.js';
-import { createAccessToken } from '../libs/jwt.js';
-import { JWT_SECRET } from '../configs/envConfig.js';
+import {
+  registerTeacherService,
+  loginTeacherService,
+  getTeacherProfileService,
+  logoutTeacherService,
+  verifyTokenService,
+  generateTokenService,
+} from '../services/teacherAuth.service.js';
 
+// definir funcion para registrar un profesor
 const registerTeacher = async (req, res) => {
-  const {
-    firstName,
-    lastName,
-    dni,
-    birthdate,
-    email,
-    phone,
-    institution,
-    password,
-  } = req.body;
-
   try {
-    const existingTeacher = await teacherModel.findOne({ email });
-
-    if (existingTeacher) {
-      return res.status(400).json({ error: ['El correo ya está registrado'] });
-    }
-
-    const hashedPassword = await bcrypt.hash(password, 12);
-
-    const newTeacher = new teacherModel({
-      firstName,
-      lastName,
-      dni,
-      birthdate,
-      email,
-      phone,
-      institution,
-      password: hashedPassword,
-    });
-
-    const savedTeacher = await newTeacher.save();
-
-    const token = await createAccessToken({ id: savedTeacher._id });
-
+    const { savedTeacher, token } = await registerTeacherService(req.body);
     res.cookie('token', token);
-    console.log(res.cookie);
     res.status(201).json(savedTeacher);
   } catch (error) {
     console.log(error);
-    res.status(500).json({ error: ['Error en el servidor'] });
+    res.status(400).json({ error: [error.message] });
   }
 };
 
+// definir funcion para loguear un profesor
 const loginTeacher = async (req, res) => {
-  const { email, password } = req.body;
-
   try {
-    const existingTeacher = await teacherModel.findOne({ email });
-
-    if (!existingTeacher) {
-      return res
-        .status(400)
-        .json({ error: ['Correo o contraseña incorrectos'] });
-    }
-
-    const isPasswordCorrect = await bcrypt.compare(
-      password,
-      existingTeacher.password
+    const { existingTeacher, token } = await loginTeacherService(
+      req.body.email,
+      req.body.password
     );
-
-    if (!isPasswordCorrect) {
-      return res
-        .status(400)
-        .json({ error: ['Correo o contraseña incorrectos'] });
-    }
-
-    const token = await createAccessToken({ id: existingTeacher._id });
-
     res.cookie('token', token);
-
     res.status(200).json(existingTeacher);
   } catch (error) {
     console.log(error);
-    res.status(500).json({ error: ['Error en el servidor'] });
+    res.status(400).json({ error: [error.message] });
   }
 };
 
+// definir funcion para obtener el perfil de un profesor
 const getTeacherProfile = async (req, res) => {
   try {
-    const existingTeacher = await teacherModel.findById(req.user.id);
-    if (!existingTeacher) {
-      return res.status(404).json({ error: ['Usuario no encontrado'] });
-    }
-
+    const existingTeacher = await getTeacherProfileService(req.user.id);
     res.status(200).json(existingTeacher);
   } catch (error) {
     console.log(error);
-    res.status(500).json({ error: ['Error en el servidor'] });
+    res.status(404).json({ error: [error.message] });
   }
 };
 
+// definir funcion para cerrar sesión de un profesor
 const logoutTeacher = async (req, res) => {
   try {
-    res.clearCookie('token', '', {
-      expires: new Date(0),
-    });
-    res.status(200).json({ message: 'Cerró sesión exitosamente' });
+    const response = logoutTeacherService();
+    res.clearCookie('token', '', { expires: new Date(0) });
+    res.status(200).json(response);
   } catch (error) {
     console.log(error);
     res.status(500).json({ error: ['Error en el servidor'] });
   }
 };
 
+// definir funcion para verificar un token
 const verifyToken = async (req, res) => {
-  const { token } = req.cookies;
-  console.log(req.cookies);
-
-  if (!token) {
-    return res.status(401).json({ error: ['No autorizado'] });
-  }
-
   try {
-    jwt.verify(token, JWT_SECRET, (error, decoded) => {
-      if (error) {
-        return res.status(401).json({ error: ['No autorizado'] });
-      }
-      const existingTeacher = teacherModel.findById(decoded.id);
-      if (!existingTeacher) {
-        return res.status(404).json({ error: ['Usuario no encontrado'] });
-      }
-      res.status(200).json(decoded);
-    });
+    const decoded = await verifyTokenService(req.cookies.token);
+    res.status(200).json(decoded);
   } catch (error) {
     console.log(error);
-    res.status(500).json({ error: ['Error en el servidor'] });
+    res.status(401).json({ error: [error.message] });
   }
 };
 
+// definir funcion para generar un token
 const generateToken = async (req, res) => {
-  const { classId } = req.body;
-
   try {
-    const existingTeacher = await teacherModel.findById(req.user.id);
-
-    if (!existingTeacher) {
-      return res.status(404).json({ error: ['Usuario no encontrado'] });
-    }
-
-    const token = await existingTeacher.generateToken(classId);
-
-    existingTeacher.generatedTokens.push({
-      token,
-      class: classId,
-      expiresOn: new Date(Date.now() + 2 * 24 * 60 * 60 * 1000),
-    });
-
-    await existingTeacher.save();
-
-    return res
-      .status(200)
-      .json({ message: 'Token generado exitosamente', token });
+    const response = await generateTokenService(req.user.id, req.body.classId);
+    res.status(200).json(response);
   } catch (error) {
     console.log(error);
-    res.status(500).json({ error: ['Error en el servidor'] });
+    res.status(404).json({ error: [error.message] });
   }
 };
 
