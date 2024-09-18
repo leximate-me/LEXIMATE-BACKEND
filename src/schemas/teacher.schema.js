@@ -19,7 +19,10 @@ const registerTeacherSchema = z.object({
   dni: z
     .string()
     .min(3, 'El DNI es obligatorio y debe tener al menos 3 caracteres')
-    .regex(/^[a-zA-Z0-9]+$/, 'El DNI no debe contener caracteres especiales'),
+    .regex(
+      /^\d{8}(?:[-\s]\d{4})?$/,
+      'El DNI no debe contener letras ni caracteres especiales y no debe ser mayor a 8'
+    ),
   birthdate: z
     .string({
       required_error: 'La fecha de nacimiento es obligatoria',
