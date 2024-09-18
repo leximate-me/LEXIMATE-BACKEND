@@ -1,32 +1,20 @@
 import { z } from 'zod';
 
-const registerSchema = z.object({
-  name: z
+const registerStudentSchema = z.object({
+  firstName: z
     .string()
     .min(3, 'El nombre es obligatorio y debe tener al menos 3 caracteres')
     .regex(
       /^[a-zA-Z]+$/,
       'El nombre no debe contener números ni caracteres especiales'
     ),
-  lastname: z
+  lastName: z
     .string()
     .min(3, 'El apellido es obligatorio y debe tener al menos 3 caracteres')
     .regex(
       /^[a-zA-Z]+$/,
       'El apellido no debe contener números ni caracteres especiales'
     ),
-  gender: z
-    .string()
-    .min(4, 'El género es obligatorio y debe tener al menos 4 caracteres'),
-  birthdate: z
-    .string(
-      'La fecha de nacimiento es obligatoria y debe ser una fecha válida en el formato YYYY-MM-DD'
-    )
-    .datetime()
-    .optional(),
-  country: z
-    .string()
-    .min(3, 'El país es obligatorio y debe tener al menos 3 caracteres'),
   email: z
     .string()
     .email(
@@ -42,7 +30,7 @@ const registerSchema = z.object({
   role: z.string().optional(),
 });
 
-const loginSchema = z.object({
+const loginStudentSchema = z.object({
   email: z
     .string()
     .email(
@@ -57,4 +45,4 @@ const loginSchema = z.object({
     ),
 });
 
-export { registerSchema, loginSchema };
+export { registerStudentSchema, loginStudentSchema };

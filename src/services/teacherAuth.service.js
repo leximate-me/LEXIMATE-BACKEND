@@ -18,7 +18,16 @@ import { JWT_SECRET } from '../configs/envConfig.js';
  */
 
 const registerTeacherService = async (teacherData) => {
-  const { email, password } = teacherData;
+  const {
+    firstName,
+    lastName,
+    dni,
+    birthdate,
+    email,
+    phone,
+    institution,
+    password,
+  } = teacherData;
 
   // Verificar si el profesor ya está registrado
   const existingTeacher = await teacherModel.findOne({ email });
@@ -33,7 +42,13 @@ const registerTeacherService = async (teacherData) => {
 
   // Crear un nuevo profesor con la contraseña encriptada
   const newTeacher = new teacherModel({
-    ...teacherData,
+    firstName,
+    lastName,
+    dni,
+    birthdate,
+    email,
+    phone,
+    institution,
     password: hashedPassword,
   });
 

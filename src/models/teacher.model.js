@@ -44,7 +44,7 @@ const teacherSchema = new Schema(
       type: String,
       required: true,
     },
-    verify: {
+    verified: {
       type: Boolean,
       default: false,
     },
