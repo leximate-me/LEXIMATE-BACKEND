@@ -2,6 +2,8 @@ import { studentModel } from '../models/student.model.js';
 import { teacherModel } from '../models/teacher.model.js';
 import { createAccessToken } from '../libs/jwt.js';
 import bcrypt from 'bcryptjs';
+import jwt from 'jsonwebtoken';
+import { JWT_SECRET } from '../configs/envConfig.js';
 
 const loginUserService = async (userData) => {
   const { email, password } = userData;
@@ -39,4 +41,27 @@ const loginUserService = async (userData) => {
   return { user, token };
 };
 
-export { loginUserService };
+const verifyTokenService = async (token) => {
+  if (!token) {
+    throw new Error('Token no proporcionado');
+  }
+  let existingUser = null;
+
+  const decoded = jwt.verify(token, JWT_SECRET);
+  existingUser = await studentModel.findById(decoded.id);
+
+  if (!existingUser) {
+    existingUser = await teacherModel.findById(decoded.id);
+  }
+
+  if (!existingUser) {
+    throw new Error('Usuario no encontrado');
+  }
+  return { decoded, existingUser };
+};
+
+const logoutUserService = () => {
+  return { message: 'Cerró sesión exitosamente' };
+};
+
+export { loginUserService, logoutUserService, verifyTokenService };
