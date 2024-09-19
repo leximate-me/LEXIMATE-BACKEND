@@ -21,6 +21,23 @@ const registerTeacher = async (req, res) => {
 
 // definir funcion para loguear un profesor
 const loginTeacher = async (req, res) => {
+  // const { role, nombre, apellido , legajo } = req.body;
+
+  // i1| f (role === 'teacher') {
+  //   if (!nombre && !apellido) {
+  //     return res.status(400).json({ error: ['Datos incorrectos'] });
+  //   } else {
+  //     // guardar los datos con el rol
+  //     nombre , apellido, role teacher
+  //   }
+  // } else if (role === 'student') {
+  //   if (!dataAlumno) {
+  //     return res.status(400).json({ error: ['Datos incorrectos'] });
+  //   } else {
+  //     // guardar los datos con el rol stundent
+  //     legajo, role student
+  //   }
+  // }
   try {
     const { existingTeacher, token } = await loginTeacherService(
       req.body.email,

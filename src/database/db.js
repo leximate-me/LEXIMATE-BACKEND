@@ -1,16 +1,37 @@
-import mongoose from 'mongoose';
-import { MONGODB_URI } from '../configs/envConfig.js';
+import { Sequelize } from 'sequelize';
+
+// Crear una instancia de Sequelize sin especificar la base de datos inicialmente
+const sequelize = new Sequelize('', 'root', '', {
+  host: 'localhost',
+  dialect: 'mysql',
+});
+
+const createDatabase = async () => {
+  try {
+    // Conectar a MySQL sin especificar la base de datos
+    await sequelize.query('CREATE DATABASE IF NOT EXISTS leximate');
+  } catch (error) {
+    console.log(error);
+  }
+};
 
 const connectDB = async () => {
   try {
-    const connnect = await mongoose.connect(MONGODB_URI);
-    console.log(
-      `💻 Conexión exitosa a la base de datos: ${connnect.connection.name} 💻`
-    );
-    return connnect;
+    await createDatabase();
+
+    // Crear una nueva instancia de Sequelize especificando la base de datos
+    const sequelizeWithDB = new Sequelize('leximate', 'root', '', {
+      host: 'localhost',
+      dialect: 'mysql',
+    });
+
+    // Probar la conexión
+    await sequelizeWithDB.authenticate();
+    console.log('Conectado a la base de datos: leximate');
+
+    return sequelizeWithDB;
   } catch (error) {
-    console.error('Error en la conexión a Mongo:', error.message);
-    process.exit(1);
+    console.log(error);
   }
 };
 
