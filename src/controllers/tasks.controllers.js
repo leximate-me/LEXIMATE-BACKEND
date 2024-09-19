@@ -22,7 +22,10 @@ const createTask = async (req, res) => {
 
 const getTasks = async (req, res) => {
   try {
-    const tasks = await taskModel.find({ user: req.user.id }).populate('user');
+    const { id } = req.user;
+    console.log(id);
+    const tasks = await taskModel.find({ user: id }).populate('Teacher');
+
     if (!tasks) {
       return res.status(404).json({ error: ['No hay tareas para mostrar'] });
     }
