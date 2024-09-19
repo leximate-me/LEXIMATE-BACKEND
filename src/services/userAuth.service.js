@@ -60,8 +60,29 @@ const verifyTokenService = async (token) => {
   return { decoded, existingUser };
 };
 
+const getProfileUserService = async (userId) => {
+  let existingUser = null;
+
+  existingUser = await studentModel.findById(userId);
+
+  if (!existingUser) {
+    existingUser = await teacherModel.findById(userId);
+  }
+
+  if (!existingUser) {
+    throw new Error('Usuario no encontrado');
+  }
+
+  return existingUser;
+};
+
 const logoutUserService = () => {
   return { message: 'Cerró sesión exitosamente' };
 };
 
-export { loginUserService, logoutUserService, verifyTokenService };
+export {
+  loginUserService,
+  verifyTokenService,
+  getProfileUserService,
+  logoutUserService,
+};

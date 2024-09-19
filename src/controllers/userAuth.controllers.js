@@ -2,6 +2,7 @@ import {
   loginUserService,
   logoutUserService,
   verifyTokenService,
+  getProfileUserService,
 } from '../services/userAuth.service.js';
 
 const loginUser = async (req, res) => {
@@ -26,6 +27,16 @@ const verifyToken = async (req, res) => {
   }
 };
 
+const getProfileUser = async (req, res) => {
+  try {
+    const existingUser = await getProfileUserService(req.user.id);
+    res.status(200).json(existingUser);
+  } catch (error) {
+    console.log(error);
+    res.status(404).json({ error: [error.message] });
+  }
+};
+
 const logoutUser = async (req, res) => {
   try {
     const response = logoutUserService();
@@ -37,4 +48,4 @@ const logoutUser = async (req, res) => {
   }
 };
 
-export { loginUser, verifyToken, logoutUser };
+export { loginUser, verifyToken, getProfileUser, logoutUser };
