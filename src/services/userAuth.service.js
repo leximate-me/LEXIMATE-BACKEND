@@ -73,34 +73,26 @@ const loginUserService = async (userData) => {
   let user = null;
   let userType = null;
 
-  user = await teacherModel.findOne({ email });
-  userType = 'teacher';
+  // Verificar si el usuario existe
+  user = await User.findOne({ where: { email } });
   console.log(user);
-  if (!user) {
-    user = await studentModel.findOne({ email });
-    userType = 'student';
-
-    if (user.expiresAt < new Date()) {
-      const deleteStudent = await studentModel.findByIdAndDelete({
-        _id: user._id,
-      });
-      res.json({ error: ['El token de acceso ha expirado'] });
-      return deleteStudent;
-    }
-  }
 
   if (!user) {
-    throw new Error('Correo o contraseña incorrectos');
+    throw new Error('Usuario no encontrado');
   }
 
-  const isValidPassword = await bcrypt.compare(password, user.password);
-
-  if (!isValidPassword) {
-    throw new Error('Correo o contraseña incorrectos');
+  // Verificar la contraseña
+  const validPassword = await bcrypt.compare(password, user.password);
+  if (!validPassword) {
+    throw new Error('Contraseña incorrecta');
   }
 
-  const token = await createAccessToken({ id: user._id, userType });
-  console.log(user);
+  // Obtener el rol del usuario
+  const role = await Role.findByPk(user.role_fk);
+
+  // Crear el token de acceso
+  const token = await createAccessToken({ id: user.id, role: role.name });
+
   return { user, token };
 };
 
@@ -108,29 +100,26 @@ const verifyTokenService = async (token) => {
   if (!token) {
     throw new Error('Token no proporcionado');
   }
-  let existingUser = null;
 
-  const decoded = jwt.verify(token, JWT_SECRET);
-  existingUser = await studentModel.findById(decoded.id);
+  try {
+    const decoded = jwt.verify(token, JWT_SECRET);
+    const existingUser = await User.findByPk(decoded.id);
 
-  if (!existingUser) {
-    existingUser = await teacherModel.findById(decoded.id);
+    if (!existingUser) {
+      throw new Error('Usuario no encontrado');
+    }
+
+    return { decoded, existingUser };
+  } catch (error) {
+    console.log(error);
+    res.status(400).json({ error: [error.message] });
   }
-
-  if (!existingUser) {
-    throw new Error('Usuario no encontrado');
-  }
-  return { decoded, existingUser };
 };
 
 const getProfileUserService = async (userId) => {
   let existingUser = null;
 
-  existingUser = await studentModel.findById(userId);
-
-  if (!existingUser) {
-    existingUser = await teacherModel.findById(userId);
-  }
+  existingUser = await User.findByPk(userId);
 
   if (!existingUser) {
     throw new Error('Usuario no encontrado');
