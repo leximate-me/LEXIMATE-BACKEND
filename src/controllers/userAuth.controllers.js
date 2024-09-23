@@ -3,7 +3,19 @@ import {
   logoutUserService,
   verifyTokenService,
   getProfileUserService,
+  registerUserService,
 } from '../services/userAuth.service.js';
+
+const registerUser = async (req, res) => {
+  try {
+    const { newUser, token } = await registerUserService(req.body);
+    res.cookie('token', token);
+    res.status(201).json(newUser);
+  } catch (error) {
+    console.log(error);
+    res.status(400).json({ error: [error.message] });
+  }
+};
 
 const loginUser = async (req, res) => {
   try {
@@ -48,4 +60,4 @@ const logoutUser = async (req, res) => {
   }
 };
 
-export { loginUser, verifyToken, getProfileUser, logoutUser };
+export { loginUser, verifyToken, getProfileUser, logoutUser, registerUser };

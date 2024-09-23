@@ -1,6 +1,7 @@
 import { DataTypes } from 'sequelize';
-import { connectDB } from '../database/db';
-const sequelize = connectDB();
+import { connectDB } from '../database/db.js';
+import { Role } from './roles.model.js';
+const sequelize = await connectDB();
 
 const User = sequelize.define(
   'User',
@@ -20,20 +21,18 @@ const User = sequelize.define(
     },
     dni: {
       type: DataTypes.INTEGER(8),
-      allowNull: false,
-      unique: true,
+      allowNull: true,
     },
     email: {
       type: DataTypes.STRING(100),
       allowNull: false,
-      unique: true,
     },
     institute: {
       type: DataTypes.STRING(100),
-      allowNull: false,
+      allowNull: true,
     },
     phone_number: {
-      type: DataTypes.INTEGER(15),
+      type: DataTypes.STRING(15),
       allowNull: false,
     },
     birth_date: {
@@ -50,12 +49,26 @@ const User = sequelize.define(
     },
     role_fk: {
       type: DataTypes.INTEGER,
-      allowNull: false,
+      references: {
+        model: Role,
+        key: 'id',
+      },
     },
   },
   {
+    tableName: 'users',
     timestamps: true,
   }
 );
+
+User.belongsTo(Role, {
+  foreignKey: 'role_fk',
+  as: 'role',
+});
+
+Role.hasMany(User, {
+  foreignKey: 'role_fk',
+  as: 'users',
+});
 
 export { User };
