@@ -1,15 +1,13 @@
-import { Role, defineRoles } from '../models/roles.model.js';
-import { User } from '../models/user.model.js';
+import { connectDB } from './db.js';
+import './relationship.js';
 
 const syncModels = async () => {
   try {
-    await Role.sync({ alter: true }); // Usa { force: true } para recrear la tabla cada vez (útil para desarrollo)
-    await User.sync({ alter: true }); // Usa { force: true } para recrear la tabla cada vez (útil para desarrollo)
-
-    console.log('Modelo de Rol sincronizado con la base de datos');
-    await defineRoles(); // Definir roles predeterminados
+    const sequelize = await connectDB();
+    await sequelize.sync({ force: true });
+    console.log('Modelos sincronizados correctamente.');
   } catch (error) {
-    console.log('Error al sincronizar el modelo de Rol:', error);
+    console.log('Error al sincronizar los modelos:', error);
   }
 };
 

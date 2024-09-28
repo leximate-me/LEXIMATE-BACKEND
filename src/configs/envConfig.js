@@ -6,6 +6,8 @@ const PORT = process.env.PORT || 3000;
 const DB_HOST = process.env.DB_HOST;
 const DB_USER = process.env.DB_USER;
 const DB_NAME = process.env.DB_NAME;
+const DB_PORT = process.env.DB_PORT;
+const DB_PASSWORD = process.env.DB_PASSWORD;
 
 const JWT_SECRET = process.env.JWT_SECRET;
 const CLOUDINARY_CLOUD_NAME = process.env.CLOUDINARY_CLOUD_NAME;
@@ -18,6 +20,8 @@ export {
   DB_HOST,
   DB_USER,
   DB_NAME,
+  DB_PORT,
+  DB_PASSWORD,
   JWT_SECRET,
   CLOUDINARY_CLOUD_NAME,
   CLOUDINARY_API_KEY,

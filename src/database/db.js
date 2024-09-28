@@ -1,38 +1,54 @@
 import { Sequelize } from 'sequelize';
+import mysql from 'mysql2/promise';
+import {
+  DB_HOST,
+  DB_NAME,
+  DB_PASSWORD,
+  DB_USER,
+  DB_PORT,
+} from '../configs/envConfig.js';
 
-// Crear una instancia de Sequelize sin especificar la base de datos inicialmente
-const sequelize = new Sequelize('', 'root', '', {
-  host: 'localhost',
+// Función para crear la base de datos si no existe
+const createDatabase = async () => {
+  try {
+    const connection = await mysql.createConnection({
+      host: DB_HOST,
+      user: DB_USER,
+      password: DB_PASSWORD,
+      port: DB_PORT,
+    });
+
+    await connection.query(`CREATE DATABASE IF NOT EXISTS \`${DB_NAME}\`;`);
+    console.log(`Base de datos "${DB_NAME}" verificada o creada.`);
+    await connection.end();
+  } catch (error) {
+    console.log('Error al crear la base de datos:', error);
+    throw error;
+  }
+};
+
+const sequelize = new Sequelize(DB_NAME, DB_USER, DB_PASSWORD, {
+  host: DB_HOST,
+  port: DB_PORT,
   dialect: 'mysql',
 });
 
-const createDatabase = async () => {
-  try {
-    // Conectar a MySQL sin especificar la base de datos
-    await sequelize.query('CREATE DATABASE IF NOT EXISTS leximate');
-  } catch (error) {
-    console.log(error);
-  }
-};
-
 const connectDB = async () => {
   try {
+    // Verifica si la base de datos existe o la crea
     await createDatabase();
 
-    // Crear una nueva instancia de Sequelize especificando la base de datos
-    const sequelizeWithDB = new Sequelize('leximate', 'root', '', {
-      host: 'localhost',
-      dialect: 'mysql',
-    });
+    // Autenticar la conexión con Sequelize
+    await sequelize.authenticate();
+    console.log('Conexión establecida correctamente con la base de datos.');
 
-    // Probar la conexión
-    await sequelizeWithDB.authenticate();
-    console.log('Conectado a la base de datos: leximate');
+    // Sincroniza los modelos con la base de datos (crea tablas si no existen)
+    await sequelize.sync();
 
-    return sequelizeWithDB;
+    return sequelize;
   } catch (error) {
-    console.log(error);
+    console.log('Error al conectar con la base de datos:', error);
   }
 };
 
-export { connectDB };
+export { connectDB, sequelize };

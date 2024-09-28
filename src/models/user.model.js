@@ -1,6 +1,6 @@
 import { DataTypes } from 'sequelize';
 import { connectDB } from '../database/db.js';
-import { Role } from './roles.model.js';
+
 const sequelize = await connectDB();
 
 const User = sequelize.define(
@@ -47,13 +47,6 @@ const User = sequelize.define(
       type: DataTypes.BOOLEAN,
       defaultValue: false,
     },
-    role_fk: {
-      type: DataTypes.INTEGER,
-      references: {
-        model: Role,
-        key: 'id',
-      },
-    },
   },
   {
     tableName: 'users',
@@ -62,15 +55,5 @@ const User = sequelize.define(
     deleteAt: 'deleteAt',
   }
 );
-
-User.belongsTo(Role, {
-  foreignKey: 'role_fk',
-  as: 'role',
-});
-
-Role.hasMany(User, {
-  foreignKey: 'role_fk',
-  as: 'users',
-});
 
 export { User };

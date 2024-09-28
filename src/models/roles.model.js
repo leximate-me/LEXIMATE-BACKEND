@@ -22,21 +22,4 @@ const Role = sequelize.define(
   }
 );
 
-const defineRoles = async () => {
-  const roles = ['Admin', 'Teacher', 'Student', 'Guest'];
-
-  for (const roleName of roles) {
-    const [role, created] = await Role.findOrCreate({
-      where: { name: roleName },
-      defaults: { name: roleName },
-    });
-
-    if (created) {
-      console.log(`Roles ${roleName} creado.`);
-    } else {
-      console.log(`Roles ${roleName} ya existe.`);
-    }
-  }
-};
-
-export { Role, defineRoles };
+export { Role };
