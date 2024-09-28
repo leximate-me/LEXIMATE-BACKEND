@@ -1,5 +1,7 @@
 import { User } from '../models/user.model.js';
+import { People } from '../models/people.model.js';
 import { Role } from '../models/roles.model.js';
+import { RoleUser } from '../models/rolesUsers.model.js';
 import { createAccessToken } from '../libs/jwt.js';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
@@ -7,64 +9,75 @@ import { JWT_SECRET } from '../configs/envConfig.js';
 
 const registerUserService = async (userData) => {
   const {
-    role,
     first_name,
     last_name,
     dni,
-    email,
     institute,
     phone_number,
     birth_date,
+    user_name,
+    email,
     password,
+    role,
   } = userData;
 
   // Verificar si el usuario ya existe
-  const existingUser = await User.findOne({ where: { email } });
+  const existingEmail = await User.findOne({ where: { email } });
+  if (existingEmail) {
+    throw new Error('El usuario ya existe');
+  }
+
+  // Verificar si la persona ya existe
+  const existingPerson = await People.findOne({ where: { dni } });
+  if (existingPerson) {
+    throw new Error('La persona ya existe');
+  }
+
+  // Verificar si el nombre de usuario ya existe
+  const existingUser = await User.findOne({ where: { user_name } });
   if (existingUser) {
-    throw new Error('El correo ya está registrado');
+    throw new Error('El nombre de usuario ya existe');
   }
 
-  // Hashear la contraseña
-  const hashedPassword = await bcrypt.hash(password, 10);
-
-  // Buscar el rol en la base de datos
-  const roleRecord = await Role.findOne({ where: { name: role } });
-  if (!roleRecord) {
-    throw new Error('Rol no válido');
+  // Verificar si el rol existe
+  const existingRole = await Role.findByPk(role);
+  if (!existingRole) {
+    throw new Error('El rol no existe');
   }
 
-  // Crear el nuevo usuario
-  let newUser;
-  if (role === 'Teacher') {
-    newUser = await User.create({
-      first_name,
-      last_name,
-      dni,
-      email,
-      institute,
-      phone_number,
-      birth_date,
-      password: hashedPassword,
-      role_fk: roleRecord.id,
-    });
-  } else if (role === 'Student') {
-    newUser = await User.create({
-      first_name,
-      last_name,
-      email,
-      phone_number,
-      birth_date,
-      password: hashedPassword,
-      role_fk: roleRecord.id,
-    });
-  } else {
-    throw new Error('Rol no válido');
-  }
+  // Crear la persona
+  const newPerson = await People.create({
+    first_name,
+    last_name,
+    dni,
+    institute,
+    phone_number,
+    birth_date,
+  });
+
+  // Encriptar la contraseña
+  const hashedPassword = await bcrypt.hash(password, 12);
+
+  // Crear el usuario
+  const newUser = await User.create({
+    user_name,
+    email,
+    password: hashedPassword,
+    people_fk: newPerson.id,
+  });
+
+  // Asignar el rol al usuario
+  await RoleUser.create({
+    users_fk: newUser.id,
+    roles_fk: role,
+  });
 
   // Crear el token de acceso
-  const token = await createAccessToken({ id: newUser.id, role });
+  const token = await createAccessToken({
+    id: newUser.id,
+    rol: existingRole.name,
+  });
 
-  // Devolver el nuevo usuario y el token
   return { newUser, token };
 };
 
