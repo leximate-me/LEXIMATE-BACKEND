@@ -40,7 +40,7 @@ const People = sequelize.define(
   {
     tableName: 'people',
     paranoid: true,
-    timestamps: true,
+    timestamps: false,
     deleteAt: 'deleteAt',
   }
 );
