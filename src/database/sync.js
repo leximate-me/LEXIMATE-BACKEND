@@ -1,4 +1,6 @@
 import { connectDB } from './db.js';
+import { defineRoles } from '../models/roles.model.js';
+import { definePermissions } from '../models/permission.model.js';
 import './relationship.js';
 
 const syncModels = async () => {
@@ -6,6 +8,8 @@ const syncModels = async () => {
     const sequelize = await connectDB();
     await sequelize.sync({ force: true });
     console.log('Modelos sincronizados correctamente.');
+    await defineRoles();
+    await definePermissions();
   } catch (error) {
     console.log('Error al sincronizar los modelos:', error);
   }

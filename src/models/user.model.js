@@ -7,52 +7,27 @@ const User = sequelize.define(
   'User',
   {
     id: {
-      type: DataTypes.INTEGER,
+      type: DataTypes.INTEGER(11),
       primaryKey: true,
       autoIncrement: true,
     },
-    first_name: {
-      type: DataTypes.STRING(50),
-      allowNull: false,
-    },
-    last_name: {
-      type: DataTypes.STRING(50),
-      allowNull: false,
-    },
-    dni: {
-      type: DataTypes.STRING(8),
-      allowNull: true,
-    },
     email: {
-      type: DataTypes.STRING(100),
-      allowNull: false,
-    },
-    institute: {
-      type: DataTypes.STRING(100),
-      allowNull: true,
-    },
-    phone_number: {
-      type: DataTypes.STRING(15),
-      allowNull: false,
-    },
-    birth_date: {
-      type: DataTypes.DATE,
+      type: DataTypes.STRING(50),
       allowNull: false,
     },
     password: {
-      type: DataTypes.STRING,
+      type: DataTypes.STRING(100),
       allowNull: false,
     },
     verified: {
       type: DataTypes.BOOLEAN,
+      allowNull: false,
       defaultValue: false,
     },
   },
   {
     tableName: 'users',
-    paranoid: true,
     timestamps: true,
-    deleteAt: 'deleteAt',
   }
 );
 

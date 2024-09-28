@@ -7,13 +7,17 @@ const Role = sequelize.define(
   'Role',
   {
     id: {
-      type: DataTypes.INTEGER,
+      type: DataTypes.INTEGER(11),
       primaryKey: true,
       autoIncrement: true,
     },
     name: {
       type: DataTypes.STRING,
       allowNull: false,
+    },
+    description: {
+      type: DataTypes.STRING,
+      allowNull: true,
     },
   },
   {
@@ -22,4 +26,36 @@ const Role = sequelize.define(
   }
 );
 
-export { Role };
+const defineRoles = async () => {
+  try {
+    const roles = await Role.findAll();
+    if (roles.length === 0) {
+      await Role.bulkCreate([
+        {
+          name: 'Admin',
+          description:
+            'Administrador del sistema, puede realizar cualquier acción.',
+        },
+        {
+          name: 'Student',
+          description:
+            'Estudiante del sistema, puede realizar acciones de estudiantes.',
+        },
+        {
+          name: 'Teacher',
+          description:
+            'Profesor del sistema, puede realizar acciones de profesores.',
+        },
+        {
+          name: 'Guest',
+          description: 'Usuario invitado, puede realizar acciones básicas.',
+        },
+      ]);
+      console.log('Roles creados correctamente.');
+    }
+  } catch (error) {
+    console.log('Error al definir roles:', error);
+  }
+};
+
+export { Role, defineRoles };
