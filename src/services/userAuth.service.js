@@ -75,38 +75,54 @@ const registerUserService = async (userData) => {
   // Crear el token de acceso
   const token = await createAccessToken({
     id: newUser.id,
-    rol: existingRole.name,
+    rol: existingRole.id,
   });
 
   return { newUser, token };
 };
 
 const loginUserService = async (userData) => {
-  const { email, password } = userData;
-  let user = null;
-  let userType = null;
+  const { user_name, email, password } = userData;
 
-  // Verificar si el usuario existe
-  user = await User.findOne({ where: { email } });
-  console.log(user);
+  // Verificar si se proporcionó el correo electrónico o el nombre de usuario
+  if (!email && !user_name) {
+    throw new Error(
+      'Debe proporcionar un correo electrónico o un nombre de usuario'
+    );
+  }
 
-  if (!user) {
+  // Verificar si el usuario existe con el correo electrónico o nombre de usuario
+  const existingEmail = email ? await User.findOne({ where: { email } }) : null;
+  const existingUser = user_name
+    ? await User.findOne({ where: { user_name } })
+    : null;
+
+  if (!existingEmail && !existingUser) {
     throw new Error('Usuario no encontrado');
   }
 
-  // Verificar la contraseña
-  const validPassword = await bcrypt.compare(password, user.password);
-  if (!validPassword) {
+  // Seleccionar el usuario correcto
+  const existing = existingEmail ? existingEmail : existingUser;
+
+  // Verificar si la contraseña es correcta
+  const isValidPassword = await bcrypt.compare(password, existing.password);
+  if (!isValidPassword) {
     throw new Error('Contraseña incorrecta');
   }
 
-  // Obtener el rol del usuario
-  const role = await Role.findByPk(user.role_fk);
+  // Verificar si el usuario tiene un rol asignado
+  const role = await RoleUser.findOne({ where: { users_fk: existing.id } });
+  if (!role) {
+    throw new Error('El usuario no tiene un rol asignado');
+  }
 
   // Crear el token de acceso
-  const token = await createAccessToken({ id: user.id, role: role.name });
+  const token = await createAccessToken({
+    id: existing.id,
+    rol: role.roles_fk,
+  });
 
-  return { user, token };
+  return { user: existing, token };
 };
 
 const verifyTokenService = async (token) => {
@@ -115,7 +131,9 @@ const verifyTokenService = async (token) => {
   }
 
   try {
+    // Verificar el token
     const decoded = jwt.verify(token, JWT_SECRET);
+    // Buscar el usuario
     const existingUser = await User.findByPk(decoded.id);
 
     if (!existingUser) {
@@ -145,10 +163,20 @@ const logoutUserService = () => {
   return { message: 'Cerró sesión exitosamente' };
 };
 
+const deleteUserById = async (id) => {
+  const user = await User.findByPk(id);
+  if (!user) {
+    throw new Error('Usuario no encontrado');
+  }
+  await user.destroy();
+  return { message: 'Usuario eliminado exitosamente' };
+};
+
 export {
   loginUserService,
   verifyTokenService,
   getProfileUserService,
   logoutUserService,
   registerUserService,
+  deleteUserById,
 };

@@ -4,6 +4,7 @@ import {
   verifyTokenService,
   getProfileUserService,
   registerUserService,
+  deleteUserById,
 } from '../services/userAuth.service.js';
 
 const registerUser = async (req, res) => {
@@ -42,10 +43,22 @@ const verifyToken = async (req, res) => {
 const getProfileUser = async (req, res) => {
   try {
     const existingUser = await getProfileUserService(req.user.id);
+    console.log(req.user);
     res.status(200).json(existingUser);
   } catch (error) {
     console.log(error);
     res.status(404).json({ error: [error.message] });
+  }
+};
+
+const deleteUser = async (req, res) => {
+  try {
+    const response = await deleteUserById(req.user.id);
+    res.clearCookie('token', '', { expires: new Date(0) });
+    res.status(200).json(response);
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ error: ['Error en el servidor'] });
   }
 };
 
@@ -60,4 +73,11 @@ const logoutUser = async (req, res) => {
   }
 };
 
-export { loginUser, verifyToken, getProfileUser, logoutUser, registerUser };
+export {
+  loginUser,
+  verifyToken,
+  getProfileUser,
+  logoutUser,
+  registerUser,
+  deleteUser,
+};

@@ -7,7 +7,7 @@ import './relationship.js';
 const syncModels = async () => {
   try {
     const sequelize = await connectDB();
-    await sequelize.sync({ force: true });
+    await sequelize.sync({ force: false });
     console.log('Modelos sincronizados correctamente.');
     await defineRoles();
     await definePermissions();
