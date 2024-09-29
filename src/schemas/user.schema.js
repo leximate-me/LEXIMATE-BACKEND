@@ -12,7 +12,7 @@ const registerUserSchema = z.object({
   password: z
     .string()
     .min(8, 'La contraseña es obligatoria y debe tener al menos 8 caracteres'),
-  role: z.string().min(1, 'El rol es obligatorio'),
+  role: z.number().min(1, 'El rol es obligatorio'),
 });
 
 const loginUserSchema = z.object({

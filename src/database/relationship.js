@@ -5,12 +5,12 @@ import { RoleUser } from '../models/rolesUsers.model.js';
 import { People } from '../models/people.model.js';
 import { User } from '../models/user.model.js';
 
-RolePermission.belongsTo(Role, { foreignKey: 'roles_fk' });
-
-RolePermission.belongsTo(Permission, { foreignKey: 'permissions_fk' });
+User.belongsTo(People, { foreignKey: 'people_fk' });
 
 RoleUser.belongsTo(User, { foreignKey: 'users_fk' });
 
 RoleUser.belongsTo(Role, { foreignKey: 'roles_fk' });
 
-User.belongsTo(People, { foreignKey: 'people_fk' });
+RolePermission.belongsTo(Role, { foreignKey: 'roles_fk' });
+
+RolePermission.belongsTo(Permission, { foreignKey: 'permissions_fk' });
