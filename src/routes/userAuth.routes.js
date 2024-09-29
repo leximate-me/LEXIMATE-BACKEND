@@ -18,6 +18,6 @@ userAuthRouter.post('/login', validateSchema(loginUserSchema), loginUser);
 userAuthRouter.get('/verify-token', verifyToken);
 userAuthRouter.post('/logout', logoutUser);
 userAuthRouter.get('/profile', authRequired, getProfileUser);
-userAuthRouter.delete('/delete-user', authRequired, deleteUser);
+userAuthRouter.delete('/delete', authRequired, deleteUser);
 
 export { userAuthRouter };

@@ -82,27 +82,14 @@ const registerUserService = async (userData) => {
 };
 
 const loginUserService = async (userData) => {
-  const { user_name, email, password } = userData;
+  const { email, password } = userData;
 
-  // Verificar si se proporcionó el correo electrónico o el nombre de usuario
-  if (!email && !user_name) {
-    throw new Error(
-      'Debe proporcionar un correo electrónico o un nombre de usuario'
-    );
-  }
+  // Verificar si el usuario existe
+  const existing = await User.findOne({ where: { email } });
 
-  // Verificar si el usuario existe con el correo electrónico o nombre de usuario
-  const existingEmail = email ? await User.findOne({ where: { email } }) : null;
-  const existingUser = user_name
-    ? await User.findOne({ where: { user_name } })
-    : null;
-
-  if (!existingEmail && !existingUser) {
+  if (!existing) {
     throw new Error('Usuario no encontrado');
   }
-
-  // Seleccionar el usuario correcto
-  const existing = existingEmail ? existingEmail : existingUser;
 
   // Verificar si la contraseña es correcta
   const isValidPassword = await bcrypt.compare(password, existing.password);
