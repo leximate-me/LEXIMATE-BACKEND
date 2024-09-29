@@ -9,8 +9,8 @@ RolePermission.belongsTo(Role, { foreignKey: 'roles_fk' });
 
 RolePermission.belongsTo(Permission, { foreignKey: 'permissions_fk' });
 
-RoleUser.belongsTo(Role, { foreignKey: 'roles_fk' });
-
 RoleUser.belongsTo(User, { foreignKey: 'users_fk' });
+
+RoleUser.belongsTo(Role, { foreignKey: 'roles_fk' });
 
 User.belongsTo(People, { foreignKey: 'people_fk' });
