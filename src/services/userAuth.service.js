@@ -83,7 +83,7 @@ const loginUserService = async (userData) => {
   const existing = await User.findOne({ where: { email } });
 
   if (!existing) {
-    throw new Error('Usuario no encontrado');
+    throw new Error('No existe un usuario con ese email');
   }
 
   // Verificar si la contraseña es correcta
