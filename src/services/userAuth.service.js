@@ -6,6 +6,7 @@ import { createAccessToken } from '../libs/jwt.js';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import { JWT_SECRET } from '../configs/envConfig.js';
+import { resend } from '../libs/resend.js';
 
 const registerUserService = async (userData) => {
   const {
@@ -40,7 +41,7 @@ const registerUserService = async (userData) => {
   }
 
   // Verificar si el rol existe
-  const existingRole = await Role.findByPk(role);
+  const existingRole = await Role.findOne({ where: { name: role } });
   if (!existingRole) {
     throw new Error('El rol no existe');
   }
@@ -69,7 +70,7 @@ const registerUserService = async (userData) => {
   // Asignar el rol al usuario
   await RoleUser.create({
     users_fk: newUser.id,
-    roles_fk: role,
+    roles_fk: existingRole.id,
   });
 
   // Crear el token de acceso
@@ -157,6 +158,16 @@ const deleteUserById = async (id) => {
   }
   await user.destroy();
   return { message: 'Usuario eliminado exitosamente' };
+};
+
+const resendService = async (email) => {
+  const user = await User.findOne({ where: { email } });
+  if (!user) {
+    throw new Error('Usuario no encontrado');
+  }
+  const token = await createAccessToken({ id: user.id });
+  await resend(email, token);
+  return { message: 'Correo reenviado exitosamente' };
 };
 
 export {
