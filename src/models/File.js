@@ -1,38 +1,37 @@
 import { DataTypes } from 'sequelize';
 import { sequelize } from '../database/db.js';
 
-const User = sequelize.define(
-  'User',
+const File = sequelize.define(
+  'File',
   {
     id: {
       type: DataTypes.INTEGER(11),
       primaryKey: true,
       autoIncrement: true,
     },
-    user_name: {
+    file_name: {
       type: DataTypes.STRING(50),
       allowNull: false,
     },
-    email: {
-      type: DataTypes.STRING(50),
-      allowNull: false,
-    },
-    password: {
+    file_path: {
       type: DataTypes.STRING(100),
       allowNull: false,
     },
-    verified: {
-      type: DataTypes.BOOLEAN,
+    file_type: {
+      type: DataTypes.STRING(10),
       allowNull: false,
-      defaultValue: false,
+    },
+    file_url: {
+      type: DataTypes.STRING(100),
+      allowNull: false,
     },
   },
   {
-    tableName: 'users',
+    tableName: 'files',
     timestamps: true,
     paranoid: true,
     deletedAt: 'deleted_at',
   }
 );
 
-export { User };
+export { File };

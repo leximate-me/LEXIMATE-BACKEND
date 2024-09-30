@@ -1,38 +1,33 @@
 import { DataTypes } from 'sequelize';
 import { sequelize } from '../database/db.js';
 
-const User = sequelize.define(
-  'User',
+const Task = sequelize.define(
+  'Task',
   {
     id: {
       type: DataTypes.INTEGER(11),
       primaryKey: true,
       autoIncrement: true,
     },
-    user_name: {
+    title: {
       type: DataTypes.STRING(50),
       allowNull: false,
     },
-    email: {
-      type: DataTypes.STRING(50),
-      allowNull: false,
-    },
-    password: {
+    description: {
       type: DataTypes.STRING(100),
-      allowNull: false,
+      allowNull: true,
     },
-    verified: {
-      type: DataTypes.BOOLEAN,
+    status: {
+      type: DataTypes.STRING(10),
       allowNull: false,
-      defaultValue: false,
     },
   },
   {
-    tableName: 'users',
-    timestamps: true,
+    tableName: 'tasks',
     paranoid: true,
-    deletedAt: 'deleted_at',
+    timestamps: true,
+    deleteAt: 'deleteAt',
   }
 );
 
-export { User };
+export { Task };

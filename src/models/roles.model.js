@@ -1,7 +1,5 @@
 import { DataTypes } from 'sequelize';
-import { connectDB } from '../database/db.js';
-
-const sequelize = await connectDB();
+import { sequelize } from '../database/db.js';
 
 const Role = sequelize.define(
   'Role',

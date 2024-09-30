@@ -1,45 +1,33 @@
 import { DataTypes } from 'sequelize';
 import { sequelize } from '../database/db.js';
 
-const People = sequelize.define(
-  'People',
+const Class = sequelize.define(
+  'Class',
   {
     id: {
       type: DataTypes.INTEGER(11),
       primaryKey: true,
       autoIncrement: true,
     },
-    first_name: {
+    class_name: {
       type: DataTypes.STRING(50),
       allowNull: false,
     },
-    last_name: {
-      type: DataTypes.STRING(50),
-      allowNull: false,
-    },
-    dni: {
-      type: DataTypes.STRING(8),
-      allowNull: true,
-    },
-    institute: {
+    description: {
       type: DataTypes.STRING(100),
       allowNull: true,
     },
-    phone_number: {
-      type: DataTypes.STRING(15),
-      allowNull: false,
-    },
-    birth_date: {
-      type: DataTypes.DATE,
+    class_code: {
+      type: DataTypes.STRING(10),
       allowNull: false,
     },
   },
   {
-    tableName: 'people',
+    tableName: 'classes',
     paranoid: true,
     timestamps: false,
     deleteAt: 'deleteAt',
   }
 );
 
-export { People };
+export { Class };
