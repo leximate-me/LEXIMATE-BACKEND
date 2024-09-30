@@ -4,7 +4,9 @@ import {
   verifyTokenService,
   getProfileUserService,
   registerUserService,
-  deleteUserById,
+  deleteUserService,
+  sendEmailVerificationService,
+  verifyEmailService,
 } from '../services/userAuth.service.js';
 
 const registerUser = async (req, res) => {
@@ -53,7 +55,7 @@ const getProfileUser = async (req, res) => {
 
 const deleteUser = async (req, res) => {
   try {
-    const response = await deleteUserById(req.user.id);
+    const response = await deleteUserService(req.user.id);
     res.clearCookie('token', '', { expires: new Date(0) });
     res.status(200).json(response);
   } catch (error) {
@@ -73,6 +75,27 @@ const logoutUser = async (req, res) => {
   }
 };
 
+const sendEmailVerification = async (req, res) => {
+  try {
+    const response = await sendEmailVerificationService(req.user.id);
+    res.status(200).json(response);
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ error: ['Error en el servidor'] });
+  }
+};
+
+const verifyEmail = async (req, res) => {
+  try {
+    const token = req.query.token; // Obtener el token de los parámetros de consulta
+    const response = await verifyEmailService(token);
+    res.status(200).json(response);
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ error: ['Error en el servidor'] });
+  }
+};
+
 export {
   loginUser,
   verifyToken,
@@ -80,4 +103,6 @@ export {
   logoutUser,
   registerUser,
   deleteUser,
+  sendEmailVerification,
+  verifyEmail,
 };

@@ -6,6 +6,8 @@ import {
   getProfileUser,
   registerUser,
   deleteUser,
+  sendEmailVerification,
+  verifyEmail,
 } from '../controllers/userAuth.controllers.js';
 import { validateSchema } from '../middlewares/validator.middleware.js';
 import { loginUserSchema, registerUserSchema } from '../schemas/user.schema.js';
@@ -23,5 +25,11 @@ userAuthRouter.get('/verify-token', verifyToken);
 userAuthRouter.post('/logout', logoutUser);
 userAuthRouter.get('/profile', authRequired, getProfileUser);
 userAuthRouter.delete('/delete', authRequired, deleteUser);
+userAuthRouter.post(
+  '/send-email-verification',
+  authRequired,
+  sendEmailVerification
+);
+userAuthRouter.get('/verify-email', verifyEmail);
 
 export { userAuthRouter };

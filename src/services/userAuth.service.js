@@ -151,7 +151,7 @@ const logoutUserService = () => {
   return { message: 'Cerró sesión exitosamente' };
 };
 
-const deleteUserById = async (id) => {
+const deleteUserService = async (id) => {
   const user = await User.findByPk(id);
   if (!user) {
     throw new Error('Usuario no encontrado');
@@ -160,14 +160,43 @@ const deleteUserById = async (id) => {
   return { message: 'Usuario eliminado exitosamente' };
 };
 
-const resendService = async (email) => {
-  const user = await User.findOne({ where: { email } });
+const sendEmailVerificationService = async (id) => {
+  const user = await User.findByPk(id);
   if (!user) {
     throw new Error('Usuario no encontrado');
   }
-  const token = await createAccessToken({ id: user.id });
-  await resend(email, token);
-  return { message: 'Correo reenviado exitosamente' };
+
+  const token = jwt.sign({ id: user.id }, JWT_SECRET, {
+    expiresIn: '1d',
+  });
+
+  const { data, error } = await resend.emails.send({
+    from: 'Leximate <no-reply@leximate.me>', // Usa tu dominio personalizado
+    to: [user.email],
+    subject: 'Verificación de correo electrónico',
+    html: `<strong>Por favor, verifica tu correo electrónico haciendo clic en el siguiente enlace:</strong> <a href="http://localhost:8080/api/auth/verify-email?token=${token}">Verificar correo electrónico</a>`,
+  });
+
+  if (error) {
+    throw new Error(`Error al enviar el correo: ${error.message}`);
+  }
+
+  return data;
+};
+
+const verifyEmailService = async (token) => {
+  try {
+    const decoded = jwt.verify(token, JWT_SECRET);
+    const user = await User.findByPk(decoded.id);
+    if (!user) {
+      throw new Error('Usuario no encontrado');
+    }
+    user.email_verified = true;
+    await user.save();
+    return { message: 'Email verificado exitosamente' };
+  } catch (error) {
+    throw new Error('Token no válido');
+  }
 };
 
 export {
@@ -176,5 +205,7 @@ export {
   getProfileUserService,
   logoutUserService,
   registerUserService,
-  deleteUserById,
+  deleteUserService,
+  sendEmailVerificationService,
+  verifyEmailService,
 };
