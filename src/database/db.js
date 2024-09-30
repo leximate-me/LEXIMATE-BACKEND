@@ -42,9 +42,6 @@ const connectDB = async () => {
     await sequelize.authenticate();
     console.log('Conexión establecida correctamente con la base de datos.');
 
-    // Sincroniza los modelos con la base de datos (crea tablas si no existen)
-    await sequelize.sync();
-
     return sequelize;
   } catch (error) {
     console.log('Error al conectar con la base de datos:', error);
