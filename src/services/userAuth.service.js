@@ -1,7 +1,6 @@
 import { User } from '../models/user.model.js';
 import { People } from '../models/people.model.js';
 import { Role } from '../models/roles.model.js';
-import { RoleUser } from '../models/rolesUsers.model.js';
 import { createAccessToken } from '../libs/jwt.js';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
@@ -65,11 +64,6 @@ const registerUserService = async (userData) => {
     email,
     password: hashedPassword,
     people_fk: newPerson.id,
-  });
-
-  // Asignar el rol al usuario
-  await RoleUser.create({
-    users_fk: newUser.id,
     roles_fk: existingRole.id,
   });
 
@@ -99,7 +93,8 @@ const loginUserService = async (userData) => {
   }
 
   // Verificar si el usuario tiene un rol asignado
-  const role = await RoleUser.findOne({ where: { users_fk: existing.id } });
+  const role = existing.roles_fk;
+
   if (!role) {
     throw new Error('El usuario no tiene un rol asignado');
   }
@@ -107,7 +102,7 @@ const loginUserService = async (userData) => {
   // Crear el token de acceso
   const token = await createAccessToken({
     id: existing.id,
-    rol: role.roles_fk,
+    rol: role,
   });
 
   return { user: existing, token };
