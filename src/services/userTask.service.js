@@ -26,7 +26,7 @@ const createTaskService = async (classCode, taskData, user) => {
   const verifyPermission = await RolePermission.findOne({
     where: { roles_fk: user.rol, permissions_fk: 1 },
   });
-  console.log(verifyPermission.permissions_fk);
+  console.log(verifyPermission);
 
   if (!verifyPermission) {
     throw new Error('No tiene permisos para crear una tarea');
