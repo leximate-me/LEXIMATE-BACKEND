@@ -19,11 +19,11 @@ const People = sequelize.define(
     },
     dni: {
       type: DataTypes.STRING(8),
-      allowNull: true,
+      allowNull: false,
     },
     institute: {
       type: DataTypes.STRING(100),
-      allowNull: true,
+      allowNull: false,
     },
     phone_number: {
       type: DataTypes.STRING(15),

@@ -15,7 +15,7 @@ const Class = sequelize.define(
     },
     description: {
       type: DataTypes.STRING(100),
-      allowNull: true,
+      allowNull: false,
     },
     class_code: {
       type: DataTypes.STRING(10),
