@@ -8,7 +8,7 @@ import {
   deleteUser,
   sendEmailVerification,
   verifyEmail,
-} from '../controllers/userAuth.controllers.js';
+} from '../controllers/userAuth.controller.js';
 import { validateSchema } from '../middlewares/validator.middleware.js';
 import { loginUserSchema, registerUserSchema } from '../schemas/user.schema.js';
 import { authRequired } from '../middlewares/validator.token.js';

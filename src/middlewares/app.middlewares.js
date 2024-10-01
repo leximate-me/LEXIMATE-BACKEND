@@ -4,13 +4,14 @@ import cors from 'cors';
 import morgan from 'morgan';
 import cookieParser from 'cookie-parser';
 import fileUpload from 'express-fileupload';
+import { FRONTEND_URL } from '../configs/envConfig.js';
 
 const applyMiddlewares = (app) => {
   app.use(express.json());
   app.use(
     cors({
       credentials: true,
-      origin: 'http://localhost:5173',
+      origin: FRONTEND_URL,
     })
   );
   app.use(morgan('dev'));

@@ -15,6 +15,7 @@ const CLOUDINARY_API_KEY = process.env.CLOUDINARY_API_KEY;
 const CLOUDINARY_API_SECRET = process.env.CLOUDINARY_API_SECRET;
 const PDFREST_API_KEY = process.env.PDFREST_API_KEY;
 const RESEND_API_KEY = process.env.RESEND_API_KEY;
+const FRONTEND_URL = process.env.FRONTEND_URL;
 
 export {
   PORT,
@@ -29,4 +30,5 @@ export {
   CLOUDINARY_API_SECRET,
   PDFREST_API_KEY,
   RESEND_API_KEY,
+  FRONTEND_URL,
 };

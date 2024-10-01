@@ -21,6 +21,10 @@ const File = sequelize.define(
       type: DataTypes.STRING(10),
       allowNull: false,
     },
+    file_id: {
+      type: DataTypes.STRING(100),
+      allowNull: false,
+    },
     file_url: {
       type: DataTypes.STRING(100),
       allowNull: false,
