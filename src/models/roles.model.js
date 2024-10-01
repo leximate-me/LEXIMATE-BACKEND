@@ -10,11 +10,11 @@ const Role = sequelize.define(
       autoIncrement: true,
     },
     name: {
-      type: DataTypes.STRING(15),
+      type: DataTypes.STRING(50),
       allowNull: false,
     },
     description: {
-      type: DataTypes.STRING(40),
+      type: DataTypes.STRING(100),
       allowNull: true,
     },
   },

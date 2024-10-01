@@ -10,7 +10,7 @@ const Task = sequelize.define(
       autoIncrement: true,
     },
     title: {
-      type: DataTypes.STRING,
+      type: DataTypes.STRING(50),
       allowNull: false,
     },
     description: {
@@ -18,7 +18,7 @@ const Task = sequelize.define(
       allowNull: true,
     },
     status: {
-      type: DataTypes.STRING(10),
+      type: DataTypes.BOOLEAN,
       allowNull: false,
     },
     due_date: {
