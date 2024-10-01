@@ -1,8 +1,8 @@
 import { DataTypes } from 'sequelize';
 import { sequelize } from '../database/db.js';
 
-const File = sequelize.define(
-  'File',
+const FileTask = sequelize.define(
+  'FileTask',
   {
     id: {
       type: DataTypes.INTEGER(11),
@@ -31,11 +31,11 @@ const File = sequelize.define(
     },
   },
   {
-    tableName: 'files',
+    tableName: 'files_tasks',
     timestamps: true,
     paranoid: true,
     deletedAt: 'deletedAt',
   }
 );
 
-export { File };
+export { FileTask };

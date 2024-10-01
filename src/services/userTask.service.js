@@ -1,7 +1,7 @@
 import { UsersClasses } from '../models/usersClasses.js';
 import { Class } from '../models/class.js';
 import { Task } from '../models/task.js';
-import { File } from '../models/file.js';
+import { FileTask } from '../models/fileTask.js';
 import { RolePermission } from '../models/rolesPermissions.model.js';
 
 // Funcion para crear una tarea
@@ -57,7 +57,7 @@ const createTaskService = async (classCode, taskData, user) => {
   });
 
   if (imageUrl) {
-    await File.create({
+    await FileTask.create({
       file_name: imageProps.name,
       file_path: imageProps.tempFilePath,
       file_type: imageProps.mimetype,
@@ -102,7 +102,7 @@ const updateTaskService = async (taskData, user) => {
   );
 
   if (imageUrl) {
-    await File.create({
+    await FileTask.create({
       file_name: imageProps.name,
       file_path: imageProps.tempFilePath,
       file_type: imageProps.mimetype,
@@ -138,7 +138,7 @@ const deleteTaskService = async (taskId, user) => {
     throw new Error('Tarea no encontrada');
   }
 
-  const file = await File.findOne({ where: { tasks_fk: taskId } });
+  const file = await FileTask.findOne({ where: { tasks_fk: taskId } });
 
   let public_id = null;
 
