@@ -186,7 +186,7 @@ const verifyEmailService = async (token) => {
     if (!user) {
       throw new Error('Usuario no encontrado');
     }
-    user.email_verified = true;
+    user.verified = true;
     await user.save();
     return { message: 'Email verificado exitosamente' };
   } catch (error) {
