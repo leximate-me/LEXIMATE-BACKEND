@@ -3,6 +3,8 @@ import { UsersClasses } from '../models/usersClasses.js';
 import { User } from '../models/user.model.js';
 import { resend } from '../libs/resend.js';
 import crypto from 'crypto';
+import { RolePermission } from '../models/rolesPermissions.model.js';
+import { Where } from 'sequelize/lib/utils';
 
 // Función para crear una clase
 const createClassService = async (classData, user) => {
@@ -15,11 +17,16 @@ const createClassService = async (classData, user) => {
     throw new Error('Usuario no encontrado');
   }
 
-  if (!user.rol === 'teacher') {
-    throw new Error('No tiene permisos para crear una clase');
+  const verifyPermission = await RolePermission.findOne({
+    where: { roles_fk: user.rol, permissions_fk: 1 },
+  });
+
+  if (!verifyPermission) {
+    throw new Error('No tienes los permisos para crear una clase');
   }
 
   const class_code = crypto.randomBytes(5).toString('hex');
+
   const newClass = await Class.create({
     name,
     description,
@@ -87,6 +94,14 @@ const getClassesByUserService = async (user) => {
     throw new Error('Usuario no encontrado');
   }
 
+  const verifyPermission = await RolePermission.findOne({
+    where: { roles_fk: user.rol, permissions_fk: 2 },
+  });
+
+  if (!verifyPermission) {
+    throw new Error('No tienes los permisos para ver una clase');
+  }
+
   const classes = await UsersClasses.findAll({
     where: { users_fk: user.id },
     include: {
@@ -135,6 +150,14 @@ const updateClassService = async (classCode, classData, user) => {
     throw new Error('Usuario no encontrado');
   }
 
+  const verifyPermission = await RolePermission.findOne({
+    where: { roles_fk: user.rol, permissions_fk: 3 },
+  });
+
+  if (!verifyPermission) {
+    throw new Error('No tienes los permisos para actualizar una clase');
+  }
+
   const classFound = await Class.findOne({ where: { class_code: classCode } });
 
   if (!classFound) {
@@ -162,14 +185,18 @@ const deleteClassService = async (classCode, user) => {
     throw new Error('Usuario no encontrado');
   }
 
+  const verifyPermission = await RolePermission.findOne({
+    where: { roles_fk: user.rol, permissions_fk: 4 },
+  });
+
+  if (!verifyPermission) {
+    throw new Error('No tienes los permisos para eliminar una clase');
+  }
+
   const classFound = await Class.findOne({ where: { class_code: classCode } });
 
   if (!classFound) {
     throw new Error('Clase no encontrada');
-  }
-
-  if (!user.rol === 'teacher') {
-    throw new Error('No tiene permisos para eliminar la clase');
   }
 
   await Class.destroy({

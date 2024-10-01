@@ -6,7 +6,7 @@ import { User } from '../models/user.model.js';
 import { Class } from '../models/class.js';
 import { Task } from '../models/task.js';
 import { UsersClasses } from '../models/usersClasses.js';
-import { File } from '../models/File.js';
+import { File } from '../models/file.js';
 
 User.belongsTo(People, { foreignKey: 'people_fk' });
 

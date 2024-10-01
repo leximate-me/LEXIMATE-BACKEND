@@ -1,7 +1,7 @@
 import { UsersClasses } from '../models/usersClasses.js';
 import { Class } from '../models/class.js';
 import { Task } from '../models/task.js';
-import { File } from '../models/File.js';
+import { File } from '../models/file.js';
 import { RolePermission } from '../models/rolesPermissions.model.js';
 
 // Funcion para crear una tarea
