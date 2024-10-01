@@ -31,7 +31,7 @@ const User = sequelize.define(
     tableName: 'users',
     timestamps: true,
     paranoid: true,
-    deletedAt: 'deleted_at',
+    deletedAt: 'deletedAt',
   }
 );
 

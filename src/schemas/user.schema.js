@@ -18,7 +18,7 @@ const registerUserSchema = z.object({
   user_name: z
     .string()
     .min(
-      10,
+      4,
       'El nombre de usuario es obligatorio  y debe tener al menos 10 caracteres'
     ),
   email: z.string().email('El email es obligatorio y debe ser válido'),

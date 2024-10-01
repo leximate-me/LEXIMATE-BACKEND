@@ -30,7 +30,7 @@ const File = sequelize.define(
     tableName: 'files',
     timestamps: true,
     paranoid: true,
-    deletedAt: 'deleted_at',
+    deletedAt: 'deletedAt',
   }
 );
 

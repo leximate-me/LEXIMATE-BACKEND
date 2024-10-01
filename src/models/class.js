@@ -9,7 +9,7 @@ const Class = sequelize.define(
       primaryKey: true,
       autoIncrement: true,
     },
-    class_name: {
+    name: {
       type: DataTypes.STRING(50),
       allowNull: false,
     },
@@ -25,7 +25,7 @@ const Class = sequelize.define(
   {
     tableName: 'classes',
     paranoid: true,
-    timestamps: false,
+    timestamps: true,
     deleteAt: 'deleteAt',
   }
 );
