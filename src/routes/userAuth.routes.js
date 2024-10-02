@@ -12,6 +12,7 @@ import {
 import { validateSchema } from '../middlewares/validator.middleware.js';
 import { loginUserSchema, registerUserSchema } from '../schemas/user.schema.js';
 import { authRequired } from '../middlewares/validator.token.js';
+import { verifyUserRequired } from '../middlewares/validator.user.js';
 
 const userAuthRouter = Router();
 
@@ -22,9 +23,14 @@ userAuthRouter.post(
 );
 userAuthRouter.post('/login', validateSchema(loginUserSchema), loginUser);
 userAuthRouter.get('/verify-token', verifyToken);
-userAuthRouter.post('/logout', logoutUser);
-userAuthRouter.get('/profile', authRequired, getProfileUser);
-userAuthRouter.delete('/delete', authRequired, deleteUser);
+userAuthRouter.post('/logout', authRequired, logoutUser);
+userAuthRouter.get(
+  '/profile',
+  authRequired,
+  verifyUserRequired,
+  getProfileUser
+);
+userAuthRouter.delete('/delete', authRequired, verifyUserRequired, deleteUser);
 userAuthRouter.post(
   '/send-email-verification',
   authRequired,

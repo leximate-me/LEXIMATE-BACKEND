@@ -1,10 +1,8 @@
 import { Class } from '../models/class.js';
 import { UsersClasses } from '../models/usersClasses.js';
 import { User } from '../models/user.model.js';
-import { resend } from '../libs/resend.js';
 import crypto from 'crypto';
 import { RolePermission } from '../models/rolesPermissions.model.js';
-import { Where } from 'sequelize/lib/utils';
 
 // Función para crear una clase
 const createClassService = async (classData, user) => {
@@ -51,6 +49,14 @@ const joinClassService = async (classCode, user) => {
     throw new Error('Usuario no encontrado');
   }
 
+  const verifyPermission = await RolePermission.findOne({
+    where: { roles_fk: user.rol, permissions_fk: 3 },
+  });
+
+  if (!verifyPermission) {
+    throw new Error('No tienes los permisos para crear una clase');
+  }
+
   const classData = await Class.findOne({ where: { class_code: classCode } });
 
   if (!classData) {
@@ -61,6 +67,14 @@ const joinClassService = async (classCode, user) => {
     users_fk: user.id,
     classes_fk: classData.id,
   });
+
+  const foundUserClass = await UsersClasses.findOne({
+    where: { users_fk: user.id, classes_fk: classData.id },
+  });
+
+  if (foundUserClass) {
+    throw new Error('Ya estás en esta clase');
+  }
 
   return classData;
 };
@@ -73,6 +87,14 @@ const leaveClassService = async (classCode, user) => {
 
   if (!user) {
     throw new Error('Usuario no encontrado');
+  }
+
+  const verifyPermission = await RolePermission.findOne({
+    where: { roles_fk: user.rol, permissions_fk: 3 },
+  });
+
+  if (!verifyPermission) {
+    throw new Error('No tienes los permisos para crear una clase');
   }
 
   const classData = await Class.findOne({ where: { class_code: classCode } });

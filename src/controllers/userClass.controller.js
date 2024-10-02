@@ -22,7 +22,7 @@ const createClassController = async (req, res) => {
 
 // controlador para unirse a una clase
 const joinClassController = async (req, res) => {
-  const { classCode } = req.params;
+  const { classCode } = req.body;
   const user = req.user;
   try {
     const classData = await joinClassService(classCode, user);

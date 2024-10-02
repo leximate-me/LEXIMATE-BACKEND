@@ -9,19 +9,51 @@ import {
   updateClassController,
   deleteClassController,
 } from '../controllers/userClass.controller.js';
+import { verifyUserRequired } from '../middlewares/validator.user.js';
 
 const userClassRouter = Router();
 
-userClassRouter.post('/', authRequired, createClassController);
-userClassRouter.post('/join/:classCode', authRequired, joinClassController);
-userClassRouter.post('/leave', authRequired, leaveClassController);
-userClassRouter.get('/', authRequired, getClassesByUserController);
+userClassRouter.post(
+  '/',
+  authRequired,
+  verifyUserRequired,
+  createClassController
+);
+userClassRouter.post(
+  '/join',
+  authRequired,
+  verifyUserRequired,
+  joinClassController
+);
+userClassRouter.post(
+  '/leave',
+  authRequired,
+  verifyUserRequired,
+  leaveClassController
+);
+userClassRouter.get(
+  '/',
+  authRequired,
+  verifyUserRequired,
+  getClassesByUserController
+);
 userClassRouter.get(
   '/users/:classCode',
   authRequired,
+  verifyUserRequired,
   getUsersByClassController
 );
-userClassRouter.put('/:classCode', authRequired, updateClassController);
-userClassRouter.delete('/:classCode', authRequired, deleteClassController);
+userClassRouter.put(
+  '/:classCode',
+  authRequired,
+  verifyUserRequired,
+  updateClassController
+);
+userClassRouter.delete(
+  '/:classCode',
+  authRequired,
+  verifyUserRequired,
+  deleteClassController
+);
 
 export { userClassRouter };
