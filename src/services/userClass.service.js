@@ -225,6 +225,10 @@ const deleteClassService = async (classCode, user) => {
     where: { class_code: classCode },
   });
 
+  await UsersClasses.destroy({
+    where: { classes_fk: classFound.id },
+  });
+
   return classFound;
 };
 
