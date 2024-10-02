@@ -63,11 +63,6 @@ const joinClassService = async (classCode, user) => {
     throw new Error('Clase no encontrada');
   }
 
-  await UsersClasses.create({
-    users_fk: user.id,
-    classes_fk: classData.id,
-  });
-
   const foundUserClass = await UsersClasses.findOne({
     where: { users_fk: user.id, classes_fk: classData.id },
   });
@@ -75,6 +70,11 @@ const joinClassService = async (classCode, user) => {
   if (foundUserClass) {
     throw new Error('Ya estás en esta clase');
   }
+
+  await UsersClasses.create({
+    users_fk: user.id,
+    classes_fk: classData.id,
+  });
 
   return classData;
 };
