@@ -71,6 +71,7 @@ const registerUserService = async (userData) => {
   const token = await createAccessToken({
     id: newUser.id,
     rol: existingRole.id,
+    verify: newUser.verified,
   });
 
   return { newUser, token };
@@ -80,32 +81,33 @@ const loginUserService = async (userData) => {
   const { email, password } = userData;
 
   // Verificar si el usuario existe
-  const existing = await User.findOne({ where: { email } });
+  const existingUser = await User.findOne({ where: { email } });
 
-  if (!existing) {
+  if (!existingUser) {
     throw new Error('No existe un usuario con ese email');
   }
 
   // Verificar si la contraseña es correcta
-  const isValidPassword = await bcrypt.compare(password, existing.password);
+  const isValidPassword = await bcrypt.compare(password, existingUser.password);
   if (!isValidPassword) {
     throw new Error('Contraseña incorrecta');
   }
 
   // Verificar si el usuario tiene un rol asignado
-  const role = existing.roles_fk;
+  const existingRole = await Role.findByPk(existingUser.roles_fk);
 
-  if (!role) {
+  if (!existingRole) {
     throw new Error('El usuario no tiene un rol asignado');
   }
 
   // Crear el token de acceso
   const token = await createAccessToken({
-    id: existing.id,
-    rol: role,
+    id: existingUser.id,
+    rol: existingRole.id,
+    verify: existingUser.verified,
   });
 
-  return { user: existing, token };
+  return { user: existingUser, token };
 };
 
 const verifyTokenService = async (token) => {
@@ -151,7 +153,11 @@ const deleteUserService = async (id) => {
   if (!user) {
     throw new Error('Usuario no encontrado');
   }
+
+  const person = await People.findByPk(user.people_fk);
+
   await user.destroy();
+  await person.destroy();
   return { message: 'Usuario eliminado exitosamente' };
 };
 
@@ -161,12 +167,10 @@ const sendEmailVerificationService = async (id) => {
     throw new Error('Usuario no encontrado');
   }
 
-  const token = jwt.sign({ id: user.id }, JWT_SECRET, {
-    expiresIn: '1d',
-  });
+  const token = jwt.sign({ id: user.id }, JWT_SECRET, { expiresIn: '1h' });
 
   const { data, error } = await resend.emails.send({
-    from: 'Leximate <no-reply@leximate.me>', // Usa tu dominio personalizado
+    from: 'Leximate <no-reply@leximate.me>',
     to: [user.email],
     subject: 'Verificación de correo electrónico',
     html: `<strong>Por favor, verifica tu correo electrónico haciendo clic en el siguiente enlace:</strong> <a href="http://localhost:8080/api/auth/verify-email?token=${token}">Verificar correo electrónico</a>`,
@@ -188,7 +192,8 @@ const verifyEmailService = async (token) => {
     }
     user.verified = true;
     await user.save();
-    return { message: 'Email verificado exitosamente' };
+
+    return { message: 'Correo electrónico verificado exitosamente' };
   } catch (error) {
     throw new Error('Token no válido');
   }

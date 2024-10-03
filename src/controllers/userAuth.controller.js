@@ -8,6 +8,7 @@ import {
   sendEmailVerificationService,
   verifyEmailService,
 } from '../services/userAuth.service.js';
+import { FRONTEND_URL } from '../configs/envConfig.js';
 
 const registerUser = async (req, res) => {
   try {
@@ -89,7 +90,8 @@ const verifyEmail = async (req, res) => {
   try {
     const token = req.query.token; // Obtener el token de los parámetros de consulta
     const response = await verifyEmailService(token);
-    res.status(200).json(response);
+    console.log(response);
+    res.redirect(`${FRONTEND_URL}/login`);
   } catch (error) {
     console.log(error);
     res.status(500).json({ error: ['Error en el servidor'] });

@@ -2,13 +2,12 @@ import { User } from '../models/user.model.js';
 
 const verifyUserRequired = async (req, res, next) => {
   try {
-    const { id } = req.user;
+    const { id, verify } = req.user;
     console.log('id de usuario', id);
+    console.log('verificado', verify);
 
-    const user = await User.findByPk(id);
-
-    if (user.verified !== true) {
-      return res.status(401).json({ error: ['Usuario no vericado'] });
+    if (!verify) {
+      return res.status(403).json({ error: ['Usuario no verificado'] });
     }
 
     next();
