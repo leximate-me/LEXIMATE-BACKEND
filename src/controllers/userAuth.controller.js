@@ -91,7 +91,7 @@ const verifyEmail = async (req, res) => {
     const token = req.query.token; // Obtener el token de los parámetros de consulta
     const response = await verifyEmailService(token);
     console.log(response);
-    res.redirect(`${FRONTEND_URL}/login`);
+    res.redirect(`${FRONTEND_URL}`);
   } catch (error) {
     console.log(error);
     res.status(500).json({ error: ['Error en el servidor'] });
