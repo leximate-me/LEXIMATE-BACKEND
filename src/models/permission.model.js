@@ -1,5 +1,6 @@
 import { DataTypes } from 'sequelize';
 import { sequelize } from '../database/db.js';
+import { logger } from '../configs/loggerConfig.js';
 
 const Permission = sequelize.define(
   'Permission',
@@ -46,10 +47,10 @@ const definePermissions = async () => {
           description: 'Eliminar un registro.',
         },
       ]);
-      console.log('Permisos creados correctamente.');
+      logger.info('Permisos creados correctamente.');
     }
   } catch (error) {
-    console.log('Error al definir permisos:', error);
+    logger.child({ error }).error('Error al definir roles y permisos');
   }
 };
 

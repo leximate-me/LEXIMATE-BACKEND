@@ -1,5 +1,6 @@
 import { JWT_SECRET } from '../configs/envConfig.js';
 import jwt from 'jsonwebtoken';
+import { logger } from '../configs/loggerConfig.js';
 
 const createAccessToken = (payload) => {
   return new Promise((resolve, reject) => {

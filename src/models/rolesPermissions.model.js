@@ -1,5 +1,6 @@
 import { DataTypes } from 'sequelize';
 import { sequelize } from '../database/db.js';
+import { logger } from '../configs/loggerConfig.js';
 
 const RolePermission = sequelize.define(
   'RolePermission',
@@ -34,10 +35,10 @@ const defineRolesPermissions = async () => {
         { roles_fk: 3, permissions_fk: 4 },
         { roles_fk: 4, permissions_fk: 2 },
       ]);
-      console.log('Roles y permisos asignados correctamente.');
+      logger.info('Roles y permisos asignados correctamente.');
     }
   } catch (error) {
-    console.log('Error al definir roles y permisos:', error);
+    logger.child({ error }).error('Error al definir roles y permisos');
   }
 };
 

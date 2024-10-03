@@ -4,6 +4,7 @@ const validateSchema = (schema) => {
       await schema.parseAsync(req.body);
       next();
     } catch (error) {
+      logger.child({ error }).error('Error en validateSchema');
       res.status(400).json({ error: error.errors.map((err) => err.message) });
     }
   };

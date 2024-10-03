@@ -4,6 +4,7 @@ import {
   CLOUDINARY_API_KEY,
   CLOUDINARY_API_SECRET,
 } from '../configs/envConfig.js';
+import { logger } from '../configs/loggerConfig.js';
 
 cloudinary.config({
   cloud_name: CLOUDINARY_CLOUD_NAME,
@@ -18,7 +19,7 @@ const uploadImage = async (filePath) => {
     });
     return result;
   } catch (error) {
-    console.error('Error al subir la imagen:', error.message);
+    logger.child({ error }).error('Error al subir la imagen');
   }
 };
 
@@ -27,7 +28,7 @@ const deleteImage = async (publicId) => {
     const result = await cloudinary.uploader.destroy(publicId);
     return result;
   } catch (error) {
-    console.error('Error al borrar la imagen:', error.message);
+    logger.child({ error }).error('Error al eliminar la imagen');
   }
 };
 

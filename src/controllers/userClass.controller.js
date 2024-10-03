@@ -7,6 +7,7 @@ import {
   updateClassService,
   deleteClassService,
 } from '../services/userClass.service.js';
+import { logger } from '../configs/loggerConfig.js';
 
 // controlador para crear una clase
 const createClassController = async (req, res) => {
@@ -16,6 +17,7 @@ const createClassController = async (req, res) => {
     const newClass = await createClassService({ name, description }, user);
     res.status(201).json(newClass);
   } catch (error) {
+    logger.error(error, 'Error en createClassController');
     res.status(400).json({ error: error.message });
   }
 };
@@ -28,6 +30,7 @@ const joinClassController = async (req, res) => {
     const classData = await joinClassService(classCode, user);
     res.status(200).json(classData);
   } catch (error) {
+    logger.error(error, 'Error en joinClassController');
     res.status(400).json({ error: error.message });
   }
 };
@@ -40,6 +43,7 @@ const leaveClassController = async (req, res) => {
     const classData = await leaveClassService(classCode, user);
     res.status(200).json(classData);
   } catch (error) {
+    logger.error(error, 'Error en leaveClassController');
     res.status(400).json({ error: error.message });
   }
 };
@@ -51,6 +55,7 @@ const getClassesByUserController = async (req, res) => {
     const classes = await getClassesByUserService(user);
     res.status(200).json(classes);
   } catch (error) {
+    logger.error(error, 'Error en getClassesByUserController');
     res.status(400).json({ error: error.message });
   }
 };
@@ -62,6 +67,7 @@ const getUsersByClassController = async (req, res) => {
     const users = await getUsersByClassService(classCode);
     res.status(200).json(users);
   } catch (error) {
+    logger.error(error, 'Error en getUsersByClassController');
     res.status(400).json({ error: error.message });
   }
 };
@@ -82,6 +88,7 @@ const updateClassController = async (req, res) => {
     );
     res.status(200).json(updatedClass);
   } catch (error) {
+    logger.error(error, 'Error en updateClassController');
     res.status(400).json({ error: error.message });
   }
 };
@@ -94,6 +101,7 @@ const deleteClassController = async (req, res) => {
     const deletedClass = await deleteClassService(classCode, user);
     res.status(200).json(deletedClass);
   } catch (error) {
+    logger.error(error, 'Error en deleteClassController');
     res.status(400).json({ error: error.message });
   }
 };

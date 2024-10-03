@@ -7,6 +7,7 @@ import {
 } from '../services/userTask.service.js';
 import { deleteImage, uploadImage } from '../libs/cloudinary.js';
 import fs from 'fs/promises';
+import { logger } from '../configs/loggerConfig.js';
 
 const createTaskController = async (req, res) => {
   try {
@@ -35,6 +36,7 @@ const createTaskController = async (req, res) => {
     );
     res.status(201).json(newTask);
   } catch (error) {
+    logger.error(error, 'Error en createTaskController');
     res.status(400).json({ error: error.message });
   }
 };
@@ -61,6 +63,7 @@ const updateTaskController = async (req, res) => {
     );
     res.status(200).json(updatedTask);
   } catch (error) {
+    logger.error(error, 'Error en updateTaskController');
     res.status(400).json({ error: error.message });
   }
 };
@@ -77,6 +80,7 @@ const deleteTaskController = async (req, res) => {
 
     res.status(204).end();
   } catch (error) {
+    logger.error(error, 'Error en deleteTaskController');
     res.status(400).json({ error: error.message });
   }
 };
@@ -88,6 +92,7 @@ const getTasksByClassController = async (req, res) => {
     const tasks = await getTasksByClassService(classCode, user);
     res.status(200).json(tasks);
   } catch (error) {
+    logger.error(error, 'Error en getTasksByClassController');
     res.status(400).json({ error: error.message });
   }
 };
@@ -98,6 +103,7 @@ const getTaskController = async (req, res) => {
     const task = await getTaskService(id);
     res.status(200).json(task);
   } catch (error) {
+    logger.error(error, 'Error en getTaskController');
     res.status(400).json({ error: error.message });
   }
 };

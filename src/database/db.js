@@ -7,6 +7,7 @@ import {
   DB_USER,
   DB_PORT,
 } from '../configs/envConfig.js';
+import { logger } from '../configs/loggerConfig.js';
 
 // Función para crear la base de datos si no existe
 const createDatabase = async () => {
@@ -19,10 +20,12 @@ const createDatabase = async () => {
     });
 
     await connection.query(`CREATE DATABASE IF NOT EXISTS \`${DB_NAME}\`;`);
-    console.log(`Base de datos "${DB_NAME}" verificada o creada.`);
+    logger.info(`Base de datos "${DB_NAME}" verificada o creada.`);
     await connection.end();
   } catch (error) {
-    console.log('Error al crear la base de datos:', error);
+    logger
+      .child({ error })
+      .fatal('Error al verificar o crear la base de datos.');
     throw error;
   }
 };
@@ -31,6 +34,7 @@ const sequelize = new Sequelize(DB_NAME, DB_USER, DB_PASSWORD, {
   host: DB_HOST,
   port: DB_PORT,
   dialect: 'mysql',
+  logging: false,
 });
 
 const connectDB = async () => {
@@ -40,11 +44,10 @@ const connectDB = async () => {
 
     // Autenticar la conexión con Sequelize
     await sequelize.authenticate();
-    console.log('Conexión establecida correctamente con la base de datos.');
-
+    logger.info('Conexion establecida correctamente con la base de datos.');
     return sequelize;
   } catch (error) {
-    console.log('Error al conectar con la base de datos:', error);
+    logger.child({ error }).fatal('Error al conectar con la base de datos.');
   }
 };
 

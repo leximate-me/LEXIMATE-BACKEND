@@ -1,13 +1,13 @@
 import { Router } from 'express';
 import {
-  loginUser,
-  logoutUser,
-  verifyToken,
-  getProfileUser,
-  registerUser,
-  deleteUser,
-  sendEmailVerification,
-  verifyEmail,
+  registerUserController,
+  loginUserController,
+  verifyTokenController,
+  getProfileUserController,
+  deleteUserController,
+  logoutUserController,
+  sendEmailVerificationController,
+  verifyEmailController,
 } from '../controllers/userAuth.controller.js';
 import { validateSchema } from '../middlewares/validator.middleware.js';
 import { loginUserSchema, registerUserSchema } from '../schemas/user.schema.js';
@@ -19,23 +19,32 @@ const userAuthRouter = Router();
 userAuthRouter.post(
   '/register',
   validateSchema(registerUserSchema),
-  registerUser
+  registerUserController
 );
-userAuthRouter.post('/login', validateSchema(loginUserSchema), loginUser);
-userAuthRouter.get('/verify-token', verifyToken);
-userAuthRouter.post('/logout', authRequired, logoutUser);
+userAuthRouter.post(
+  '/login',
+  validateSchema(loginUserSchema),
+  loginUserController
+);
+userAuthRouter.get('/verify-token', verifyTokenController);
+userAuthRouter.post('/logout', authRequired, logoutUserController);
 userAuthRouter.get(
   '/profile',
   authRequired,
   verifyUserRequired,
-  getProfileUser
+  getProfileUserController
 );
-userAuthRouter.delete('/delete', authRequired, verifyUserRequired, deleteUser);
+userAuthRouter.delete(
+  '/delete',
+  authRequired,
+  verifyUserRequired,
+  deleteUserController
+);
 userAuthRouter.post(
   '/send-email-verification',
   authRequired,
-  sendEmailVerification
+  sendEmailVerificationController
 );
-userAuthRouter.get('/verify-email', verifyEmail);
+userAuthRouter.get('/verify-email', verifyEmailController);
 
 export { userAuthRouter };
