@@ -1,3 +1,5 @@
+import { logger } from '../configs/loggerConfig.js';
+
 const validateSchema = (schema) => {
   return async (req, res, next) => {
     try {

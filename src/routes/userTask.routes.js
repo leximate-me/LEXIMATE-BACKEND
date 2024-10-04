@@ -8,6 +8,8 @@ import {
 import { Router } from 'express';
 import { authRequired } from '../middlewares/validator.token.js';
 import { verifyUserRequired } from '../middlewares/validator.user.js';
+import { validateSchema } from '../middlewares/validator.middleware.js';
+import { createTaskSchema, updateTaskSchema } from '../schemas/task.schema.js';
 
 const userTaskRouter = Router();
 
@@ -15,12 +17,14 @@ userTaskRouter.post(
   '/:classCode',
   authRequired,
   verifyUserRequired,
+  validateSchema(createTaskSchema),
   createTaskController
 );
 userTaskRouter.put(
   '/:id',
   authRequired,
   verifyUserRequired,
+  validateSchema(updateTaskSchema),
   updateTaskController
 );
 userTaskRouter.delete(
