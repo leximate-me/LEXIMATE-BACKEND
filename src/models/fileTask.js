@@ -10,7 +10,7 @@ const FileTask = sequelize.define(
       autoIncrement: true,
     },
     file_name: {
-      type: DataTypes.STRING(50),
+      type: DataTypes.STRING(100),
       allowNull: false,
     },
     file_path: {
