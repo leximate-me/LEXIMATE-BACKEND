@@ -22,10 +22,8 @@ const createTaskController = async (req, res) => {
     if (req.files?.image) {
       const result = await uploadImage(req.files.image.tempFilePath);
       imageProps = req.files.image;
-      console.log(imageProps);
       imageUrl = result.secure_url;
       imageId = result.public_id;
-      console.log(imageId);
       await fs.unlink(req.files.image.tempFilePath);
     }
 

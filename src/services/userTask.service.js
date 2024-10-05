@@ -133,15 +133,15 @@ const updateTaskService = async (taskData, user) => {
     );
 
     if (imageUrl) {
-      await FileTask.create(
+      await FileTask.update(
         {
           file_name: imageProps.name,
           file_path: imageProps.tempFilePath,
           file_type: imageProps.mimetype,
           file_id: imageId,
           file_url: imageUrl,
-          tasks_fk: taskData.id,
         },
+        { where: { tasks_fk: taskData.id } },
         { transaction }
       );
     }
