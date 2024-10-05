@@ -1,6 +1,6 @@
+import './database/sync.js';
 import { app } from './app.js';
 import { PORT } from './configs/envConfig.js';
-import './database/sync.js';
 import { logger } from './configs/loggerConfig.js';
 import figlet from 'figlet';
 
