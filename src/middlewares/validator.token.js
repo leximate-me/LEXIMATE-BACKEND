@@ -2,9 +2,12 @@ import { JWT_SECRET } from '../configs/envConfig.js';
 import { User } from '../models/user.model.js';
 import jwt from 'jsonwebtoken';
 import { logger } from '../configs/loggerConfig.js';
+import Cookies from 'cookies';
 
 const authRequired = async (req, res, next) => {
-  const { token } = req.cookies;
+  const cookies = new Cookies(req, res);
+  const token = cookies.get('token');
+
   if (!token) {
     return res.status(401).json({ error: ['No autorizado'] });
   }

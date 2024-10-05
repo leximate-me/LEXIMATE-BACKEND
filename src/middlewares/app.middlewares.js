@@ -2,7 +2,7 @@
 import express from 'express';
 import cors from 'cors';
 import morgan from 'morgan';
-import cookieParser from 'cookie-parser';
+import Cookies from 'cookies';
 import fileUpload from 'express-fileupload';
 import { FRONTEND_URL } from '../configs/envConfig.js';
 
@@ -15,7 +15,10 @@ const applyMiddlewares = (app) => {
     })
   );
   app.use(morgan('dev'));
-  app.use(cookieParser());
+  app.use((req, res, next) => {
+    req.cookies = new Cookies(req, res);
+    next();
+  });
   app.use(
     fileUpload({
       useTempFiles: true,

@@ -10,11 +10,13 @@ import {
 } from '../services/userAuth.service.js';
 import { FRONTEND_URL } from '../configs/envConfig.js';
 import { logger } from '../configs/loggerConfig.js';
+import Cookies from 'cookies';
 
 const registerUserController = async (req, res) => {
   try {
     const { newUser, token } = await registerUserService(req.body);
-    res.cookie('token', token);
+    const cookies = new Cookies(req, res);
+    cookies.set('token', token);
     res.status(201).json(newUser);
   } catch (error) {
     logger.child({ error }).error('Error en registerUserController');
@@ -25,7 +27,8 @@ const registerUserController = async (req, res) => {
 const loginUserController = async (req, res) => {
   try {
     const { user, token } = await loginUserService(req.body);
-    res.cookie('token', token);
+    const cookies = new Cookies(req, res);
+    cookies.set('token', token);
     res.status(200).json(user);
   } catch (error) {
     logger.error(error, 'Error en loginUserController');
@@ -35,7 +38,9 @@ const loginUserController = async (req, res) => {
 
 const verifyTokenController = async (req, res) => {
   try {
-    const { decoded } = await verifyTokenService(req.cookies.token);
+    const cookies = new Cookies(req, res);
+    const token = cookies.get('token');
+    const { decoded } = await verifyTokenService(token);
     logger.info(decoded, 'Token verificado');
     res.status(200).json(decoded);
   } catch (error) {
@@ -58,7 +63,8 @@ const getProfileUserController = async (req, res) => {
 const deleteUserController = async (req, res) => {
   try {
     const response = await deleteUserService(req.user.id);
-    res.clearCookie('token', '', { expires: new Date(0) });
+    const cookies = new Cookies(req, res);
+    cookies.set('token', '', { expires: new Date(0) });
     res.status(200).json(response);
   } catch (error) {
     logger.error(error, 'Error en deleteUserController');
@@ -69,7 +75,8 @@ const deleteUserController = async (req, res) => {
 const logoutUserController = async (req, res) => {
   try {
     const response = logoutUserService();
-    res.clearCookie('token', '', { expires: new Date(0) });
+    const cookies = new Cookies(req, res);
+    cookies.set('token', '', { expires: new Date(0) });
     res.status(200).json(response);
   } catch (error) {
     logger.error(error, 'Error en logoutUserController');
