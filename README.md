@@ -97,17 +97,17 @@ apoyar su progreso.
 - Descarga las dependencias del proyecto:
 
 ```bash
-npm install
+yarn install
 ```
 
 - Descarga las variables de entorno del proyecto:
 
 ```bash
-npm run pull-keys
+yarn pull-keys
 ```
 
 - Inicializar servidor del proyecto:
 
 ```bash
-npm run dev
+yarn run dev
 ```

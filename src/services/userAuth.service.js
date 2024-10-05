@@ -283,6 +283,11 @@ const verifyEmailService = async (token) => {
       throw new Error('Token no proporcionado');
     }
     const decoded = jwt.verify(token, JWT_SECRET);
+
+    if (!decoded) {
+      throw new Error('Token inválido');
+    }
+
     const user = await User.findByPk(decoded.id, { transaction });
     if (!user) {
       throw new Error('Usuario no encontrado');
