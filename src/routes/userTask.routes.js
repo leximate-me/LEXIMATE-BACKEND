@@ -1,3 +1,8 @@
+import { Router } from 'express';
+import { verifyUserRequired } from '../middlewares/validator.user.js';
+import { authRequired } from '../middlewares/validator.token.js';
+import { validateSchema } from '../middlewares/validator.middleware.js';
+import { createTaskSchema, updateTaskSchema } from '../schemas/task.schema.js';
 import {
   createTaskController,
   updateTaskController,
@@ -5,11 +10,6 @@ import {
   getTasksByClassController,
   getTaskController,
 } from '../controllers/userTask.controller.js';
-import { Router } from 'express';
-import { authRequired } from '../middlewares/validator.token.js';
-import { verifyUserRequired } from '../middlewares/validator.user.js';
-import { validateSchema } from '../middlewares/validator.middleware.js';
-import { createTaskSchema, updateTaskSchema } from '../schemas/task.schema.js';
 
 const userTaskRouter = Router();
 

@@ -1,3 +1,6 @@
+import Cookies from 'cookies';
+import { FRONTEND_URL } from '../configs/envConfig.js';
+import { logger } from '../configs/loggerConfig.js';
 import {
   loginUserService,
   logoutUserService,
@@ -8,9 +11,6 @@ import {
   sendEmailVerificationService,
   verifyEmailService,
 } from '../services/userAuth.service.js';
-import { FRONTEND_URL } from '../configs/envConfig.js';
-import { logger } from '../configs/loggerConfig.js';
-import Cookies from 'cookies';
 
 const registerUserController = async (req, res) => {
   try {

@@ -1,3 +1,4 @@
+import { logger } from '../configs/loggerConfig.js';
 import {
   createClassService,
   joinClassService,
@@ -7,7 +8,6 @@ import {
   updateClassService,
   deleteClassService,
 } from '../services/userClass.service.js';
-import { logger } from '../configs/loggerConfig.js';
 
 // controlador para crear una clase
 const createClassController = async (req, res) => {

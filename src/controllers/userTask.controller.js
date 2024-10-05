@@ -1,3 +1,6 @@
+import fs from 'fs/promises';
+import { deleteImage, uploadImage } from '../libs/cloudinary.js';
+import { logger } from '../configs/loggerConfig.js';
 import {
   createTaskService,
   updateTaskService,
@@ -5,9 +8,6 @@ import {
   getTasksByClassService,
   getTaskService,
 } from '../services/userTask.service.js';
-import { deleteImage, uploadImage } from '../libs/cloudinary.js';
-import fs from 'fs/promises';
-import { logger } from '../configs/loggerConfig.js';
 
 const createTaskController = async (req, res) => {
   try {

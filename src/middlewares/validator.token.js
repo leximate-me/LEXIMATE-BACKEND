@@ -1,8 +1,7 @@
-import { JWT_SECRET } from '../configs/envConfig.js';
-import { User } from '../models/user.model.js';
 import jwt from 'jsonwebtoken';
-import { logger } from '../configs/loggerConfig.js';
 import Cookies from 'cookies';
+import { JWT_SECRET } from '../configs/envConfig.js';
+import { logger } from '../configs/loggerConfig.js';
 
 const authRequired = async (req, res, next) => {
   const cookies = new Cookies(req, res);

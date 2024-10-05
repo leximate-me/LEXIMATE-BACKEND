@@ -1,5 +1,5 @@
-import { Sequelize } from 'sequelize';
 import mysql from 'mysql2/promise';
+import { Sequelize } from 'sequelize';
 import {
   DB_HOST,
   DB_NAME,

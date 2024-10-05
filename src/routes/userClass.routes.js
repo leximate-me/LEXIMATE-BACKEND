@@ -1,5 +1,11 @@
 import { Router } from 'express';
+import { verifyUserRequired } from '../middlewares/validator.user.js';
 import { authRequired } from '../middlewares/validator.token.js';
+import { validateSchema } from '../middlewares/validator.middleware.js';
+import {
+  createClassSchema,
+  updateClassSchema,
+} from '../schemas/class.schema.js';
 import {
   createClassController,
   joinClassController,
@@ -9,12 +15,6 @@ import {
   updateClassController,
   deleteClassController,
 } from '../controllers/userClass.controller.js';
-import { verifyUserRequired } from '../middlewares/validator.user.js';
-import { validateSchema } from '../middlewares/validator.middleware.js';
-import {
-  createClassSchema,
-  updateClassSchema,
-} from '../schemas/class.schema.js';
 
 const userClassRouter = Router();
 

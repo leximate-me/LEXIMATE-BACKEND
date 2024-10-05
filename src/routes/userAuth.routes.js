@@ -1,4 +1,8 @@
 import { Router } from 'express';
+import { verifyUserRequired } from '../middlewares/validator.user.js';
+import { authRequired } from '../middlewares/validator.token.js';
+import { validateSchema } from '../middlewares/validator.middleware.js';
+import { loginUserSchema, registerUserSchema } from '../schemas/user.schema.js';
 import {
   registerUserController,
   loginUserController,
@@ -9,10 +13,6 @@ import {
   sendEmailVerificationController,
   verifyEmailController,
 } from '../controllers/userAuth.controller.js';
-import { validateSchema } from '../middlewares/validator.middleware.js';
-import { loginUserSchema, registerUserSchema } from '../schemas/user.schema.js';
-import { authRequired } from '../middlewares/validator.token.js';
-import { verifyUserRequired } from '../middlewares/validator.user.js';
 
 const userAuthRouter = Router();
 
