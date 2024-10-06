@@ -35,6 +35,15 @@ const sequelize = new Sequelize(DB_NAME, DB_USER, DB_PASSWORD, {
   port: DB_PORT,
   dialect: 'mysql',
   logging: false,
+  pool: {
+    max: 5,
+    min: 0,
+    acquire: 30000,
+    idle: 10000,
+  },
+  dialectOptions: {
+    connectTimeout: 60000, // Aumentar el tiempo de espera de la conexión
+  },
 });
 
 const connectDB = async () => {
@@ -48,6 +57,7 @@ const connectDB = async () => {
     return sequelize;
   } catch (error) {
     logger.child({ error }).fatal('Error al conectar con la base de datos.');
+    throw error;
   }
 };
 

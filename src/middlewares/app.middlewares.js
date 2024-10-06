@@ -8,6 +8,7 @@ import { FRONTEND_URL } from '../configs/envConfig.js';
 
 const applyMiddlewares = (app) => {
   app.use(express.json());
+  app.use(express.urlencoded({ extended: true }));
   app.use(
     cors({
       credentials: true,
