@@ -1,4 +1,3 @@
-import Cookies from 'cookies';
 import { FRONTEND_URL } from '../configs/envConfig.js';
 import { logger } from '../configs/loggerConfig.js';
 import {
@@ -15,8 +14,11 @@ import {
 const registerUserController = async (req, res) => {
   try {
     const { newUser, token } = await registerUserService(req.body);
-    const cookies = new Cookies(req, res);
-    cookies.set('token', token);
+    res.cookie('token', token, {
+      httpOnly: true,
+      secure: true,
+      sameSite: 'Lax',
+    });
     res.status(201).json(newUser);
   } catch (error) {
     logger.child({ error }).error('Error en registerUserController');
@@ -27,8 +29,11 @@ const registerUserController = async (req, res) => {
 const loginUserController = async (req, res) => {
   try {
     const { user, token } = await loginUserService(req.body);
-    const cookies = new Cookies(req, res);
-    cookies.set('token', token);
+    res.cookie('token', token, {
+      httpOnly: true,
+      secure: true,
+      sameSite: 'Lax',
+    });
     res.status(200).json(user);
   } catch (error) {
     logger.error(error, 'Error en loginUserController');
@@ -38,14 +43,13 @@ const loginUserController = async (req, res) => {
 
 const verifyTokenController = async (req, res) => {
   try {
-    const cookies = new Cookies(req, res);
-    const token = cookies.get('token');
+    const token = req.cookies.token;
     const { decoded } = await verifyTokenService(token);
     logger.info(decoded, 'Token verificado');
     res.status(200).json(decoded);
   } catch (error) {
     logger.error(error, 'Error en verifyTokenController');
-    res.status(400).json({ error: [error.message] });
+    res.status(400).json({ error: ['error.message'] });
   }
 };
 
@@ -63,8 +67,7 @@ const getProfileUserController = async (req, res) => {
 const deleteUserController = async (req, res) => {
   try {
     const response = await deleteUserService(req.user.id);
-    const cookies = new Cookies(req, res);
-    cookies.set('token', '', { expires: new Date(0) });
+    res.cookie('token', '', { expires: new Date(0) });
     res.status(200).json(response);
   } catch (error) {
     logger.error(error, 'Error en deleteUserController');
@@ -75,8 +78,7 @@ const deleteUserController = async (req, res) => {
 const logoutUserController = async (req, res) => {
   try {
     const response = logoutUserService();
-    const cookies = new Cookies(req, res);
-    cookies.set('token', '', { expires: new Date(0) });
+    res.cookie('token', '', { expires: new Date(0) });
     res.status(200).json(response);
   } catch (error) {
     logger.error(error, 'Error en logoutUserController');
