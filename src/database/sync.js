@@ -1,4 +1,3 @@
-import { connectDB } from './db.js';
 import { sequelize } from './db.js';
 import { People } from '../models/people.model.js';
 import { User } from '../models/user.model.js';
@@ -17,15 +16,14 @@ import { logger } from '../configs/loggerConfig.js';
 
 const syncModels = async () => {
   try {
-    await connectDB();
     await sequelize.sync({ force: false });
-    logger.info('Modelos sincronizados correctamente.');
     await defineRoles();
     await definePermissions();
     await defineRolesPermissions();
+    logger.info('Modelos sincronizados correctamente.');
   } catch (error) {
     logger.error('Error al sincronizar los modelos:', error);
   }
 };
 
-syncModels();
+export { syncModels };
