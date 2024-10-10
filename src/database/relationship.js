@@ -9,6 +9,8 @@ import { UsersClasses } from '../models/usersClasses.js';
 import { FileTask } from '../models/fileTask.js';
 import { Post } from '../models/post.js';
 import { Comment } from '../models/comment.js';
+import { Tool } from '../models/tool.js';
+import { TaskTool } from '../models/taskTool.js';
 
 User.belongsTo(People, { foreignKey: 'people_fk' });
 
@@ -29,3 +31,9 @@ FileTask.belongsTo(Task, { foreignKey: 'tasks_fk' });
 Post.belongsTo(Class, { foreignKey: 'classes_fk' });
 
 Comment.belongsTo(Post, { foreignKey: 'posts_fk' });
+
+Tool.belongsTo(Task, { foreignKey: 'tasks_fk' });
+
+TaskTool.belongsTo(Task, { foreignKey: 'tasks_fk' });
+
+TaskTool.belongsTo(Tool, { foreignKey: 'tools_fk' });
