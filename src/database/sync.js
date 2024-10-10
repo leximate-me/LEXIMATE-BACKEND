@@ -8,6 +8,8 @@ import { Class } from '../models/class.js';
 import { Task } from '../models/task.js';
 import { UsersClasses } from '../models/usersClasses.js';
 import { FileTask } from '../models/fileTask.js';
+import { Post } from '../models/post.js';
+import { Comment } from '../models/comment.js';
 import { defineRoles } from '../models/roles.model.js';
 import { definePermissions } from '../models/permission.model.js';
 import { defineRolesPermissions } from '../models/rolesPermissions.model.js';
