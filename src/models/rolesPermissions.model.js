@@ -6,7 +6,7 @@ const RolePermission = sequelize.define(
   'RolePermission',
   {
     id: {
-      type: DataTypes.INTEGER(11),
+      type: DataTypes.INTEGER,
       primaryKey: true,
       autoIncrement: true,
     },

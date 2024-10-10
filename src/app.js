@@ -15,6 +15,6 @@ applyMiddlewares(app);
 app.use('/api/auth', userAuthRouter);
 app.use('/api/class', userClassRouter);
 app.use('/api/task', userTaskRouter);
-app.use('/api/tools', userToolsRouter);
+app.use('/api/tool', userToolsRouter);
 
 export { app };

@@ -18,6 +18,7 @@ const createTaskController = async (req, res) => {
     let imageUrl = null;
     let imageId = null;
     let imageProps = null;
+    console.log('hola', req.files);
 
     if (req.files?.image) {
       const result = await uploadImage(req.files.image.tempFilePath);
