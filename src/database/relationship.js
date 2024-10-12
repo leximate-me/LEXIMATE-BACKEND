@@ -1,16 +1,16 @@
-import { Role } from '../models/roles.model.js';
+import { Role } from '../models/role.model.js';
 import { Permission } from '../models/permission.model.js';
-import { RolePermission } from '../models/rolesPermissions.model.js';
+import { RolePermission } from '../models/rolePermission.model.js';
 import { People } from '../models/people.model.js';
 import { User } from '../models/user.model.js';
-import { Class } from '../models/class.js';
-import { Task } from '../models/task.js';
-import { UsersClasses } from '../models/usersClasses.js';
-import { FileTask } from '../models/fileTask.js';
-import { Post } from '../models/post.js';
-import { Comment } from '../models/comment.js';
-import { Tool } from '../models/tool.js';
-import { TaskTool } from '../models/taskTool.js';
+import { Class } from '../models/class.model.js';
+import { Task } from '../models/task.model.js';
+import { UsersClasses } from '../models/userClass.model.js';
+import { FileTask } from '../models/fileTask.model.js';
+import { Post } from '../models/post.model.js';
+import { Comment } from '../models/comment.model.js';
+import { Tool } from '../models/tool.model.js';
+import { TaskTool } from '../models/taskTool.model.js';
 
 User.belongsTo(People, { foreignKey: 'people_fk' });
 

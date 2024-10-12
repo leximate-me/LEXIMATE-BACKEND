@@ -1,8 +1,8 @@
-import { UsersClasses } from '../models/usersClasses.js';
-import { Class } from '../models/class.js';
-import { Task } from '../models/task.js';
-import { FileTask } from '../models/fileTask.js';
-import { RolePermission } from '../models/rolesPermissions.model.js';
+import { UsersClasses } from '../models/userClass.model.js';
+import { Class } from '../models/class.model.js';
+import { Task } from '../models/task.model.js';
+import { FileTask } from '../models/fileTask.model.js';
+import { RolePermission } from '../models/rolePermission.model.js';
 import { sequelize } from '../database/db.js';
 
 // Funcion para crear una tarea

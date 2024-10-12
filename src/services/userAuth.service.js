@@ -6,7 +6,7 @@ import { resend } from '../libs/resend.js';
 import { sequelize } from '../database/db.js';
 import { User } from '../models/user.model.js';
 import { People } from '../models/people.model.js';
-import { Role } from '../models/roles.model.js';
+import { Role } from '../models/role.model.js';
 
 const registerUserService = async (userData) => {
   // Iniciar una transacción de la base de datos

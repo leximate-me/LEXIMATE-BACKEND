@@ -1,8 +1,8 @@
 import crypto from 'crypto';
-import { Class } from '../models/class.js';
-import { UsersClasses } from '../models/usersClasses.js';
+import { Class } from '../models/class.model.js';
+import { UsersClasses } from '../models/userClass.model.js';
 import { User } from '../models/user.model.js';
-import { RolePermission } from '../models/rolesPermissions.model.js';
+import { RolePermission } from '../models/rolePermission.model.js';
 import { sequelize } from '../database/db.js';
 
 // Función para crear una clase
