@@ -12,18 +12,13 @@ import { Post } from '../models/post.model.js';
 import { Comment } from '../models/comment.model.js';
 import { Tool } from '../models/tool.model.js';
 import { TaskTool } from '../models/taskTool.model.js';
-import { defineRoles } from '../models/role.model.js';
-import { definePermissions } from '../models/permission.model.js';
-import { defineRolesPermissions } from '../models/rolePermission.model.js';
 import './relationship.js';
 import { logger } from '../configs/loggerConfig.js';
 
 const syncModels = async () => {
   try {
     await sequelize.sync({ force: false });
-    await defineRoles();
-    await definePermissions();
-    await defineRolesPermissions();
+
     logger.info('Modelos sincronizados correctamente.');
   } catch (error) {
     logger.error('Error al sincronizar los modelos:', error);
