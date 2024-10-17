@@ -1,7 +1,7 @@
 import {
   extractTextFromPdfService,
   extractTextFromDocxService,
-} from '../services/userTools.service.js';
+} from '../services/userTool.service.js';
 import { logger } from '../configs/loggerConfig.js';
 import fs from 'fs';
 

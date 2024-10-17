@@ -15,6 +15,7 @@ import {
   updateClassController,
   deleteClassController,
 } from '../controllers/userClass.controller.js';
+import { userTaskRouter } from './userTask.routes.js';
 
 const userClassRouter = Router();
 
@@ -38,13 +39,13 @@ userClassRouter.post(
   leaveClassController
 );
 userClassRouter.get(
-  '/',
+  '/user',
   authRequired,
   verifyUserRequired,
   getClassesByUserController
 );
 userClassRouter.get(
-  '/users/:classCode',
+  '/:classCode/user',
   authRequired,
   verifyUserRequired,
   getUsersByClassController
@@ -62,5 +63,7 @@ userClassRouter.delete(
   verifyUserRequired,
   deleteClassController
 );
+
+userClassRouter.use('/:classCode/tasks', userTaskRouter);
 
 export { userClassRouter };

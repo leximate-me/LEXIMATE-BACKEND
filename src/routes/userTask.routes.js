@@ -11,10 +11,10 @@ import {
   getTaskController,
 } from '../controllers/userTask.controller.js';
 
-const userTaskRouter = Router();
+const userTaskRouter = Router({ mergeParams: true }); // Permitir el uso de parametros de rutas padres
 
 userTaskRouter.post(
-  '/:classCode',
+  '/',
   authRequired,
   verifyUserRequired,
   validateSchema(createTaskSchema),
@@ -34,16 +34,11 @@ userTaskRouter.delete(
   deleteTaskController
 );
 userTaskRouter.get(
-  '/:classCode',
+  '/',
   authRequired,
   verifyUserRequired,
   getTasksByClassController
 );
-userTaskRouter.get(
-  '/task/:id',
-  authRequired,
-  verifyUserRequired,
-  getTaskController
-);
+userTaskRouter.get('/:id', authRequired, verifyUserRequired, getTaskController);
 
 export { userTaskRouter };

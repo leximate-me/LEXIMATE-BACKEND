@@ -182,20 +182,28 @@ const getClassesByUserService = async (user) => {
       throw new Error('No tienes los permisos para ver una clase');
     }
 
-    const classes = await UsersClasses.findAll(
+    const userClass = await UsersClasses.findAll(
       {
         where: { users_fk: user.id },
-        include: {
-          model: Class,
-          attributes: ['name', 'description', 'class_code'],
-        },
+        // include: {
+        //   model: Class,
+        //   attributes: ['name', 'description', 'class_code'],
+        // },
       },
       { transaction }
     );
 
-    if (classes.length === 0) {
-      throw new Error('No hay clases disponibles');
+    if (userClass.length === 0) {
+      throw new Error('No tienes clases');
     }
+
+    const classes = await Class.findAll(
+      {
+        where: { id: userClass.map((classData) => classData.classes_fk) },
+        attributes: ['name', 'description', 'class_code'],
+      },
+      { transaction }
+    );
 
     await transaction.commit();
 
@@ -222,13 +230,25 @@ const getUsersByClassService = async (classCode) => {
       throw new Error('Clase no encontrada');
     }
 
-    const users = await UsersClasses.findAll(
+    const userClass = await UsersClasses.findAll(
       {
         where: { classes_fk: classData.id },
-        include: {
-          model: User,
-          attributes: ['user_name', 'roles_fk', 'email'],
-        },
+        // include: {
+        //   model: User,
+        //   attributes: ['user_name', 'roles_fk', 'email'],
+        // },
+      },
+      { transaction }
+    );
+
+    if (userClass.length === 0) {
+      throw new Error('No hay usuarios en esta clase');
+    }
+
+    const users = await User.findAll(
+      {
+        where: { id: userClass.map((user) => user.users_fk) },
+        attributes: ['user_name', 'roles_fk', 'email'],
       },
       { transaction }
     );

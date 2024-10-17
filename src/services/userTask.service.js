@@ -265,15 +265,11 @@ const getTasksByClassService = async (classCode, user) => {
 };
 
 // Funcion para obtener una tarea
-const getTaskService = async (taskId, user) => {
+const getTaskService = async (taskId) => {
   const transaction = await sequelize.transaction();
   try {
     if (!taskId) {
       throw new Error('Id de tarea no proporcionado');
-    }
-
-    if (!user) {
-      throw new Error('Usuario no encontrado');
     }
 
     const task = await Task.findOne(
