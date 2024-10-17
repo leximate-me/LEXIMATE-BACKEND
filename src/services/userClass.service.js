@@ -233,10 +233,6 @@ const getUsersByClassService = async (classCode) => {
     const userClass = await UsersClasses.findAll(
       {
         where: { classes_fk: classData.id },
-        // include: {
-        //   model: User,
-        //   attributes: ['user_name', 'roles_fk', 'email'],
-        // },
       },
       { transaction }
     );

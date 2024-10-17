@@ -1,5 +1,10 @@
 import { Router } from 'express';
-import { createPostController } from '../controllers/userPost.controller.js';
+import {
+  createPostController,
+  readPostController,
+  updatePostController,
+  deletePostController,
+} from '../controllers/userPost.controller.js';
 import { authRequired } from '../middlewares/validator.token.js';
 import { verifyUserRequired } from '../middlewares/validator.user.js';
 
@@ -10,6 +15,27 @@ userPostRouter.post(
   authRequired,
   verifyUserRequired,
   createPostController
+);
+
+userPostRouter.get(
+  '/:classCode',
+  authRequired,
+  verifyUserRequired,
+  readPostController
+);
+
+userPostRouter.put(
+  '/:classCode',
+  authRequired,
+  verifyUserRequired,
+  updatePostController
+);
+
+userPostRouter.delete(
+  '/:classCode',
+  authRequired,
+  verifyUserRequired,
+  deletePostController
 );
 
 export { userPostRouter };
