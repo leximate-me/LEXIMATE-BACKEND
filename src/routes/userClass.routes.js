@@ -1,4 +1,4 @@
-import { Router } from 'express';
+  import { Router } from 'express';
 import { verifyUserRequired } from '../middlewares/validator.user.js';
 import { authRequired } from '../middlewares/validator.token.js';
 import { validateSchema } from '../middlewares/validator.middleware.js';
