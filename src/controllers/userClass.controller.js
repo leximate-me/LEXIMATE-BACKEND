@@ -37,7 +37,7 @@ const joinClassController = async (req, res) => {
 
 // controlador para salir de una clase
 const leaveClassController = async (req, res) => {
-  const { classCode } = req.body;
+  const { classCode } = req.params;
   const user = req.user;
   try {
     const classData = await leaveClassService(classCode, user);

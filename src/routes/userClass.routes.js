@@ -33,7 +33,7 @@ userClassRouter.post(
   joinClassController
 );
 userClassRouter.post(
-  '/leave',
+  '/leave/:classCode',
   authRequired,
   verifyUserRequired,
   leaveClassController
