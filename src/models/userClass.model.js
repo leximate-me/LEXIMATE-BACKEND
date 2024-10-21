@@ -12,7 +12,9 @@ const UsersClasses = sequelize.define(
   },
   {
     tableName: 'users_classes',
-    timestamps: false,
+    timestamps: true,
+    paranoid: true,
+    deletedAt: 'deleted_at',
   }
 );
 
