@@ -19,7 +19,7 @@ const updateClassSchema = z.object({
     .optional(),
   description: z
     .string()
-    .min(10, 'La descripción debe tener al menos 10 caracteres')
+    .min(5, 'La descripción debe tener al menos 5 caracteres')
     .optional(),
 });
 
