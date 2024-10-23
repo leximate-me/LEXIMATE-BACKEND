@@ -264,6 +264,10 @@ const getTasksByClassService = async (classCode, user) => {
       { transaction }
     );
 
+    if (!files) {
+      return tasks;
+    }
+
     await transaction.commit();
 
     return tasks.map((task) => {
@@ -297,10 +301,25 @@ const getTaskService = async (taskId) => {
     if (!task) {
       throw new Error('Tarea no encontrada');
     }
+    console.log(task.id);
+
+    const files = await FileTask.findAll(
+      {
+        where: { tasks_fk: task.id },
+      },
+      { transaction }
+    );
+
+    if (!files) {
+      return task;
+    }
 
     await transaction.commit();
 
-    return task;
+    return {
+      ...task.dataValues,
+      files,
+    };
   } catch (error) {
     await transaction.rollback();
     throw error;
