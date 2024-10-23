@@ -232,6 +232,8 @@ const getTasksByClassService = async (classCode, user) => {
       },
       { transaction }
     );
+    console.log(classCode);
+    console.log(classCodeMatch);
 
     if (!classCodeMatch) {
       throw new Error('Clase no encontrada');
@@ -255,9 +257,22 @@ const getTasksByClassService = async (classCode, user) => {
       { transaction }
     );
 
+    const files = await FileTask.findAll(
+      {
+        where: { tasks_fk: tasks.map((task) => task.id) },
+      },
+      { transaction }
+    );
+
     await transaction.commit();
 
-    return tasks;
+    return tasks.map((task) => {
+      const taskFiles = files.filter((file) => file.tasks_fk === task.id);
+      return {
+        ...task.dataValues,
+        files: taskFiles,
+      };
+    });
   } catch (error) {
     await transaction.rollback();
     throw error;
