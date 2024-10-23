@@ -298,6 +298,8 @@ const getTaskService = async (taskId) => {
       { transaction }
     );
 
+    
+
     if (!task) {
       throw new Error('Tarea no encontrada');
     }
