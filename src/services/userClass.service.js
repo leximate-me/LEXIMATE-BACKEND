@@ -185,10 +185,6 @@ const getClassesByUserService = async (user) => {
     const userClass = await UsersClasses.findAll(
       {
         where: { users_fk: user.id },
-        // include: {
-        //   model: Class,
-        //   attributes: ['name', 'description', 'class_code'],
-        // },
       },
       { transaction }
     );
@@ -200,7 +196,6 @@ const getClassesByUserService = async (user) => {
     const classes = await Class.findAll(
       {
         where: { id: userClass.map((classData) => classData.classes_fk) },
-        attributes: ['name', 'description', 'class_code'],
       },
       { transaction }
     );
