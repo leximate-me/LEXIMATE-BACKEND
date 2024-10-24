@@ -4,9 +4,10 @@ import { Task } from '../models/task.model.js';
 import { FileTask } from '../models/fileTask.model.js';
 import { RolePermission } from '../models/rolePermission.model.js';
 import { sequelize } from '../database/db.js';
+import { json } from 'sequelize';
 
 // Funcion para crear una tarea
-const createTaskService = async (classCode, taskData, user) => {
+const createTaskService = async (classId, taskData, user) => {
   const transaction = await sequelize.transaction();
   try {
     const {
@@ -40,7 +41,7 @@ const createTaskService = async (classCode, taskData, user) => {
 
     const classCodeMatch = await Class.findOne(
       {
-        where: { class_code: classCode },
+        where: { id: classId },
       },
       { transaction }
     );
@@ -95,7 +96,7 @@ const createTaskService = async (classCode, taskData, user) => {
 };
 
 // Funcion para actualizar una tarea
-const updateTaskService = async (taskData, user) => {
+const updateTaskService = async (taskId, taskData, user) => {
   const transaction = await sequelize.transaction();
   try {
     const {
@@ -128,9 +129,11 @@ const updateTaskService = async (taskData, user) => {
 
     const updatedTask = await Task.update(
       { title, description, status, due_date },
-      { where: { id: taskData.id } },
+      { where: { id: taskId } },
       { transaction }
     );
+
+    console.log(updatedTask);
 
     if (imageUrl) {
       await FileTask.update(
@@ -141,14 +144,14 @@ const updateTaskService = async (taskData, user) => {
           file_id: imageId,
           file_url: imageUrl,
         },
-        { where: { tasks_fk: taskData.id } },
+        { where: { tasks_fk: taskId } },
         { transaction }
       );
     }
 
     await transaction.commit();
 
-    return updatedTask;
+    return { msg: 'Tarea actualizada correctamente' };
   } catch (error) {
     await transaction.rollback();
     throw error;
@@ -193,7 +196,7 @@ const deleteTaskService = async (taskId, user) => {
 
     if (file) {
       public_id = file.file_id;
-      await File.destroy({ where: { tasks_fk: taskId } }, { transaction });
+      await FileTask.destroy({ where: { tasks_fk: taskId } }, { transaction });
     }
 
     await Task.destroy({ where: { id: taskId } }, { transaction });
@@ -208,9 +211,13 @@ const deleteTaskService = async (taskId, user) => {
 };
 
 // Funcion para obtener las tareas de una clase
-const getTasksByClassService = async (classCode, user) => {
+const getTasksByClassService = async (classId, user) => {
   const transaction = await sequelize.transaction();
   try {
+    if (!classId) {
+      throw new Error('Id de clase no proporcionado');
+    }
+
     if (!user) {
       throw new Error('Usuario no encontrado');
     }
@@ -228,12 +235,10 @@ const getTasksByClassService = async (classCode, user) => {
 
     const classCodeMatch = await Class.findOne(
       {
-        where: { class_code: classCode },
+        where: { id: classId },
       },
       { transaction }
     );
-    console.log(classCode);
-    console.log(classCodeMatch);
 
     if (!classCodeMatch) {
       throw new Error('Clase no encontrada');

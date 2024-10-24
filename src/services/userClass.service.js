@@ -4,6 +4,7 @@ import { UsersClasses } from '../models/userClass.model.js';
 import { User } from '../models/user.model.js';
 import { RolePermission } from '../models/rolePermission.model.js';
 import { sequelize } from '../database/db.js';
+import { Task } from '../models/task.model.js';
 
 // Función para crear una clase
 const createClassService = async (classData, user) => {
@@ -116,11 +117,11 @@ const joinClassService = async (classCode, user) => {
 };
 
 // Función para salir de una clase
-const leaveClassService = async (classCode, user) => {
+const leaveClassService = async (classId, user) => {
   const transaction = await sequelize.transaction();
 
   try {
-    if (!classCode) {
+    if (!classId) {
       throw new Error('Código de clase no proporcionado');
     }
 
@@ -139,7 +140,7 @@ const leaveClassService = async (classCode, user) => {
     }
 
     const classData = await Class.findOne(
-      { where: { class_code: classCode } },
+      { where: { id: classId } },
       { transaction }
     );
 
@@ -210,14 +211,14 @@ const getClassesByUserService = async (user) => {
 };
 
 // funcion para obtener los usuarios de una clase
-const getUsersByClassService = async (classCode) => {
+const getUsersByClassService = async (classId) => {
   const transaction = await sequelize.transaction();
   try {
-    if (!classCode) {
+    if (!classId) {
       throw new Error('Código de clase no proporcionado');
     }
     const classData = await Class.findOne(
-      { where: { class_code: classCode } },
+      { where: { id: classId } },
       { transaction }
     );
 
@@ -239,7 +240,6 @@ const getUsersByClassService = async (classCode) => {
     const users = await User.findAll(
       {
         where: { id: userClass.map((user) => user.users_fk) },
-        attributes: ['user_name', 'roles_fk', 'email'],
       },
       { transaction }
     );
@@ -254,15 +254,19 @@ const getUsersByClassService = async (classCode) => {
 };
 
 // funcion para actualizar una clase
-const updateClassService = async (classCode, classData, user) => {
+const updateClassService = async (classId, classData, user) => {
   const transaction = await sequelize.transaction();
   try {
-    if (!classCode) {
+    if (!classId) {
       throw new Error('Código de clase no proporcionado');
     }
 
     if (!user) {
       throw new Error('Usuario no encontrado');
+    }
+
+    if (!classData) {
+      throw new Error('Datos de clase no proporcionados');
     }
 
     const verifyPermission = await RolePermission.findOne(
@@ -278,7 +282,7 @@ const updateClassService = async (classCode, classData, user) => {
 
     const classFound = await Class.findOne(
       {
-        where: { class_code: classCode },
+        where: { id: classId },
       },
       { transaction }
     );
@@ -294,7 +298,7 @@ const updateClassService = async (classCode, classData, user) => {
     await Class.update(
       classData,
       {
-        where: { class_code: classCode },
+        where: { id: classId },
       },
       { transaction }
     );
@@ -309,10 +313,10 @@ const updateClassService = async (classCode, classData, user) => {
 };
 
 // funcion para eliminar una clase
-const deleteClassService = async (classCode, user) => {
+const deleteClassService = async (classId, user) => {
   const transaction = await sequelize.transaction();
   try {
-    if (!classCode) {
+    if (!classId) {
       throw new Error('Código de clase no proporcionado');
     }
 
@@ -333,7 +337,7 @@ const deleteClassService = async (classCode, user) => {
 
     const classFound = await Class.findOne(
       {
-        where: { class_code: classCode },
+        where: { id: classId },
       },
       { transaction }
     );
@@ -344,12 +348,19 @@ const deleteClassService = async (classCode, user) => {
 
     await Class.destroy(
       {
-        where: { class_code: classCode },
+        where: { id: classId },
       },
       { transaction }
     );
 
     await UsersClasses.destroy(
+      {
+        where: { classes_fk: classFound.id },
+      },
+      { transaction }
+    );
+
+    await Task.destroy(
       {
         where: { classes_fk: classFound.id },
       },

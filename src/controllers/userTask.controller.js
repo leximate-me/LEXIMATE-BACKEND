@@ -11,7 +11,7 @@ import {
 
 const createTaskController = async (req, res) => {
   try {
-    const { classCode } = req.params;
+    const { classId } = req.params;
     const { title, description, status, due_date } = req.body;
     const user = req.user;
 
@@ -29,7 +29,7 @@ const createTaskController = async (req, res) => {
     }
 
     const newTask = await createTaskService(
-      classCode,
+      classId,
       { title, description, status, due_date, imageUrl, imageId, imageProps },
       user
     );
@@ -44,7 +44,7 @@ const updateTaskController = async (req, res) => {
   try {
     const { title, description, status, due_date } = req.body;
     const user = req.user;
-    const { id } = req.params;
+    const { taskId } = req.params;
 
     let imageUrl = null;
     let imageProps = null;
@@ -57,7 +57,8 @@ const updateTaskController = async (req, res) => {
     }
 
     const updatedTask = await updateTaskService(
-      { id, title, description, status, due_date, imageUrl, imageProps },
+      taskId,
+      { title, description, status, due_date, imageUrl, imageProps },
       user
     );
     res.status(200).json(updatedTask);
@@ -69,9 +70,9 @@ const updateTaskController = async (req, res) => {
 
 const deleteTaskController = async (req, res) => {
   try {
-    const { id } = req.params;
+    const { taskId } = req.params;
     const user = req.user;
-    const task = await deleteTaskService(id, user);
+    const task = await deleteTaskService(taskId, user);
 
     if (task) {
       await deleteImage(task);
@@ -86,9 +87,9 @@ const deleteTaskController = async (req, res) => {
 
 const getTasksByClassController = async (req, res) => {
   try {
-    const { classCode } = req.params;
+    const { classId } = req.params;
     const user = req.user;
-    const tasks = await getTasksByClassService(classCode, user);
+    const tasks = await getTasksByClassService(classId, user);
     res.status(200).json(tasks);
   } catch (error) {
     logger.error(error, 'Error en getTasksByClassController');
@@ -98,8 +99,8 @@ const getTasksByClassController = async (req, res) => {
 
 const getTaskController = async (req, res) => {
   try {
-    const { id } = req.params;
-    const task = await getTaskService(id);
+    const { taskId } = req.params;
+    const task = await getTaskService(taskId);
     res.status(200).json(task);
   } catch (error) {
     logger.error(error, 'Error en getTaskController');

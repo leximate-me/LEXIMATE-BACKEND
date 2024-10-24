@@ -26,7 +26,7 @@ const updateTaskSchema = z.object({
   description: z
     .string()
     .min(10, 'La descripción debe tener al menos 10 caracteres'),
-  status: z.string().min(5, 'El estado debe tener al menos 5 caracteres'),
+  status: z.boolean(),
   due_date: z
     .string()
     .min(10, 'La fecha de vencimiento debe tener al menos 10 caracteres'),
