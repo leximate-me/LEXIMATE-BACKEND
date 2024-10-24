@@ -21,14 +21,14 @@ userTaskRouter.post(
   createTaskController
 );
 userTaskRouter.put(
-  '/:id',
+  '/:taskId',
   authRequired,
   verifyUserRequired,
   validateSchema(updateTaskSchema),
   updateTaskController
 );
 userTaskRouter.delete(
-  '/:id',
+  '/:taskId',
   authRequired,
   verifyUserRequired,
   deleteTaskController
@@ -39,6 +39,11 @@ userTaskRouter.get(
   verifyUserRequired,
   getTasksByClassController
 );
-userTaskRouter.get('/:id', authRequired, verifyUserRequired, getTaskController);
+userTaskRouter.get(
+  '/:taskId',
+  authRequired,
+  verifyUserRequired,
+  getTaskController
+);
 
 export { userTaskRouter };

@@ -33,7 +33,7 @@ userClassRouter.post(
   joinClassController
 );
 userClassRouter.post(
-  '/leave/:classCode',
+  '/leave/:classId',
   authRequired,
   verifyUserRequired,
   leaveClassController
@@ -45,25 +45,25 @@ userClassRouter.get(
   getClassesByUserController
 );
 userClassRouter.get(
-  '/:classCode/user',
+  '/user/:classId',
   authRequired,
   verifyUserRequired,
   getUsersByClassController
 );
 userClassRouter.put(
-  '/:classCode',
+  '/:classId',
   authRequired,
   verifyUserRequired,
   validateSchema(updateClassSchema),
   updateClassController
 );
 userClassRouter.delete(
-  '/:classCode',
+  '/:classId',
   authRequired,
   verifyUserRequired,
   deleteClassController
 );
 
-userClassRouter.use('/:classCode/tasks', userTaskRouter);
+userClassRouter.use('/:classId/task', userTaskRouter);
 
 export { userClassRouter };
