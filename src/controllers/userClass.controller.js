@@ -37,10 +37,10 @@ const joinClassController = async (req, res) => {
 
 // controlador para salir de una clase
 const leaveClassController = async (req, res) => {
-  const { classCode } = req.params;
+  const { classId } = req.params;
   const user = req.user;
   try {
-    const classData = await leaveClassService(classCode, user);
+    const classData = await leaveClassService(classId, user);
     res.status(200).json(classData);
   } catch (error) {
     logger.error(error, 'Error en leaveClassController');
@@ -62,9 +62,9 @@ const getClassesByUserController = async (req, res) => {
 
 // controlador para obtener los usuarios de una clase
 const getUsersByClassController = async (req, res) => {
-  const { classCode } = req.params;
+  const { classId } = req.params;
   try {
-    const users = await getUsersByClassService(classCode);
+    const users = await getUsersByClassService(classId);
     res.status(200).json(users);
   } catch (error) {
     logger.error(error, 'Error en getUsersByClassController');
@@ -75,11 +75,11 @@ const getUsersByClassController = async (req, res) => {
 // controlador para actualizar una clase
 const updateClassController = async (req, res) => {
   const { name, description } = req.body;
-  const { classCode } = req.params;
+  const { classId } = req.params;
   const user = req.user;
   try {
     const updatedClass = await updateClassService(
-      classCode,
+      classId,
       {
         name,
         description,
@@ -95,10 +95,10 @@ const updateClassController = async (req, res) => {
 
 // controlador para eliminar una clase
 const deleteClassController = async (req, res) => {
-  const { classCode } = req.params;
+  const { classId } = req.params;
   const user = req.user;
   try {
-    const deletedClass = await deleteClassService(classCode, user);
+    const deletedClass = await deleteClassService(classId, user);
     res.status(200).json(deletedClass);
   } catch (error) {
     logger.error(error, 'Error en deleteClassController');
