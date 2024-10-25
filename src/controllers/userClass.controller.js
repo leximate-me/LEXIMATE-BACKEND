@@ -98,8 +98,8 @@ const deleteClassController = async (req, res) => {
   const { classId } = req.params;
   const user = req.user;
   try {
-    const deletedClass = await deleteClassService(classId, user);
-    res.status(200).json(deletedClass);
+    await deleteClassService(classId, user);
+    res.status(204).end();
   } catch (error) {
     logger.error(error, 'Error en deleteClassController');
     res.status(400).json({ error: error.message });
