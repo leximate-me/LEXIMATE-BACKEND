@@ -1,10 +1,11 @@
 import { UsersClasses } from '../models/userClass.model.js';
+import { User } from '../models/user.model.js';
 import { Class } from '../models/class.model.js';
 import { Task } from '../models/task.model.js';
 import { FileTask } from '../models/fileTask.model.js';
 import { RolePermission } from '../models/rolePermission.model.js';
+import { Role } from '../models/role.model.js';
 import { sequelize } from '../database/db.js';
-import { json } from 'sequelize';
 
 // Funcion para crear una tarea
 const createTaskService = async (classId, taskData, user) => {
@@ -24,12 +25,30 @@ const createTaskService = async (classId, taskData, user) => {
     }
 
     if (!user) {
+      throw new Error('Usuario no proporcionado');
+    }
+
+    const foundUser = await User.findOne(
+      {
+        where: { id: user.id },
+      },
+      { transaction }
+    );
+
+    if (!foundUser) {
       throw new Error('Usuario no encontrado');
     }
 
+    const verifiedRole = await Role.findOne(
+      {
+        where: { id: foundUser.roles_fk },
+      },
+      { transaction }
+    );
+
     const verifiedPermission = await RolePermission.findOne(
       {
-        where: { roles_fk: user.rol, permissions_fk: 1 },
+        where: { roles_fk: verifiedRole.id, permissions_fk: 1 },
       },
       { transaction }
     );
@@ -115,9 +134,31 @@ const updateTaskService = async (taskId, taskData, user) => {
       throw new Error('Usuario no encontrado');
     }
 
+    const foundUser = await User.findOne(
+      {
+        where: { id: user.id },
+      },
+      { transaction }
+    );
+
+    if (!foundUser) {
+      throw new Error('Usuario no encontrado');
+    }
+
+    const verifiedRole = await Role.findOne(
+      {
+        where: { id: foundUser.roles_fk },
+      },
+      { transaction }
+    );
+
+    if (!verifiedRole) {
+      throw new Error('Rol no encontrado');
+    }
+
     const verifiedPermission = await RolePermission.findOne(
       {
-        where: { roles_fk: user.id, permissions_fk: 3 },
+        where: { roles_fk: verifiedRole.id, permissions_fk: 3 },
       },
       { transaction }
     );
@@ -169,9 +210,20 @@ const deleteTaskService = async (taskId, user) => {
       throw new Error('Usuario no encontrado');
     }
 
+    const foundUser = await User.findOne(
+      {
+        where: { id: user.id },
+      },
+      { transaction }
+    );
+
+    if (!foundUser) {
+      throw new Error('Usuario no encontrado');
+    }
+
     const verifiedPermission = await RolePermission.findOne(
       {
-        where: { roles_fk: user.id, permissions_fk: 4 },
+        where: { roles_fk: foundUser.roles_fk, permissions_fk: 4 },
       },
       { transaction }
     );
@@ -221,9 +273,31 @@ const getTasksByClassService = async (classId, user) => {
       throw new Error('Usuario no encontrado');
     }
 
+    const foundUser = await User.findOne(
+      {
+        where: { id: user.id },
+      },
+      { transaction }
+    );
+
+    if (!foundUser) {
+      throw new Error('Usuario no encontrado');
+    }
+
+    const verifiedRole = await Role.findOne(
+      {
+        where: { id: foundUser.roles_fk },
+      },
+      { transaction }
+    );
+
+    if (!verifiedRole) {
+      throw new Error('Rol no encontrado');
+    }
+
     const verifiedPermission = await RolePermission.findOne(
       {
-        where: { roles_fk: user.rol, permissions_fk: 2 },
+        where: { roles_fk: foundUser.roles_fk, permissions_fk: 2 },
       },
       { transaction }
     );

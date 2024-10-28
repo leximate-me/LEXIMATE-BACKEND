@@ -3,6 +3,7 @@ import { Class } from '../models/class.model.js';
 import { UsersClasses } from '../models/userClass.model.js';
 import { User } from '../models/user.model.js';
 import { RolePermission } from '../models/rolePermission.model.js';
+import { Role } from '../models/role.model.js';
 import { sequelize } from '../database/db.js';
 import { Task } from '../models/task.model.js';
 import { Post } from '../models/post.model.js';
@@ -19,9 +20,33 @@ const createClassService = async (classData, user) => {
     if (!user) {
       throw new Error('Usuario no encontrado');
     }
+
+    const foundUser = await User.findOne(
+      {
+        where: { id: user.id },
+      },
+
+      { transaction }
+    );
+
+    if (!foundUser) {
+      throw new Error('Usuario no encontrado');
+    }
+
+    const verifiedRole = await Role.findOne(
+      {
+        where: { id: foundUser.roles_fk },
+      },
+      { transaction }
+    );
+
+    if (!verifiedRole) {
+      throw new Error('Rol no encontrado');
+    }
+
     const verifiedPermission = await RolePermission.findOne(
       {
-        where: { roles_fk: user.rol, permissions_fk: 1 },
+        where: { roles_fk: verifiedRole.id, permissions_fk: 1 },
       },
       { transaction }
     );
@@ -43,7 +68,7 @@ const createClassService = async (classData, user) => {
 
     await UsersClasses.create(
       {
-        users_fk: user.id,
+        users_fk: foundUser.id,
         classes_fk: newClass.id,
       },
       { transaction }
@@ -69,9 +94,32 @@ const joinClassService = async (classCode, user) => {
     if (!user) {
       throw new Error('Usuario no encontrado');
     }
+
+    const foundUser = await User.findOne(
+      {
+        where: { id: user.id },
+      },
+      { transaction }
+    );
+
+    if (!foundUser) {
+      throw new Error('Usuario no encontrado');
+    }
+
+    const verifiedRole = await Role.findOne(
+      {
+        where: { id: foundUser.roles_fk },
+      },
+      { transaction }
+    );
+
+    if (!verifiedRole) {
+      throw new Error('Rol no encontrado');
+    }
+
     const verifiedPermission = await RolePermission.findOne(
       {
-        where: { roles_fk: user.rol, permissions_fk: 3 },
+        where: { roles_fk: verifiedRole.id, permissions_fk: 3 },
       },
       { transaction }
     );
@@ -91,7 +139,7 @@ const joinClassService = async (classCode, user) => {
 
     const foundUserClass = await UsersClasses.findOne(
       {
-        where: { users_fk: user.id, classes_fk: classData.id },
+        where: { users_fk: foundUser.id, classes_fk: classData.id },
       },
       { transaction }
     );
@@ -102,7 +150,7 @@ const joinClassService = async (classCode, user) => {
 
     await UsersClasses.create(
       {
-        users_fk: user.id,
+        users_fk: foundUser.id,
         classes_fk: classData.id,
       },
       { transaction }
@@ -129,9 +177,28 @@ const leaveClassService = async (classId, user) => {
     if (!user) {
       throw new Error('Usuario no encontrado');
     }
+
+    const foundUser = await User.findOne(
+      {
+        where: { id: user.id },
+      },
+      { transaction }
+    );
+
+    if (!foundUser) {
+      throw new Error('Usuario no encontrado');
+    }
+
+    const verifiedRole = await Role.findOne(
+      {
+        where: { id: foundUser.roles_fk },
+      },
+      { transaction }
+    );
+
     const verifiedPermission = await RolePermission.findOne(
       {
-        where: { roles_fk: user.rol, permissions_fk: 3 },
+        where: { roles_fk: verifiedRole.id, permissions_fk: 3 },
       },
       { transaction }
     );
@@ -151,7 +218,7 @@ const leaveClassService = async (classId, user) => {
 
     await UsersClasses.destroy(
       {
-        where: { users_fk: user.id, classes_fk: classData.id },
+        where: { users_fk: foundUser.id, classes_fk: classData.id },
       },
       { transaction }
     );
@@ -173,9 +240,32 @@ const getClassesByUserService = async (user) => {
     if (!user) {
       throw new Error('Usuario no encontrado');
     }
+
+    const foundUser = await User.findOne(
+      {
+        where: { id: user.id },
+      },
+      { transaction }
+    );
+
+    if (!foundUser) {
+      throw new Error('Usuario no encontrado');
+    }
+
+    const verifiedRole = await Role.findOne(
+      {
+        where: { id: foundUser.roles_fk },
+      },
+      { transaction }
+    );
+
+    if (!verifiedRole) {
+      throw new Error('Rol no encontrado');
+    }
+
     const verifiedPermission = await RolePermission.findOne(
       {
-        where: { roles_fk: user.rol, permissions_fk: 2 },
+        where: { roles_fk: verifiedRole.id, permissions_fk: 2 },
       },
       { transaction }
     );
@@ -186,7 +276,7 @@ const getClassesByUserService = async (user) => {
 
     const userClass = await UsersClasses.findAll(
       {
-        where: { users_fk: user.id },
+        where: { users_fk: foundUser.id },
       },
       { transaction }
     );
@@ -270,9 +360,31 @@ const updateClassService = async (classId, classData, user) => {
       throw new Error('Datos de clase no proporcionados');
     }
 
+    const foundUser = await User.findOne(
+      {
+        where: { id: user.id },
+      },
+      { transaction }
+    );
+
+    if (!foundUser) {
+      throw new Error('Usuario no encontrado');
+    }
+
+    const verifiedRole = await Role.findOne(
+      {
+        where: { id: foundUser.roles_fk },
+      },
+      { transaction }
+    );
+
+    if (!verifiedRole) {
+      throw new Error('Rol no encontrado');
+    }
+
     const verifiedPermission = await RolePermission.findOne(
       {
-        where: { roles_fk: user.rol, permissions_fk: 3 },
+        where: { roles_fk: verifiedRole.id, permissions_fk: 3 },
       },
       { transaction }
     );
@@ -290,10 +402,6 @@ const updateClassService = async (classId, classData, user) => {
 
     if (!classFound) {
       throw new Error('Clase no encontrada');
-    }
-
-    if (!user.rol === 'teacher') {
-      throw new Error('No tiene permisos para actualizar la clase');
     }
 
     await Class.update(
@@ -325,9 +433,31 @@ const deleteClassService = async (classId, user) => {
       throw new Error('Usuario no encontrado');
     }
 
+    const foundUser = await User.findOne(
+      {
+        where: { id: user.id },
+      },
+      { transaction }
+    );
+
+    if (!foundUser) {
+      throw new Error('Usuario no encontrado');
+    }
+
+    const verifiedRole = await Role.findOne(
+      {
+        where: { id: foundUser.roles_fk },
+      },
+      { transaction }
+    );
+
+    if (!verifiedRole) {
+      throw new Error('Rol no encontrado');
+    }
+
     const verifiedPermission = await RolePermission.findOne(
       {
-        where: { roles_fk: user.rol, permissions_fk: 4 },
+        where: { roles_fk: verifiedRole.id, permissions_fk: 4 },
       },
       { transaction }
     );
