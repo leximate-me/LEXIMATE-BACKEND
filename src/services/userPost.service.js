@@ -4,6 +4,7 @@ import { User } from '../models/user.model.js';
 import { UsersClasses } from '../models/userClass.model.js';
 import { Class } from '../models/class.model.js';
 import { RolePermission } from '../models/rolePermission.model.js';
+import { Role } from '../models/role.model.js';
 import { sequelize } from '../database/db.js';
 
 const createPostService = async (postData, classId, user) => {
@@ -26,9 +27,18 @@ const createPostService = async (postData, classId, user) => {
       throw new Error('Clase no encontrada');
     }
 
+    const foundUser = await User.findOne(
+      { where: { id: user.id } },
+      { transaction }
+    );
+
+    if (!foundUser) {
+      throw new Error('Usuario no encontrado');
+    }
+
     const existingUserInClass = await UsersClasses.findOne(
       {
-        where: { users_fk: user.id, classes_fk: existingClass.id },
+        where: { users_fk: foundUser.id, classes_fk: existingClass.id },
       },
       { transaction }
     );
@@ -37,12 +47,25 @@ const createPostService = async (postData, classId, user) => {
       throw new Error('El usuario no pertenece a la clase');
     }
 
+    const verifiedRole = await Role.findOne(
+      { where: { id: foundUser.roles_fk } },
+      { transaction }
+    );
+
+    if (!verifiedRole) {
+      throw new Error('Rol no encontrado');
+    }
+
     const verifiedPermission = await RolePermission.findOne(
       {
-        where: { roles_fk: user.roles_fk, permissions_fk: 1 },
+        where: { roles_fk: verifiedRole.id, permissions_fk: 1 },
       },
       { transaction }
     );
+
+    if (!verifiedPermission) {
+      throw new Error('No tiene permisos para crear una publicación');
+    }
 
     const post = await Post.create(
       {
@@ -78,9 +101,18 @@ const readPostsService = async (classId, user) => {
       throw new Error('El usuario no pertenece a la clase');
     }
 
+    const foundUser = await User.findOne(
+      { where: { id: user.id } },
+      { transaction }
+    );
+
+    if (!foundUser) {
+      throw new Error('Usuario no encontrado');
+    }
+
     const existingUserInClass = await UsersClasses.findOne(
       {
-        where: { users_fk: user.id, classes_fk: existingClass.id },
+        where: { users_fk: foundUser.id, classes_fk: existingClass.id },
       },
       { transaction }
     );
@@ -89,9 +121,18 @@ const readPostsService = async (classId, user) => {
       throw new Error('El usuario no pertenece a la clase');
     }
 
+    const verifiedRole = await Role.findOne(
+      { where: { id: foundUser.roles_fk } },
+      { transaction }
+    );
+
+    if (!verifiedRole) {
+      throw new Error('Rol no encontrado');
+    }
+
     const verifiedPermission = await RolePermission.findOne(
       {
-        where: { roles_fk: user.roles_fk, permissions_fk: 2 },
+        where: { roles_fk: verifiedRole.id, permissions_fk: 2 },
       },
       { transaction }
     );
@@ -133,9 +174,18 @@ const updatePostService = async (postId, postData, classId, user) => {
       throw new Error('El usuario no pertenece a la clase');
     }
 
+    const foundUser = await User.findOne(
+      { where: { id: user.id } },
+      { transaction }
+    );
+
+    if (!foundUser) {
+      throw new Error('Usuario no encontrado');
+    }
+
     const existingUserInClass = await UsersClasses.findOne(
       {
-        where: { users_fk: user.id, classes_fk: existingClass.id },
+        where: { users_fk: foundUser.id, classes_fk: existingClass.id },
       },
       { transaction }
     );
@@ -144,9 +194,18 @@ const updatePostService = async (postId, postData, classId, user) => {
       throw new Error('El usuario no pertenece a la clase');
     }
 
+    const verifiedRole = await Role.findOne(
+      { where: { id: foundUser.roles_fk } },
+      { transaction }
+    );
+
+    if (!verifiedRole) {
+      throw new Error('Rol no encontrado');
+    }
+
     const verifiedPermission = await RolePermission.findOne(
       {
-        where: { roles_fk: user.roles_fk, permissions_fk: 3 },
+        where: { roles_fk: verifiedRole.id, permissions_fk: 3 },
       },
       { transaction }
     );
@@ -198,12 +257,20 @@ const deletePostService = async (postId, classId, user) => {
       throw new Error('El usuario no pertenece a la clase');
     }
 
+    const foundUser = await User.findOne(
+      { where: { id: user.id } },
+      { transaction }
+    );
+
+    if (!foundUser) {
+      throw new Error('Usuario no encontrado');
+    }
+
     const existingUserInClass = await UsersClasses.findOne(
       {
         where: {
-          users_fk: user.id,
+          users_fk: foundUser.id,
           classes_fk: existingClass.id,
-          users_fk: user.id,
         },
       },
       { transaction }
@@ -213,9 +280,18 @@ const deletePostService = async (postId, classId, user) => {
       throw new Error('El usuario no pertenece a la clase');
     }
 
+    const verifiedRole = await Role.findOne(
+      { where: { id: foundUser.roles_fk } },
+      { transaction }
+    );
+
+    if (!verifiedRole) {
+      throw new Error('Rol no encontrado');
+    }
+
     const verifiedPermission = await RolePermission.findOne(
       {
-        where: { roles_fk: user.roles_fk, permissions_fk: 4 },
+        where: { roles_fk: verifiedRole.id, permissions_fk: 4 },
       },
       { transaction }
     );
@@ -260,9 +336,18 @@ const readPostService = async (classId, user) => {
       throw new Error('El usuario no pertenece a la clase');
     }
 
+    const foundUser = await User.findOne(
+      { where: { id: user.id } },
+      { transaction }
+    );
+
+    if (!foundUser) {
+      throw new Error('Usuario no encontrado');
+    }
+
     const existingUserInClass = await UsersClasses.findOne(
       {
-        where: { users_fk: user.id, classes_fk: existingClass.id },
+        where: { users_fk: foundUser.id, classes_fk: existingClass.id },
       },
       { transaction }
     );
@@ -271,12 +356,21 @@ const readPostService = async (classId, user) => {
       throw new Error('El usuario no pertenece a la clase');
     }
 
+    const verifiedRole = await Role.findOne(
+      { where: { id: foundUser.roles_fk } },
+      { transaction }
+    );
+
     const verifiedPermission = await RolePermission.findOne(
       {
-        where: { roles_fk: user.roles_fk, permissions_fk: 2 },
+        where: { roles_fk: verifiedRole.id, permissions_fk: 2 },
       },
       { transaction }
     );
+
+    if (!verifiedPermission) {
+      throw new Error('No tiene permisos para leer publicaciones');
+    }
 
     const post = await Post.findAll(
       {
