@@ -16,6 +16,7 @@ import {
   deleteClassController,
 } from '../controllers/userClass.controller.js';
 import { userTaskRouter } from './userTask.routes.js';
+import { userPostRouter } from './userPost.routes.js';
 
 const userClassRouter = Router();
 
@@ -65,5 +66,7 @@ userClassRouter.delete(
 );
 
 userClassRouter.use('/:classId/task', userTaskRouter);
+
+userClassRouter.use('/:classId/post', userPostRouter);
 
 export { userClassRouter };

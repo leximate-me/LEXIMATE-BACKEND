@@ -5,17 +5,19 @@ import { UsersClasses } from '../models/userClass.model.js';
 import { Class } from '../models/class.model.js';
 import { sequelize } from '../database/db.js';
 
-const createPostService = async (postData, classData, user) => {
+const createPostService = async (postData, classId, user) => {
   const transaction = await sequelize.transaction();
   try {
-    if (!postData || !classData) {
+    if (!postData || !classId) {
       throw new Error('Datos no proporcionados');
     }
+
+    console.log(classId);
 
     const { title, content } = postData;
 
     const existingClass = await Class.findOne(
-      { where: { class_code: classData } },
+      { where: { id: classId } },
       { transaction }
     );
 
@@ -51,15 +53,15 @@ const createPostService = async (postData, classData, user) => {
   }
 };
 
-const readPostService = async (classData, user) => {
+const readPostsService = async (classId, user) => {
   const transaction = await sequelize.transaction();
   try {
-    if (!classData) {
+    if (!classId) {
       throw new Error('Datos no proporcionados');
     }
 
     const existingClass = await Class.findOne(
-      { where: { class_code: classData } },
+      { where: { id: classId } },
       { transaction }
     );
 
@@ -81,17 +83,6 @@ const readPostService = async (classData, user) => {
     const posts = await Post.findAll(
       {
         where: { classes_fk: existingUserInClass.classes_fk },
-        // include: [
-        //   {
-        //     model: Comment,
-        //     include: [
-        //       {
-        //         model: User,
-        //         attributes: ['user_name'],
-        //       },
-        //     ],
-        //   },
-        // ],
       },
       { transaction }
     );
@@ -104,17 +95,17 @@ const readPostService = async (classData, user) => {
   }
 };
 
-const updatePostService = async (postData, classData, user) => {
+const updatePostService = async (postId, postData, classId, user) => {
   const transaction = await sequelize.transaction();
   try {
-    if (!postData || !classData) {
+    if (!postData || !classId || !postId) {
       throw new Error('Datos no proporcionados');
     }
 
-    const { title, content, postId } = postData;
+    const { title, content } = postData;
 
     const existingClass = await Class.findOne(
-      { where: { class_code: classData } },
+      { where: { id: classId } },
       { transaction }
     );
 
@@ -156,15 +147,15 @@ const updatePostService = async (postData, classData, user) => {
   }
 };
 
-const deletePostService = async (postId, classData, user) => {
+const deletePostService = async (postId, classId, user) => {
   const transaction = await sequelize.transaction();
   try {
-    if (!postId || !classData) {
+    if (!postId || !classId) {
       throw new Error('Datos no proporcionados');
     }
 
     const existingClass = await Class.findOne(
-      { where: { class_code: classData } },
+      { where: { id: classId } },
       { transaction }
     );
 
@@ -203,9 +194,60 @@ const deletePostService = async (postId, classData, user) => {
   }
 };
 
+const readPostService = async (classId, user) => {
+  const transaction = await sequelize.transaction();
+  try {
+    if (!classId) {
+      throw new Error('Datos no proporcionados');
+    }
+
+    const existingClass = await Class.findOne(
+      { where: { id: classId } },
+      { transaction }
+    );
+
+    if (!existingClass) {
+      throw new Error('El usuario no pertenece a la clase');
+    }
+
+    const existingUserInClass = await UsersClasses.findOne(
+      {
+        where: { users_fk: user.id, classes_fk: existingClass.id },
+      },
+      { transaction }
+    );
+
+    if (!existingUserInClass) {
+      throw new Error('El usuario no pertenece a la clase');
+    }
+
+    const post = await Post.findAll(
+      {
+        where: { classes_fk: existingUserInClass.classes_fk },
+      },
+      { transaction }
+    );
+
+    if (post === null) {
+      throw new Error('No hay publicaciones en esta clase');
+    }
+
+    if (!post) {
+      throw new Error('Publicación no encontrada');
+    }
+
+    await transaction.commit();
+    return post;
+  } catch (error) {
+    await transaction.rollback();
+    throw error;
+  }
+};
+
 export {
   createPostService,
   updatePostService,
   readPostService,
   deletePostService,
+  readPostsService,
 };
