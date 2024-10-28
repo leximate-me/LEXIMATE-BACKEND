@@ -5,6 +5,7 @@ import { User } from '../models/user.model.js';
 import { RolePermission } from '../models/rolePermission.model.js';
 import { sequelize } from '../database/db.js';
 import { Task } from '../models/task.model.js';
+import { Post } from '../models/post.model.js';
 
 // Función para crear una clase
 const createClassService = async (classData, user) => {
@@ -361,6 +362,13 @@ const deleteClassService = async (classId, user) => {
     );
 
     await Task.destroy(
+      {
+        where: { classes_fk: classFound.id },
+      },
+      { transaction }
+    );
+
+    await Post.destroy(
       {
         where: { classes_fk: classFound.id },
       },

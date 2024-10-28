@@ -8,22 +8,22 @@ import {
 const createPostController = async (req, res) => {
   try {
     const postData = req.body;
-    const classData = req.params.classCode;
+    const classId = req.params.classId;
     const user = req.user;
 
-    const post = await createPostService(postData, classData, user);
+    const post = await createPostService(postData, classId, user);
     res.status(201).json(post);
   } catch (error) {
     res.status(400).json({ message: error.message });
   }
 };
 
-const readPostController = async (req, res) => {
+const readPostsController = async (req, res) => {
   try {
-    const classData = req.params.classCode;
+    const classId = req.params.classId;
     const user = req.user;
 
-    const posts = await readPostService(classData, user);
+    const posts = await readPostService(classId, user);
     res.status(200).json(posts);
   } catch (error) {
     res.status(400).json({ message: error.message });
@@ -32,11 +32,12 @@ const readPostController = async (req, res) => {
 
 const updatePostController = async (req, res) => {
   try {
+    const postId = req.params.postId;
     const postData = req.body;
-    const classData = req.params.classCode;
+    const classId = req.params.classId;
     const user = req.user;
 
-    const post = await updatePostService(postData, classData, user);
+    const post = await updatePostService(postId, postData, classId, user);
     res.status(200).json(post);
   } catch (error) {
     res.status(400).json({ message: error.message });
@@ -45,11 +46,24 @@ const updatePostController = async (req, res) => {
 
 const deletePostController = async (req, res) => {
   try {
-    const classData = req.params.classCode;
+    const postId = req.params.postId;
+    const classId = req.params.classId;
     const user = req.user;
 
-    const post = await deletePostService(classData, user);
-    res.status(200).json(post);
+    await deletePostService(postId, classId, user);
+    res.status(204).end();
+  } catch (error) {
+    res.status(400).json({ message: error.message });
+  }
+};
+
+const readPostController = async (req, res) => {
+  try {
+    const classId = req.params.classId;
+    const user = req.user;
+
+    const posts = await readPostService(classId, user);
+    res.status(200).json(posts);
   } catch (error) {
     res.status(400).json({ message: error.message });
   }
@@ -57,7 +71,8 @@ const deletePostController = async (req, res) => {
 
 export {
   createPostController,
-  readPostController,
+  readPostsController,
   updatePostController,
   deletePostController,
+  readPostController,
 };

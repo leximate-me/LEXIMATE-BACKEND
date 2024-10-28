@@ -230,10 +230,11 @@ const deleteUserService = async (id) => {
       throw new Error('Persona no encontrada');
     }
 
+    await user.destroy({ transaction });
+    await person.destroy({ transaction });
+
     await transaction.commit();
 
-    await user.destroy();
-    await person.destroy();
     return { message: 'Usuario eliminado exitosamente' };
   } catch (error) {
     await transaction.rollback();
