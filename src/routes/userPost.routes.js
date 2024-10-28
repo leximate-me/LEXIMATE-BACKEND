@@ -8,6 +8,7 @@ import {
 } from '../controllers/userPost.controller.js';
 import { authRequired } from '../middlewares/validator.token.js';
 import { verifyUserRequired } from '../middlewares/validator.user.js';
+import { userCommentRouter } from './userComment.routes.js';
 
 const userPostRouter = Router({ mergeParams: true });
 
@@ -40,5 +41,7 @@ userPostRouter.get(
   verifyUserRequired,
   readPostController
 );
+
+userPostRouter.use('/:postId/comment', userCommentRouter);
 
 export { userPostRouter };

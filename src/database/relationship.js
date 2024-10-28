@@ -5,7 +5,7 @@ import { People } from '../models/people.model.js';
 import { User } from '../models/user.model.js';
 import { Class } from '../models/class.model.js';
 import { Task } from '../models/task.model.js';
-import { UsersClasses } from '../models/userClass.model.js';
+import { UserClass } from '../models/userClass.model.js';
 import { FileTask } from '../models/fileTask.model.js';
 import { Post } from '../models/post.model.js';
 import { Comment } from '../models/comment.model.js';
@@ -22,9 +22,9 @@ RolePermission.belongsTo(Permission, { foreignKey: 'permissions_fk' });
 
 Task.belongsTo(Class, { foreignKey: 'classes_fk' });
 
-UsersClasses.belongsTo(User, { foreignKey: 'users_fk' });
+UserClass.belongsTo(User, { foreignKey: 'users_fk' });
 
-UsersClasses.belongsTo(Class, { foreignKey: 'classes_fk' });
+UserClass.belongsTo(Class, { foreignKey: 'classes_fk' });
 
 FileTask.belongsTo(Task, { foreignKey: 'tasks_fk' });
 

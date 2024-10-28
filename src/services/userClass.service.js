@@ -1,6 +1,6 @@
 import crypto from 'crypto';
 import { Class } from '../models/class.model.js';
-import { UsersClasses } from '../models/userClass.model.js';
+import { UserClass } from '../models/userClass.model.js';
 import { User } from '../models/user.model.js';
 import { RolePermission } from '../models/rolePermission.model.js';
 import { Role } from '../models/role.model.js';
@@ -66,7 +66,7 @@ const createClassService = async (classData, user) => {
       { transaction }
     );
 
-    await UsersClasses.create(
+    await UserClass.create(
       {
         users_fk: foundUser.id,
         classes_fk: newClass.id,
@@ -137,7 +137,7 @@ const joinClassService = async (classCode, user) => {
       throw new Error('Clase no encontrada');
     }
 
-    const foundUserClass = await UsersClasses.findOne(
+    const foundUserClass = await UserClass.findOne(
       {
         where: { users_fk: foundUser.id, classes_fk: classData.id },
       },
@@ -148,7 +148,7 @@ const joinClassService = async (classCode, user) => {
       throw new Error('Ya estás en esta clase');
     }
 
-    await UsersClasses.create(
+    await UserClass.create(
       {
         users_fk: foundUser.id,
         classes_fk: classData.id,
@@ -216,7 +216,7 @@ const leaveClassService = async (classId, user) => {
       throw new Error('Clase no encontrada');
     }
 
-    await UsersClasses.destroy(
+    await UserClass.destroy(
       {
         where: { users_fk: foundUser.id, classes_fk: classData.id },
       },
@@ -274,7 +274,7 @@ const getClassesByUserService = async (user) => {
       throw new Error('No tienes los permisos para ver una clase');
     }
 
-    const userClass = await UsersClasses.findAll(
+    const userClass = await UserClass.findAll(
       {
         where: { users_fk: foundUser.id },
       },
@@ -317,7 +317,7 @@ const getUsersByClassService = async (classId) => {
       throw new Error('Clase no encontrada');
     }
 
-    const userClass = await UsersClasses.findAll(
+    const userClass = await UserClass.findAll(
       {
         where: { classes_fk: classData.id },
       },
@@ -484,7 +484,7 @@ const deleteClassService = async (classId, user) => {
       { transaction }
     );
 
-    await UsersClasses.destroy(
+    await UserClass.destroy(
       {
         where: { classes_fk: classFound.id },
       },

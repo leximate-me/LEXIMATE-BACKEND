@@ -6,7 +6,7 @@ import { Permission } from '../models/permission.model.js';
 import { RolePermission } from '../models/rolePermission.model.js';
 import { Class } from '../models/class.model.js';
 import { Task } from '../models/task.model.js';
-import { UsersClasses } from '../models/userClass.model.js';
+import { UserClass } from '../models/userClass.model.js';
 import { FileTask } from '../models/fileTask.model.js';
 import { Post } from '../models/post.model.js';
 import { Comment } from '../models/comment.model.js';

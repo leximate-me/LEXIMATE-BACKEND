@@ -1,7 +1,7 @@
 import { DataTypes } from 'sequelize';
 import { sequelize } from '../database/db.js';
 
-const UsersClasses = sequelize.define(
+const UserClass = sequelize.define(
   'UsersClasses',
   {
     id: {
@@ -18,4 +18,4 @@ const UsersClasses = sequelize.define(
   }
 );
 
-export { UsersClasses };
+export { UserClass };

@@ -1,4 +1,4 @@
-import { UsersClasses } from '../models/userClass.model.js';
+import { UserClass } from '../models/userClass.model.js';
 import { User } from '../models/user.model.js';
 import { Class } from '../models/class.model.js';
 import { Task } from '../models/task.model.js';
@@ -68,7 +68,7 @@ const createTaskService = async (classId, taskData, user) => {
       throw new Error('Clase no encontrada');
     }
 
-    const classData = await UsersClasses.findOne(
+    const classData = await UserClass.findOne(
       {
         where: { users_fk: user.id, classes_fk: classCodeMatch.id },
       },
@@ -317,7 +317,7 @@ const getTasksByClassService = async (classId, user) => {
       throw new Error('Clase no encontrada');
     }
 
-    const classData = await UsersClasses.findOne(
+    const classData = await UserClass.findOne(
       {
         where: { users_fk: user.id, classes_fk: classCodeMatch.id },
       },

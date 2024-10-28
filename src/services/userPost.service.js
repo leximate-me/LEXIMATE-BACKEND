@@ -1,7 +1,7 @@
 import { Post } from '../models/post.model.js';
 import { Comment } from '../models/comment.model.js';
 import { User } from '../models/user.model.js';
-import { UsersClasses } from '../models/userClass.model.js';
+import { UserClass } from '../models/userClass.model.js';
 import { Class } from '../models/class.model.js';
 import { RolePermission } from '../models/rolePermission.model.js';
 import { Role } from '../models/role.model.js';
@@ -36,7 +36,7 @@ const createPostService = async (postData, classId, user) => {
       throw new Error('Usuario no encontrado');
     }
 
-    const existingUserInClass = await UsersClasses.findOne(
+    const existingUserInClass = await UserClass.findOne(
       {
         where: { users_fk: foundUser.id, classes_fk: existingClass.id },
       },
@@ -110,7 +110,7 @@ const readPostsService = async (classId, user) => {
       throw new Error('Usuario no encontrado');
     }
 
-    const existingUserInClass = await UsersClasses.findOne(
+    const existingUserInClass = await UserClass.findOne(
       {
         where: { users_fk: foundUser.id, classes_fk: existingClass.id },
       },
@@ -183,7 +183,7 @@ const updatePostService = async (postId, postData, classId, user) => {
       throw new Error('Usuario no encontrado');
     }
 
-    const existingUserInClass = await UsersClasses.findOne(
+    const existingUserInClass = await UserClass.findOne(
       {
         where: { users_fk: foundUser.id, classes_fk: existingClass.id },
       },
@@ -266,7 +266,7 @@ const deletePostService = async (postId, classId, user) => {
       throw new Error('Usuario no encontrado');
     }
 
-    const existingUserInClass = await UsersClasses.findOne(
+    const existingUserInClass = await UserClass.findOne(
       {
         where: {
           users_fk: foundUser.id,
@@ -345,7 +345,7 @@ const readPostService = async (classId, user, postId) => {
       throw new Error('Usuario no encontrado');
     }
 
-    const existingUserInClass = await UsersClasses.findOne(
+    const existingUserInClass = await UserClass.findOne(
       {
         where: { users_fk: foundUser.id, classes_fk: existingClass.id },
       },
