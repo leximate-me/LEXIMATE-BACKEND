@@ -61,8 +61,9 @@ const readPostController = async (req, res) => {
   try {
     const classId = req.params.classId;
     const user = req.user;
+    const postId = req.params.postId;
 
-    const posts = await readPostService(classId, user);
+    const posts = await readPostService(classId, user, postId);
     res.status(200).json(posts);
   } catch (error) {
     res.status(400).json({ message: error.message });

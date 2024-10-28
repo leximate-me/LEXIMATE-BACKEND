@@ -320,7 +320,7 @@ const deletePostService = async (postId, classId, user) => {
   }
 };
 
-const readPostService = async (classId, user) => {
+const readPostService = async (classId, user, postId) => {
   const transaction = await sequelize.transaction();
   try {
     if (!classId) {
@@ -372,9 +372,9 @@ const readPostService = async (classId, user) => {
       throw new Error('No tiene permisos para leer publicaciones');
     }
 
-    const post = await Post.findAll(
+    const post = await Post.findOne(
       {
-        where: { classes_fk: existingUserInClass.classes_fk },
+        where: { id: postId, classes_fk: existingUserInClass.classes_fk },
       },
       { transaction }
     );
