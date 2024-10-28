@@ -19,14 +19,14 @@ const createClassService = async (classData, user) => {
     if (!user) {
       throw new Error('Usuario no encontrado');
     }
-    const verifyPermission = await RolePermission.findOne(
+    const verifiedPermission = await RolePermission.findOne(
       {
         where: { roles_fk: user.rol, permissions_fk: 1 },
       },
       { transaction }
     );
 
-    if (!verifyPermission) {
+    if (!verifiedPermission) {
       throw new Error('No tienes los permisos para crear una clase');
     }
 
@@ -69,14 +69,14 @@ const joinClassService = async (classCode, user) => {
     if (!user) {
       throw new Error('Usuario no encontrado');
     }
-    const verifyPermission = await RolePermission.findOne(
+    const verifiedPermission = await RolePermission.findOne(
       {
         where: { roles_fk: user.rol, permissions_fk: 3 },
       },
       { transaction }
     );
 
-    if (!verifyPermission) {
+    if (!verifiedPermission) {
       throw new Error('No tienes los permisos para crear una clase');
     }
 
@@ -129,14 +129,14 @@ const leaveClassService = async (classId, user) => {
     if (!user) {
       throw new Error('Usuario no encontrado');
     }
-    const verifyPermission = await RolePermission.findOne(
+    const verifiedPermission = await RolePermission.findOne(
       {
         where: { roles_fk: user.rol, permissions_fk: 3 },
       },
       { transaction }
     );
 
-    if (!verifyPermission) {
+    if (!verifiedPermission) {
       throw new Error('No tienes los permisos para crear una clase');
     }
 
@@ -173,14 +173,14 @@ const getClassesByUserService = async (user) => {
     if (!user) {
       throw new Error('Usuario no encontrado');
     }
-    const verifyPermission = await RolePermission.findOne(
+    const verifiedPermission = await RolePermission.findOne(
       {
         where: { roles_fk: user.rol, permissions_fk: 2 },
       },
       { transaction }
     );
 
-    if (!verifyPermission) {
+    if (!verifiedPermission) {
       throw new Error('No tienes los permisos para ver una clase');
     }
 
@@ -270,14 +270,14 @@ const updateClassService = async (classId, classData, user) => {
       throw new Error('Datos de clase no proporcionados');
     }
 
-    const verifyPermission = await RolePermission.findOne(
+    const verifiedPermission = await RolePermission.findOne(
       {
         where: { roles_fk: user.rol, permissions_fk: 3 },
       },
       { transaction }
     );
 
-    if (!verifyPermission) {
+    if (!verifiedPermission) {
       throw new Error('No tienes los permisos para actualizar una clase');
     }
 
@@ -325,14 +325,14 @@ const deleteClassService = async (classId, user) => {
       throw new Error('Usuario no encontrado');
     }
 
-    const verifyPermission = await RolePermission.findOne(
+    const verifiedPermission = await RolePermission.findOne(
       {
         where: { roles_fk: user.rol, permissions_fk: 4 },
       },
       { transaction }
     );
 
-    if (!verifyPermission) {
+    if (!verifiedPermission) {
       throw new Error('No tienes los permisos para eliminar una clase');
     }
 

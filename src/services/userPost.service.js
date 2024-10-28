@@ -3,6 +3,7 @@ import { Comment } from '../models/comment.model.js';
 import { User } from '../models/user.model.js';
 import { UsersClasses } from '../models/userClass.model.js';
 import { Class } from '../models/class.model.js';
+import { RolePermission } from '../models/rolePermission.model.js';
 import { sequelize } from '../database/db.js';
 
 const createPostService = async (postData, classId, user) => {
@@ -22,7 +23,7 @@ const createPostService = async (postData, classId, user) => {
     );
 
     if (!existingClass) {
-      throw new Error('El usuario no pertenece a la clase');
+      throw new Error('Clase no encontrada');
     }
 
     const existingUserInClass = await UsersClasses.findOne(
@@ -36,11 +37,19 @@ const createPostService = async (postData, classId, user) => {
       throw new Error('El usuario no pertenece a la clase');
     }
 
+    const verifiedPermission = await RolePermission.findOne(
+      {
+        where: { roles_fk: user.roles_fk, permissions_fk: 1 },
+      },
+      { transaction }
+    );
+
     const post = await Post.create(
       {
         title,
         content,
         classes_fk: existingUserInClass.classes_fk,
+        users_fk: user.id,
       },
       { transaction }
     );
@@ -78,6 +87,17 @@ const readPostsService = async (classId, user) => {
 
     if (!existingUserInClass) {
       throw new Error('El usuario no pertenece a la clase');
+    }
+
+    const verifiedPermission = await RolePermission.findOne(
+      {
+        where: { roles_fk: user.roles_fk, permissions_fk: 2 },
+      },
+      { transaction }
+    );
+
+    if (!verifiedPermission) {
+      throw new Error('No tiene permisos para leer publicaciones');
     }
 
     const posts = await Post.findAll(
@@ -124,9 +144,24 @@ const updatePostService = async (postId, postData, classId, user) => {
       throw new Error('El usuario no pertenece a la clase');
     }
 
+    const verifiedPermission = await RolePermission.findOne(
+      {
+        where: { roles_fk: user.roles_fk, permissions_fk: 3 },
+      },
+      { transaction }
+    );
+
+    if (!verifiedPermission) {
+      throw new Error('No tiene permisos para actualizar una publicación');
+    }
+
     const post = await Post.findOne(
       {
-        where: { id: postId, classes_fk: existingUserInClass.classes_fk },
+        where: {
+          id: postId,
+          classes_fk: existingUserInClass.classes_fk,
+          users_fk: user.id,
+        },
       },
       { transaction }
     );
@@ -165,13 +200,28 @@ const deletePostService = async (postId, classId, user) => {
 
     const existingUserInClass = await UsersClasses.findOne(
       {
-        where: { users_fk: user.id, classes_fk: existingClass.id },
+        where: {
+          users_fk: user.id,
+          classes_fk: existingClass.id,
+          users_fk: user.id,
+        },
       },
       { transaction }
     );
 
     if (!existingUserInClass) {
       throw new Error('El usuario no pertenece a la clase');
+    }
+
+    const verifiedPermission = await RolePermission.findOne(
+      {
+        where: { roles_fk: user.roles_fk, permissions_fk: 4 },
+      },
+      { transaction }
+    );
+
+    if (!verifiedPermission) {
+      throw new Error('No tiene permisos para eliminar una publicación');
     }
 
     const post = await Post.findOne(
@@ -220,6 +270,13 @@ const readPostService = async (classId, user) => {
     if (!existingUserInClass) {
       throw new Error('El usuario no pertenece a la clase');
     }
+
+    const verifiedPermission = await RolePermission.findOne(
+      {
+        where: { roles_fk: user.roles_fk, permissions_fk: 2 },
+      },
+      { transaction }
+    );
 
     const post = await Post.findAll(
       {

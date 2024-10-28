@@ -30,7 +30,11 @@ FileTask.belongsTo(Task, { foreignKey: 'tasks_fk' });
 
 Post.belongsTo(Class, { foreignKey: 'classes_fk' });
 
+Post.belongsTo(User, { foreignKey: 'users_fk' });
+
 Comment.belongsTo(Post, { foreignKey: 'posts_fk' });
+
+Comment.belongsTo(User, { foreignKey: 'users_fk' });
 
 Tool.belongsTo(Task, { foreignKey: 'tasks_fk' });
 

@@ -27,15 +27,14 @@ const createTaskService = async (classId, taskData, user) => {
       throw new Error('Usuario no encontrado');
     }
 
-    const verifyPermission = await RolePermission.findOne(
+    const verifiedPermission = await RolePermission.findOne(
       {
         where: { roles_fk: user.rol, permissions_fk: 1 },
       },
       { transaction }
     );
-    console.log(verifyPermission);
 
-    if (!verifyPermission) {
+    if (!verifiedPermission) {
       throw new Error('No tiene permisos para crear una tarea');
     }
 
@@ -116,14 +115,14 @@ const updateTaskService = async (taskId, taskData, user) => {
       throw new Error('Usuario no encontrado');
     }
 
-    const verifyPermission = await RolePermission.findOne(
+    const verifiedPermission = await RolePermission.findOne(
       {
         where: { roles_fk: user.id, permissions_fk: 3 },
       },
       { transaction }
     );
 
-    if (!verifyPermission) {
+    if (!verifiedPermission) {
       throw new Error('No tiene permisos para actualizar una tarea');
     }
 
@@ -170,14 +169,14 @@ const deleteTaskService = async (taskId, user) => {
       throw new Error('Usuario no encontrado');
     }
 
-    const verifyPermission = await RolePermission.findOne(
+    const verifiedPermission = await RolePermission.findOne(
       {
         where: { roles_fk: user.id, permissions_fk: 4 },
       },
       { transaction }
     );
 
-    if (!verifyPermission) {
+    if (!verifiedPermission) {
       throw new Error('No tiene permisos para actualizar una tarea');
     }
 
@@ -222,14 +221,14 @@ const getTasksByClassService = async (classId, user) => {
       throw new Error('Usuario no encontrado');
     }
 
-    const verifyPermission = await RolePermission.findOne(
+    const verifiedPermission = await RolePermission.findOne(
       {
         where: { roles_fk: user.rol, permissions_fk: 2 },
       },
       { transaction }
     );
 
-    if (!verifyPermission) {
+    if (!verifiedPermission) {
       throw new Error('No tiene permisos para visualizar una tarea');
     }
 
@@ -306,7 +305,6 @@ const getTaskService = async (taskId) => {
     if (!task) {
       throw new Error('Tarea no encontrada');
     }
-    console.log(task.id);
 
     const files = await FileTask.findAll(
       {
