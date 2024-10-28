@@ -17,6 +17,8 @@ const Comment = sequelize.define(
   {
     tableName: 'comments',
     timestamps: true,
+    paraoid: true,
+    deletedAt: 'deletedAt',
   }
 );
 
