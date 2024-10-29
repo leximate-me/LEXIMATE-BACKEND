@@ -15,7 +15,10 @@ interface FileTaskAttributes {
 }
 
 interface FileTaskCreationAttributes
-  extends Optional<FileTaskAttributes, 'id'> {}
+  extends Optional<
+    FileTaskAttributes,
+    'id' | 'createdAt' | 'updatedAt' | 'deletedAt'
+  > {}
 
 class FileTask
   extends Model<FileTaskAttributes, FileTaskCreationAttributes>

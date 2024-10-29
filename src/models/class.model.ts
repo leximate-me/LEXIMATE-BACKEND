@@ -11,7 +11,11 @@ interface ClassAttributes {
   deletedAt?: Date;
 }
 
-interface ClassCreationAttributes extends Optional<ClassAttributes, 'id'> {}
+interface ClassCreationAttributes
+  extends Optional<
+    ClassAttributes,
+    'id' | 'createdAt' | 'updatedAt' | 'deletedAt'
+  > {}
 
 class Class
   extends Model<ClassAttributes, ClassCreationAttributes>

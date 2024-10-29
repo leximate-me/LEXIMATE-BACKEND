@@ -1,7 +1,6 @@
 import { logger } from '../configs/loggerConfig.js';
 import { Request, Response, NextFunction } from 'express';
-import { Schema } from 'zod';
-import { ZodError } from 'zod';
+import { Schema, ZodError } from 'zod';
 
 const validateSchema = (schema: Schema) => {
   return async (req: Request, res: Response, next: NextFunction) => {

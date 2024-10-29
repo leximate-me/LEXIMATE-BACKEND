@@ -12,7 +12,11 @@ interface PostAttributes {
   deletedAt?: Date;
 }
 
-interface PostCreationAttributes extends Optional<PostAttributes, 'id'> {}
+interface PostCreationAttributes
+  extends Optional<
+    PostAttributes,
+    'id' | 'createdAt' | 'updatedAt' | 'deletedAt'
+  > {}
 
 class Post
   extends Model<PostAttributes, PostCreationAttributes>

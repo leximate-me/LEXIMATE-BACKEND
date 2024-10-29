@@ -11,7 +11,11 @@ interface CommentAttributes {
   deletedAt?: Date;
 }
 
-interface CommentCreationAttributes extends Optional<CommentAttributes, 'id'> {}
+interface CommentCreationAttributes
+  extends Optional<
+    CommentAttributes,
+    'id' | 'createdAt' | 'updatedAt' | 'deletedAt'
+  > {}
 
 class Comment
   extends Model<CommentAttributes, CommentCreationAttributes>
