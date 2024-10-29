@@ -1,7 +1,6 @@
 import DopplerSDK from '@dopplerhq/node-sdk';
 import fs from 'fs';
 import dotenv from 'dotenv';
-import { logger } from './src/configs/loggerConfig.js';
 
 dotenv.config();
 
@@ -22,7 +21,7 @@ const downloadEnvVariables = async () => {
 
     if (secretsResponse) {
       const secrets = secretsResponse;
-      logger.child({ secrets }).info('Secretos descargados de Doppler');
+      console.log(secrets);
 
       // Leer las variables de entorno existentes del archivo .env
       const existingEnv = dotenv.parse(fs.readFileSync('.env'));
@@ -36,14 +35,12 @@ const downloadEnvVariables = async () => {
         .join('\n');
       fs.writeFileSync('.env', envVars);
 
-      logger.info(
-        'Variables de entorno descargadas y guardadas en el archivo .env'
-      );
+      console.log('Variables de entorno descargadas correctamente');
     } else {
       throw new Error('No se recibieron secretos de Doppler');
     }
   } catch (error) {
-    logger.error(error, 'Error al descargar las variables de entorno');
+    console.log(error);
   }
 };
 
