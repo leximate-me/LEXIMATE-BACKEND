@@ -7,6 +7,9 @@ interface PostAttributes {
   content: string;
   classes_fk: number;
   users_fk: number;
+  createdAt?: Date;
+  updatedAt?: Date;
+  deletedAt?: Date;
 }
 
 interface PostCreationAttributes extends Optional<PostAttributes, 'id'> {}

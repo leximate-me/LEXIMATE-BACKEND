@@ -9,6 +9,9 @@ interface FileTaskAttributes {
   file_id: string;
   file_url: string;
   tasks_fk: number;
+  createdAt?: Date;
+  updatedAt?: Date;
+  deletedAt?: Date;
 }
 
 interface FileTaskCreationAttributes

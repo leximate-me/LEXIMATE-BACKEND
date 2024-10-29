@@ -6,6 +6,9 @@ interface ClassAttributes {
   name: string;
   description: string;
   class_code: string;
+  createdAt?: Date;
+  updatedAt?: Date;
+  deletedAt?: Date;
 }
 
 interface ClassCreationAttributes extends Optional<ClassAttributes, 'id'> {}

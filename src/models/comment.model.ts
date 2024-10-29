@@ -6,6 +6,9 @@ interface CommentAttributes {
   content: string;
   posts_fk: number;
   users_fk: number;
+  createdAt?: Date;
+  updatedAt?: Date;
+  deletedAt?: Date;
 }
 
 interface CommentCreationAttributes extends Optional<CommentAttributes, 'id'> {}
