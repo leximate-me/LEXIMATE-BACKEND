@@ -1,9 +1,35 @@
-import { DataTypes } from 'sequelize';
+import { DataTypes, Model, Optional } from 'sequelize';
 import { sequelize } from '../database/db.js';
-import { logger } from '../configs/loggerConfig.js';
 
-const Permission = sequelize.define(
-  'Permission',
+interface PermissionAttributes {
+  id: number;
+  name: string;
+  description: string;
+  createdAt?: Date;
+  updatedAt?: Date;
+  deletedAt?: Date;
+}
+
+interface PermissionCreationAttributes
+  extends Optional<
+    PermissionAttributes,
+    'id' | 'createdAt' | 'updatedAt' | 'deletedAt'
+  > {}
+
+class Permission
+  extends Model<PermissionAttributes, PermissionCreationAttributes>
+  implements PermissionAttributes
+{
+  public id!: number;
+  public name!: string;
+  public description!: string;
+
+  public readonly createdAt!: Date;
+  public readonly updatedAt!: Date;
+  public readonly deletedAt!: Date;
+}
+
+Permission.init(
   {
     id: {
       type: DataTypes.INTEGER,
@@ -21,37 +47,10 @@ const Permission = sequelize.define(
   },
   {
     tableName: 'permissions',
-    timestamps: false,
+    timestamps: true,
+    paranoid: true,
+    sequelize,
   }
 );
 
-const definePermissions = async () => {
-  try {
-    const permissions = await Permission.findAll();
-    if (permissions.length === 0) {
-      await Permission.bulkCreate([
-        {
-          name: 'Create',
-          description: 'Crear un registro.',
-        },
-        {
-          name: 'Read',
-          description: 'Leer un registro.',
-        },
-        {
-          name: 'Update',
-          description: 'Actualizar un registro.',
-        },
-        {
-          name: 'Delete',
-          description: 'Eliminar un registro.',
-        },
-      ]);
-      logger.info('Permisos creados correctamente.');
-    }
-  } catch (error) {
-    logger.child({ error }).error('Error al definir roles y permisos');
-  }
-};
-
-export { Permission, definePermissions };
+export { Permission, PermissionAttributes, PermissionCreationAttributes };

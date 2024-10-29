@@ -24,17 +24,17 @@ class User
   extends Model<UserAttributes, UserCreationAttributes>
   implements UserAttributes
 {
-  id!: number;
-  user_name!: string;
-  email!: string;
-  password!: string;
-  verified!: boolean;
-  people_fk!: number;
-  roles_fk!: number;
+  public id!: number;
+  public user_name!: string;
+  public email!: string;
+  public password!: string;
+  public verified!: boolean;
+  public people_fk!: number;
+  public roles_fk!: number;
 
-  readonly createdAt!: Date;
-  readonly updatedAt!: Date;
-  readonly deletedAt!: Date;
+  public readonly createdAt!: Date;
+  public readonly updatedAt!: Date;
+  public readonly deletedAt!: Date;
 }
 
 User.init(

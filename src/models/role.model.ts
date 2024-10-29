@@ -5,9 +5,16 @@ interface RoleAttributes {
   id: number;
   name: string;
   description: string;
+  createdAt?: Date;
+  updatedAt?: Date;
+  deletedAt?: Date;
 }
 
-interface RoleCreationAttributes extends Optional<RoleAttributes, 'id'> {}
+interface RoleCreationAttributes
+  extends Optional<
+    RoleAttributes,
+    'id' | 'createdAt' | 'updatedAt' | 'deletedAt'
+  > {}
 
 class Role
   extends Model<RoleAttributes, RoleCreationAttributes>
@@ -19,6 +26,7 @@ class Role
 
   public readonly createdAt!: Date;
   public readonly updatedAt!: Date;
+  public readonly deletedAt!: Date;
 }
 
 Role.init(
@@ -39,9 +47,11 @@ Role.init(
   },
   {
     tableName: 'roles',
-    timestamps: false,
+    timestamps: true,
+    paranoid: true,
+    deletedAt: 'deletedAt',
     sequelize,
   }
 );
 
-export { Role };
+export { Role, RoleAttributes, RoleCreationAttributes };

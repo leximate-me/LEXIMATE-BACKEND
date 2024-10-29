@@ -9,9 +9,16 @@ interface PeopleAttributes {
   institute: string;
   phone_number: string;
   birth_date: Date;
+  createdAt?: Date;
+  updatedAt?: Date;
+  deletedAt?: Date;
 }
 
-interface PeopleCreationAttributes extends Optional<PeopleAttributes, 'id'> {}
+interface PeopleCreationAttributes
+  extends Optional<
+    PeopleAttributes,
+    'id' | 'createdAt' | 'updatedAt' | 'deletedAt'
+  > {}
 
 class People
   extends Model<PeopleAttributes, PeopleCreationAttributes>
@@ -65,10 +72,10 @@ People.init(
   {
     tableName: 'people',
     paranoid: true,
-    timestamps: false,
+    timestamps: true,
     deletedAt: 'deletedAt',
     sequelize,
   }
 );
 
-export { People };
+export { People, PeopleAttributes, PeopleCreationAttributes };

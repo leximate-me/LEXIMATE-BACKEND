@@ -53,4 +53,4 @@ Class.init(
   }
 );
 
-export { Class };
+export { Class, ClassAttributes, ClassCreationAttributes };

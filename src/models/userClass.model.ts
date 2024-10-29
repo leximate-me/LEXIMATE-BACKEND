@@ -5,10 +5,16 @@ interface UserClassAttributes {
   id: number;
   users_fk: number;
   classes_fk: number;
+  createdAt?: Date;
+  updatedAt?: Date;
+  deletedAt?: Date;
 }
 
 interface UserClassCreationAttributes
-  extends Optional<UserClassAttributes, 'id'> {}
+  extends Optional<
+    UserClassAttributes,
+    'id' | 'createdAt' | 'updatedAt' | 'deletedAt'
+  > {}
 
 class UserClass
   extends Model<UserClassAttributes, UserClassCreationAttributes>
@@ -48,4 +54,4 @@ UserClass.init(
   }
 );
 
-export { UserClass };
+export { UserClass, UserClassAttributes, UserClassCreationAttributes };

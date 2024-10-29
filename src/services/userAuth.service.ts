@@ -151,14 +151,14 @@ const loginUserService = async (userData: LoginUserData) => {
     // Verificar si la contraseña es correcta
     const isValidPassword = await bcrypt.compare(
       password,
-      existingUser.dataValues.password
+      existingUser.password
     );
     if (!isValidPassword) {
       throw new Error('Contraseña incorrecta');
     }
 
     // Verificar si el usuario tiene un rol asignado
-    const existingRole = await Role.findByPk(existingUser.dataValues.roles_fk, {
+    const existingRole = await Role.findByPk(existingUser.roles_fk, {
       transaction,
     });
 
@@ -168,9 +168,9 @@ const loginUserService = async (userData: LoginUserData) => {
 
     // Crear el token de acceso
     const token = await createAccessToken({
-      id: existingUser.dataValues.id,
-      rol: existingRole.dataValues.id,
-      verify: existingUser.dataValues.verified,
+      id: existingUser.id,
+      rol: existingRole.id,
+      verify: existingUser.verified,
     });
 
     await transaction.commit();

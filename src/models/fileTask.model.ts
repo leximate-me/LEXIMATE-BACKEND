@@ -72,4 +72,4 @@ FileTask.init(
   }
 );
 
-export { FileTask };
+export { FileTask, FileTaskAttributes, FileTaskCreationAttributes };

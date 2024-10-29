@@ -8,9 +8,16 @@ interface TaskAttributes {
   status: boolean;
   due_date: Date;
   classes_fk: number;
+  createdAt?: Date;
+  updatedAt?: Date;
+  deletedAt?: Date;
 }
 
-interface TaskCreationAttributes extends Optional<TaskAttributes, 'id'> {}
+interface TaskCreationAttributes
+  extends Optional<
+    TaskAttributes,
+    'id' | 'createdAt' | 'updatedAt' | 'deletedAt'
+  > {}
 
 class Task
   extends Model<TaskAttributes, TaskCreationAttributes>

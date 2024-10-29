@@ -59,4 +59,4 @@ Post.init(
   }
 );
 
-export { Post };
+export { Post, PostAttributes, PostCreationAttributes };

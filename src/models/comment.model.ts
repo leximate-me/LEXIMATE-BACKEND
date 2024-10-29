@@ -53,4 +53,4 @@ Comment.init(
   }
 );
 
-export { Comment };
+export { Comment, CommentAttributes, CommentCreationAttributes };
