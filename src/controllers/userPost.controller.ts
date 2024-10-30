@@ -4,9 +4,9 @@ import {
   updatePostService,
   deletePostService,
   readPostsService,
-} from '../services/userPost.service.js';
+} from '../services/userPost.service';
 import { Request, Response } from 'express';
-import { logger } from '../configs/loggerConfig.js';
+import { logger } from '../configs/loggerConfig';
 
 const createPostController = async (req: Request, res: Response) => {
   const postData = req.body;

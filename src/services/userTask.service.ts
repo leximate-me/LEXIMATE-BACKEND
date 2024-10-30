@@ -1,11 +1,11 @@
-import { UserClass } from '../models/userClass.model.js';
-import { User } from '../models/user.model.js';
-import { Class } from '../models/class.model.js';
-import { Task } from '../models/task.model.js';
-import { FileTask } from '../models/fileTask.model.js';
-import { RolePermission } from '../models/rolePermission.model.js';
-import { Role } from '../models/role.model.js';
-import { sequelize } from '../database/db.js';
+import { UserClass } from '../models/userClass.model';
+import { User } from '../models/user.model';
+import { Class } from '../models/class.model';
+import { Task } from '../models/task.model';
+import { FileTask } from '../models/fileTask.model';
+import { RolePermission } from '../models/rolePermission.model';
+import { Role } from '../models/role.model';
+import { sequelize } from '../database/db';
 
 interface TaskData {
   title: string;

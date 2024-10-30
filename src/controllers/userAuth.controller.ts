@@ -1,5 +1,5 @@
-import { FRONTEND_URL } from '../configs/envConfig.js';
-import { logger } from '../configs/loggerConfig.js';
+import { FRONTEND_URL } from '../configs/envConfig';
+import { logger } from '../configs/loggerConfig';
 import {
   loginUserService,
   logoutUserService,
@@ -9,7 +9,7 @@ import {
   deleteUserService,
   sendEmailVerificationService,
   verifyEmailService,
-} from '../services/userAuth.service.js';
+} from '../services/userAuth.service';
 import { Request, Response } from 'express';
 
 const registerUserController = async (req: Request, res: Response) => {

@@ -1,10 +1,10 @@
-import { Post } from '../models/post.model.js';
-import { User } from '../models/user.model.js';
-import { UserClass } from '../models/userClass.model.js';
-import { Class } from '../models/class.model.js';
-import { RolePermission } from '../models/rolePermission.model.js';
-import { Role } from '../models/role.model.js';
-import { sequelize } from '../database/db.js';
+import { Post } from '../models/post.model';
+import { User } from '../models/user.model';
+import { UserClass } from '../models/userClass.model';
+import { Class } from '../models/class.model';
+import { RolePermission } from '../models/rolePermission.model';
+import { Role } from '../models/role.model';
+import { sequelize } from '../database/db';
 
 interface PostData {
   title: string;

@@ -1,9 +1,9 @@
 import express from 'express';
-import { applyMiddlewares } from './middlewares/app.middlewares.js';
-import { userAuthRouter } from './routes/userAuth.routes.js';
-import { userClassRouter } from './routes/userClass.routes.js';
-import { userToolsRouter } from './routes/userTools.routes.js';
-import { userPostRouter } from './routes/userPost.routes.js';
+import { applyMiddlewares } from './middlewares/app.middlewares';
+import { userAuthRouter } from './routes/userAuth.routes';
+import { userClassRouter } from './routes/userClass.routes';
+import { userToolsRouter } from './routes/userTools.routes';
+import { userPostRouter } from './routes/userPost.routes';
 
 //init app
 const app = express();

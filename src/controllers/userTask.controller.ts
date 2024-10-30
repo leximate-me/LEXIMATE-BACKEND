@@ -1,13 +1,13 @@
 import fs from 'fs/promises';
-import { deleteImage, uploadImage } from '../libs/cloudinary.js';
-import { logger } from '../configs/loggerConfig.js';
+import { deleteImage, uploadImage } from '../libs/cloudinary';
+import { logger } from '../configs/loggerConfig';
 import {
   createTaskService,
   updateTaskService,
   deleteTaskService,
   getTasksByClassService,
   getTaskService,
-} from '../services/userTask.service.js';
+} from '../services/userTask.service';
 import { Request, Response } from 'express';
 import { UploadedFile } from 'express-fileupload';
 

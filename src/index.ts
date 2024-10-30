@@ -1,10 +1,10 @@
-import './database/sync.js';
+import './database/sync';
 import figlet from 'figlet';
-import { app } from './app.js';
-import { PORT } from './configs/envConfig.js';
-import { logger } from './configs/loggerConfig.js';
-import { connectDB } from './database/db.js';
-import { syncModels } from './database/sync.js';
+import { app } from './app';
+import { PORT } from './configs/envConfig';
+import { logger } from './configs/loggerConfig';
+import { connectDB } from './database/db';
+import { syncModels } from './database/sync';
 
 // Generar texto ASCII con figlet
 figlet('LEXIMATE', { font: 'Ghost' }, async (err, data) => {

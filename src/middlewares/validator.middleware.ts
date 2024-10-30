@@ -1,4 +1,4 @@
-import { logger } from '../configs/loggerConfig.js';
+import { logger } from '../configs/loggerConfig';
 import { Request, Response, NextFunction } from 'express';
 import { Schema, ZodError } from 'zod';
 

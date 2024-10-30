@@ -1,11 +1,6 @@
 import { Sequelize } from 'sequelize';
-import {
-  DB_HOST,
-  DB_NAME,
-  DB_PASSWORD,
-  DB_USER,
-} from '../configs/envConfig.js';
-import { logger } from '../configs/loggerConfig.js';
+import { DB_HOST, DB_NAME, DB_PASSWORD, DB_USER } from '../configs/envConfig';
+import { logger } from '../configs/loggerConfig';
 
 const sequelize = new Sequelize(DB_NAME, DB_USER, DB_PASSWORD, {
   host: DB_HOST,

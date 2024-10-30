@@ -1,15 +1,15 @@
 import { Router } from 'express';
-import { verifyUserRequired } from '../middlewares/validator.user.js';
-import { authRequired } from '../middlewares/validator.token.js';
-import { validateSchema } from '../middlewares/validator.middleware.js';
-import { createTaskSchema, updateTaskSchema } from '../schemas/task.schema.js';
+import { verifyUserRequired } from '../middlewares/validator.user';
+import { authRequired } from '../middlewares/validator.token';
+import { validateSchema } from '../middlewares/validator.middleware';
+import { createTaskSchema, updateTaskSchema } from '../schemas/task.schema';
 import {
   createTaskController,
   updateTaskController,
   deleteTaskController,
   getTasksByClassController,
   getTaskController,
-} from '../controllers/userTask.controller.js';
+} from '../controllers/userTask.controller';
 
 const userTaskRouter = Router({ mergeParams: true }); // Permitir el uso de parametros de rutas padres
 

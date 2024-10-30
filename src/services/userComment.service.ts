@@ -1,10 +1,10 @@
-import { Post } from '../models/post.model.js';
-import { Comment } from '../models/comment.model.js';
-import { User } from '../models/user.model.js';
-import { UserClass } from '../models/userClass.model.js';
-import { sequelize } from '../database/db.js';
-import { Role } from '../models/role.model.js';
-import { RolePermission } from '../models/rolePermission.model.js';
+import { Post } from '../models/post.model';
+import { Comment } from '../models/comment.model';
+import { User } from '../models/user.model';
+import { UserClass } from '../models/userClass.model';
+import { sequelize } from '../database/db';
+import { Role } from '../models/role.model';
+import { RolePermission } from '../models/rolePermission.model';
 
 interface CommentData {
   content: string;

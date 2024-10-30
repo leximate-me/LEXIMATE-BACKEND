@@ -1,12 +1,12 @@
 import crypto from 'crypto';
-import { Class } from '../models/class.model.js';
-import { UserClass } from '../models/userClass.model.js';
-import { User } from '../models/user.model.js';
-import { RolePermission } from '../models/rolePermission.model.js';
-import { Role } from '../models/role.model.js';
-import { sequelize } from '../database/db.js';
-import { Task } from '../models/task.model.js';
-import { Post } from '../models/post.model.js';
+import { Class } from '../models/class.model';
+import { UserClass } from '../models/userClass.model';
+import { User } from '../models/user.model';
+import { RolePermission } from '../models/rolePermission.model';
+import { Role } from '../models/role.model';
+import { sequelize } from '../database/db';
+import { Task } from '../models/task.model';
+import { Post } from '../models/post.model';
 
 interface ClassData {
   name: string;

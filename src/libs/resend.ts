@@ -1,6 +1,6 @@
-import { RESEND_API_KEY } from '../configs/envConfig.js';
+import { RESEND_API_KEY } from '../configs/envConfig';
 import { Resend as OriginalResend } from 'resend';
-import { logger } from '../configs/loggerConfig.js';
+import { logger } from '../configs/loggerConfig';
 
 interface ResendEmails {
   send: (options: {

@@ -1,6 +1,6 @@
 import jwt from 'jsonwebtoken';
-import { JWT_SECRET } from '../configs/envConfig.js';
-import { logger } from '../configs/loggerConfig.js';
+import { JWT_SECRET } from '../configs/envConfig';
+import { logger } from '../configs/loggerConfig';
 import { Request, Response, NextFunction } from 'express';
 
 export interface TokenPayload {

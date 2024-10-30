@@ -5,10 +5,10 @@ import {
   updatePostController,
   deletePostController,
   readPostController,
-} from '../controllers/userPost.controller.js';
-import { authRequired } from '../middlewares/validator.token.js';
-import { verifyUserRequired } from '../middlewares/validator.user.js';
-import { userCommentRouter } from './userComment.routes.js';
+} from '../controllers/userPost.controller';
+import { authRequired } from '../middlewares/validator.token';
+import { verifyUserRequired } from '../middlewares/validator.user';
+import { userCommentRouter } from './userComment.routes';
 
 const userPostRouter = Router({ mergeParams: true });
 

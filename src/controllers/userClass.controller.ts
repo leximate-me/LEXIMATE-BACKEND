@@ -1,4 +1,4 @@
-import { logger } from '../configs/loggerConfig.js';
+import { logger } from '../configs/loggerConfig';
 import {
   createClassService,
   joinClassService,
@@ -7,7 +7,7 @@ import {
   getUsersByClassService,
   updateClassService,
   deleteClassService,
-} from '../services/userClass.service.js';
+} from '../services/userClass.service';
 import { Request, Response } from 'express';
 
 // controlador para crear una clase

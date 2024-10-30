@@ -1,11 +1,8 @@
 import { Router } from 'express';
-import { verifyUserRequired } from '../middlewares/validator.user.js';
-import { authRequired } from '../middlewares/validator.token.js';
-import { validateSchema } from '../middlewares/validator.middleware.js';
-import {
-  createClassSchema,
-  updateClassSchema,
-} from '../schemas/class.schema.js';
+import { verifyUserRequired } from '../middlewares/validator.user';
+import { authRequired } from '../middlewares/validator.token';
+import { validateSchema } from '../middlewares/validator.middleware';
+import { createClassSchema, updateClassSchema } from '../schemas/class.schema';
 import {
   createClassController,
   joinClassController,
@@ -14,9 +11,9 @@ import {
   getUsersByClassController,
   updateClassController,
   deleteClassController,
-} from '../controllers/userClass.controller.js';
-import { userTaskRouter } from './userTask.routes.js';
-import { userPostRouter } from './userPost.routes.js';
+} from '../controllers/userClass.controller';
+import { userTaskRouter } from './userTask.routes';
+import { userPostRouter } from './userPost.routes';
 
 const userClassRouter = Router();
 

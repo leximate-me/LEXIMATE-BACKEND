@@ -1,5 +1,5 @@
-import { User } from '../models/user.model.js';
-import { logger } from '../configs/loggerConfig.js';
+import { User } from '../models/user.model';
+import { logger } from '../configs/loggerConfig';
 import { Request, Response, NextFunction } from 'express';
 
 const verifyUserRequired = async (

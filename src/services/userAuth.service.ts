@@ -1,12 +1,12 @@
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
-import { createAccessToken } from '../libs/jwt.js';
-import { JWT_SECRET } from '../configs/envConfig.js';
-import { resend } from '../libs/resend.js';
-import { sequelize } from '../database/db.js';
-import { User } from '../models/user.model.js';
-import { People } from '../models/people.model.js';
-import { Role } from '../models/role.model.js';
+import { createAccessToken } from '../libs/jwt';
+import { JWT_SECRET } from '../configs/envConfig';
+import { resend } from '../libs/resend';
+import { sequelize } from '../database/db';
+import { User } from '../models/user.model';
+import { People } from '../models/people.model';
+import { Role } from '../models/role.model';
 
 interface RegisterUserData {
   first_name: string;
@@ -65,6 +65,7 @@ const registerUserService = async (userData: RegisterUserData) => {
       where: { dni },
       transaction,
     });
+
     if (existingPerson) {
       throw new Error('La persona ya existe');
     }
