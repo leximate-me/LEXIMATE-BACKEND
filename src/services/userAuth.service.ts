@@ -7,6 +7,7 @@ import { sequelize } from '../database/db';
 import { User } from '../models/user.model';
 import { People } from '../models/people.model';
 import { Role } from '../models/role.model';
+import { TokenPayload } from 'types/express';
 
 interface RegisterUserData {
   first_name: string;
@@ -25,12 +26,6 @@ interface RegisterUserData {
 interface LoginUserData {
   email: string;
   password: string;
-}
-
-interface jwtDecoded {
-  id: number;
-  rol: number;
-  verify: boolean;
 }
 
 const registerUserService = async (userData: RegisterUserData) => {
@@ -191,7 +186,7 @@ const verifyTokenService = async (token: string) => {
       throw new Error('Token no proporcionado');
     }
     // Verificar el token
-    const decoded = jwt.verify(token, JWT_SECRET) as jwtDecoded;
+    const decoded = jwt.verify(token, JWT_SECRET) as TokenPayload;
     // Buscar el usuario
     const existingUser = await User.findByPk(decoded.id, { transaction });
 
@@ -304,7 +299,7 @@ const verifyEmailService = async (token: string) => {
     if (!token) {
       throw new Error('Token no proporcionado');
     }
-    const decoded = jwt.verify(token, JWT_SECRET) as jwtDecoded;
+    const decoded = jwt.verify(token, JWT_SECRET) as TokenPayload;
 
     if (!decoded) {
       throw new Error('Token inválido');

@@ -5,22 +5,17 @@ import { Class } from '../models/class.model';
 import { RolePermission } from '../models/rolePermission.model';
 import { Role } from '../models/role.model';
 import { sequelize } from '../database/db';
+import { TokenPayload } from 'types/express';
 
 interface PostData {
   title: string;
   content: string;
 }
 
-interface UserData {
-  id: number;
-  rol: number;
-  verify: boolean;
-}
-
 const createPostService = async (
   postData: PostData,
   classId: number,
-  user: UserData
+  user: TokenPayload
 ) => {
   const transaction = await sequelize.transaction();
   try {
@@ -95,7 +90,7 @@ const createPostService = async (
   }
 };
 
-const readPostsService = async (classId: number, user: UserData) => {
+const readPostsService = async (classId: number, user: TokenPayload) => {
   const transaction = await sequelize.transaction();
   try {
     if (!classId) {
@@ -164,7 +159,7 @@ const updatePostService = async (
   postId: number,
   postData: PostData,
   classId: number,
-  user: UserData
+  user: TokenPayload
 ) => {
   const transaction = await sequelize.transaction();
   try {
@@ -247,7 +242,7 @@ const updatePostService = async (
 const deletePostService = async (
   postId: number,
   classId: number,
-  user: UserData
+  user: TokenPayload
 ) => {
   const transaction = await sequelize.transaction();
   try {
@@ -323,7 +318,7 @@ const deletePostService = async (
 
 const readPostService = async (
   classId: number,
-  user: UserData,
+  user: TokenPayload,
   postId: number
 ) => {
   const transaction = await sequelize.transaction();

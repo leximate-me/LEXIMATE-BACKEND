@@ -5,21 +5,15 @@ import { UserClass } from '../models/userClass.model';
 import { sequelize } from '../database/db';
 import { Role } from '../models/role.model';
 import { RolePermission } from '../models/rolePermission.model';
-
+import { TokenPayload } from 'types/express';
 interface CommentData {
   content: string;
-}
-
-interface UserData {
-  id: number;
-  rol: number;
-  verify: boolean;
 }
 
 const createCommentService = async (
   commentData: CommentData,
   postId: number,
-  user: UserData
+  user: TokenPayload
 ) => {
   const transaction = await sequelize.transaction();
   try {

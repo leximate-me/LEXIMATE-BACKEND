@@ -7,20 +7,15 @@ import { Role } from '../models/role.model';
 import { sequelize } from '../database/db';
 import { Task } from '../models/task.model';
 import { Post } from '../models/post.model';
+import { TokenPayload } from 'types/express';
 
 interface ClassData {
   name: string;
   description: string;
 }
 
-interface UserData {
-  id: number;
-  rol: number;
-  verify: boolean;
-}
-
 // Función para crear una clase
-const createClassService = async (classData: ClassData, user: UserData) => {
+const createClassService = async (classData: ClassData, user: TokenPayload) => {
   const transaction = await sequelize.transaction();
   try {
     const { name, description } = classData;
@@ -92,7 +87,7 @@ const createClassService = async (classData: ClassData, user: UserData) => {
 };
 
 // Función para unirse a una clase
-const joinClassService = async (classCode: string, user: UserData) => {
+const joinClassService = async (classCode: string, user: TokenPayload) => {
   const transaction = await sequelize.transaction();
   try {
     if (!classCode) {
@@ -170,7 +165,7 @@ const joinClassService = async (classCode: string, user: UserData) => {
 };
 
 // Función para salir de una clase
-const leaveClassService = async (classId: number, user: UserData) => {
+const leaveClassService = async (classId: number, user: TokenPayload) => {
   const transaction = await sequelize.transaction();
 
   try {
@@ -233,7 +228,7 @@ const leaveClassService = async (classId: number, user: UserData) => {
 };
 
 // funcion para obtener las clases de un usuario
-const getClassesByUserService = async (user: UserData) => {
+const getClassesByUserService = async (user: TokenPayload) => {
   const transaction = await sequelize.transaction();
 
   try {
@@ -342,7 +337,7 @@ const getUsersByClassService = async (classId: number) => {
 const updateClassService = async (
   classId: number,
   classData: ClassData,
-  user: UserData
+  user: TokenPayload
 ) => {
   const transaction = await sequelize.transaction();
   try {
@@ -418,7 +413,7 @@ const updateClassService = async (
 };
 
 // funcion para eliminar una clase
-const deleteClassService = async (classId: number, user: UserData) => {
+const deleteClassService = async (classId: number, user: TokenPayload) => {
   const transaction = await sequelize.transaction();
   try {
     if (!classId) {

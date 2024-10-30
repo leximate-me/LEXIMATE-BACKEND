@@ -6,6 +6,7 @@ import { FileTask } from '../models/fileTask.model';
 import { RolePermission } from '../models/rolePermission.model';
 import { Role } from '../models/role.model';
 import { sequelize } from '../database/db';
+import { TokenPayload } from 'types/express';
 
 interface TaskData {
   title: string;
@@ -17,17 +18,11 @@ interface TaskData {
   imageProps: any;
 }
 
-interface UserData {
-  id: number;
-  rol: number;
-  verify: boolean;
-}
-
 // Función para crear una tarea
 const createTaskService = async (
   classId: number,
   taskData: TaskData,
-  user: UserData
+  user: TokenPayload
 ) => {
   const transaction = await sequelize.transaction();
   try {
@@ -127,7 +122,7 @@ const createTaskService = async (
 const updateTaskService = async (
   taskId: number,
   taskData: TaskData,
-  user: UserData
+  user: TokenPayload
 ) => {
   const transaction = await sequelize.transaction();
   try {
@@ -205,7 +200,7 @@ const updateTaskService = async (
 };
 
 // Función para eliminar una tarea
-const deleteTaskService = async (taskId: number, user: UserData) => {
+const deleteTaskService = async (taskId: number, user: TokenPayload) => {
   const transaction = await sequelize.transaction();
   try {
     if (!taskId) {
@@ -264,7 +259,7 @@ const deleteTaskService = async (taskId: number, user: UserData) => {
 };
 
 // Función para obtener las tareas de una clase
-const getTasksByClassService = async (classId: number, user: UserData) => {
+const getTasksByClassService = async (classId: number, user: TokenPayload) => {
   const transaction = await sequelize.transaction();
   try {
     if (!classId) {
