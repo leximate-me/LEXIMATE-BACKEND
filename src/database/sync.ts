@@ -1,4 +1,3 @@
-import { sequelize } from './db';
 import { People } from '../models/people.model';
 import { User } from '../models/user.model';
 import { Role } from '../models/role.model';
@@ -17,7 +16,6 @@ import './relationship';
 
 const syncModels = async () => {
   try {
-    await sequelize.sync({ force: false });
     await People.sync({ force: false });
     await User.sync({ force: false });
     await Role.sync({ force: false });
