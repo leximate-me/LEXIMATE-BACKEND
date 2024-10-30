@@ -1,5 +1,10 @@
 import { Sequelize } from 'sequelize';
-import { DB_HOST, DB_NAME, DB_PASSWORD, DB_USER } from '../configs/envConfig.js';
+import {
+  DB_HOST,
+  DB_NAME,
+  DB_PASSWORD,
+  DB_USER,
+} from '../configs/envConfig.js';
 import { logger } from '../configs/loggerConfig.js';
 
 const sequelize = new Sequelize(DB_NAME, DB_USER, DB_PASSWORD, {
@@ -27,11 +32,7 @@ const connectDB = async () => {
     logger.info('Conexion establecida correctamente con la base de datos.');
     return sequelize;
   } catch (error) {
-    if (error instanceof Error) {
-      logger.error('Error al conectar con la base de datos:', error);
-    } else {
-      logger.error('Error desconocido al conectar con la base de datos.');
-    }
+    return logger.error('Error al conectar con la base de datos:', error);
   }
 };
 

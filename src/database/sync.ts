@@ -12,12 +12,25 @@ import { Post } from '../models/post.model.js';
 import { Comment } from '../models/comment.model.js';
 import { Tool } from '../models/tool.model.js';
 import { TaskTool } from '../models/taskTool.model.js';
-import './relationship.js';
 import { logger } from '../configs/loggerConfig.js';
+import './relationship.js';
 
 const syncModels = async () => {
   try {
     await sequelize.sync({ force: false });
+    await People.sync({ force: false });
+    await User.sync({ force: false });
+    await Role.sync({ force: false });
+    await Permission.sync({ force: false });
+    await RolePermission.sync({ force: false });
+    await Class.sync({ force: false });
+    await Task.sync({ force: false });
+    await UserClass.sync({ force: false });
+    await FileTask.sync({ force: false });
+    await Post.sync({ force: false });
+    await Comment.sync({ force: false });
+    await Tool.sync({ force: false });
+    await TaskTool.sync({ force: false });
 
     logger.info('Modelos sincronizados correctamente.');
   } catch (error) {

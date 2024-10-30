@@ -19,7 +19,7 @@ const uploadImage = async (filePath: string) => {
     });
     return result;
   } catch (error) {
-    logger.child({ error }).error('Error al subir la imagen');
+    return logger.child({ error }).error('Error al subir la imagen');
   }
 };
 
@@ -28,7 +28,7 @@ const deleteImage = async (publicId: string) => {
     const result = await cloudinary.uploader.destroy(publicId);
     return result;
   } catch (error) {
-    logger.child({ error }).error('Error al eliminar la imagen');
+    return logger.child({ error }).error('Error al eliminar la imagen');
   }
 };
 

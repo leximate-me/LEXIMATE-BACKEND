@@ -1,5 +1,4 @@
 import { Post } from '../models/post.model.js';
-import { Comment } from '../models/comment.model.js';
 import { User } from '../models/user.model.js';
 import { UserClass } from '../models/userClass.model.js';
 import { Class } from '../models/class.model.js';

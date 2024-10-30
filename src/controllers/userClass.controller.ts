@@ -1,5 +1,4 @@
 import { logger } from '../configs/loggerConfig.js';
-import { User } from '../models/user.model.js';
 import {
   createClassService,
   joinClassService,

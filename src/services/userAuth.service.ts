@@ -4,7 +4,7 @@ import { createAccessToken } from '../libs/jwt.js';
 import { JWT_SECRET } from '../configs/envConfig.js';
 import { resend } from '../libs/resend.js';
 import { sequelize } from '../database/db.js';
-import { User, UserAttributes } from '../models/user.model.js';
+import { User } from '../models/user.model.js';
 import { People } from '../models/people.model.js';
 import { Role } from '../models/role.model.js';
 

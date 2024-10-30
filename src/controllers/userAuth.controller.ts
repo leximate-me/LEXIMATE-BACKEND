@@ -115,7 +115,7 @@ const deleteUserController = async (req: Request, res: Response) => {
   }
 };
 
-const logoutUserController = async (req: Request, res: Response) => {
+const logoutUserController = async (_req: Request, res: Response) => {
   try {
     const response = logoutUserService();
     res.cookie('token', '', { expires: new Date(0) });

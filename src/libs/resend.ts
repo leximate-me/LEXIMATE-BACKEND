@@ -1,5 +1,6 @@
 import { RESEND_API_KEY } from '../configs/envConfig.js';
 import { Resend as OriginalResend } from 'resend';
+import { logger } from 'src/configs/loggerConfig.js';
 
 interface ResendEmails {
   send: (options: {
@@ -17,6 +18,13 @@ class Resend extends OriginalResend {
     super(apiKey);
     this.emails = {
       send: async (options) => {
+        const { from, to, subject, html } = options;
+
+        logger.info(
+          `Enviando correo electrónico de ${from} a ${to} con asunto ${subject}`
+        );
+        logger.debug(`Contenido del correo: ${html}`);
+
         // Implementación del envío de correo electrónico
         return { data: 'Correo enviado', error: null };
       },
