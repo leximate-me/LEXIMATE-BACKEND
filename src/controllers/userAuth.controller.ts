@@ -1,5 +1,5 @@
-import { FRONTEND_URL } from '../configs/envConfig';
-import { logger } from '../configs/loggerConfig';
+import { FRONTEND_URL } from '../configs/env.config';
+import { logger } from '../configs/logger.config';
 import {
   loginUserService,
   logoutUserService,

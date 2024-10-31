@@ -1,8 +1,8 @@
 import './database/sync';
 import figlet from 'figlet';
 import { app } from './app';
-import { PORT } from './configs/envConfig';
-import { logger } from './configs/loggerConfig';
+import { PORT } from './configs/env.config';
+import { logger } from './configs/logger.config';
 import { connectDB } from './database/db';
 import { syncModels } from './database/sync';
 

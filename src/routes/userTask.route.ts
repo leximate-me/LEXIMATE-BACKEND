@@ -1,6 +1,6 @@
 import { Router } from 'express';
-import { verifyUserRequired } from '../middlewares/validator.user';
-import { authRequired } from '../middlewares/validator.token';
+import { verifyUserRequired } from '../middlewares/user.middleware';
+import { authRequired } from '../middlewares/token.middleware';
 import { validateSchema } from '../middlewares/validator.middleware';
 import { createTaskSchema, updateTaskSchema } from '../schemas/task.schema';
 import {

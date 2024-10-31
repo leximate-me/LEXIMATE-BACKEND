@@ -4,7 +4,7 @@ import cors from 'cors';
 import morgan from 'morgan';
 import cookieParser from 'cookie-parser';
 import fileUpload from 'express-fileupload';
-import { FRONTEND_URL } from '../configs/envConfig';
+import { FRONTEND_URL } from '../configs/env.config';
 import { Application } from 'express';
 
 const applyMiddlewares = (app: Application) => {

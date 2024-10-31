@@ -1,6 +1,6 @@
 import fs from 'fs/promises';
 import { deleteImage, uploadImage } from '../libs/cloudinary';
-import { logger } from '../configs/loggerConfig';
+import { logger } from '../configs/logger.config';
 import {
   createTaskService,
   updateTaskService,

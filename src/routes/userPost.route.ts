@@ -6,9 +6,9 @@ import {
   deletePostController,
   readPostController,
 } from '../controllers/userPost.controller';
-import { authRequired } from '../middlewares/validator.token';
-import { verifyUserRequired } from '../middlewares/validator.user';
-import { userCommentRouter } from './userComment.routes';
+import { authRequired } from '../middlewares/token.middleware';
+import { verifyUserRequired } from '../middlewares/user.middleware';
+import { userCommentRouter } from './userComment.route';
 
 const userPostRouter = Router({ mergeParams: true });
 

@@ -1,7 +1,7 @@
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import { createAccessToken } from '../libs/jwt';
-import { JWT_SECRET } from '../configs/envConfig';
+import { JWT_SECRET } from '../configs/env.config';
 import { resend } from '../libs/resend';
 import { sequelize } from '../database/db';
 import { User } from '../models/user.model';

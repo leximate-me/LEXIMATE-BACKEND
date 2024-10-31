@@ -3,8 +3,8 @@ import {
   CLOUDINARY_CLOUD_NAME,
   CLOUDINARY_API_KEY,
   CLOUDINARY_API_SECRET,
-} from '../configs/envConfig';
-import { logger } from '../configs/loggerConfig';
+} from '../configs/env.config';
+import { logger } from '../configs/logger.config';
 
 cloudinary.config({
   cloud_name: CLOUDINARY_CLOUD_NAME,

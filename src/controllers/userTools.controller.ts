@@ -2,7 +2,7 @@ import {
   extractTextFromPdfService,
   extractTextFromDocxService,
 } from '../services/userTool.service';
-import { logger } from '../configs/loggerConfig';
+import { logger } from '../configs/logger.config';
 import { Request, Response } from 'express';
 import { UploadedFile } from 'express-fileupload';
 import fs from 'fs';

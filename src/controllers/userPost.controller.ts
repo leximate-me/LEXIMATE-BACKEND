@@ -6,7 +6,7 @@ import {
   readPostsService,
 } from '../services/userPost.service';
 import { Request, Response } from 'express';
-import { logger } from '../configs/loggerConfig';
+import { logger } from '../configs/logger.config';
 
 const createPostController = async (req: Request, res: Response) => {
   const postData = req.body;

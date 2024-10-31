@@ -1,5 +1,5 @@
-import { JWT_SECRET } from '../configs/envConfig';
-import { logger } from '../configs/loggerConfig';
+import { JWT_SECRET } from '../configs/env.config';
+import { logger } from '../configs/logger.config';
 import jwt from 'jsonwebtoken';
 
 interface PayloadData {

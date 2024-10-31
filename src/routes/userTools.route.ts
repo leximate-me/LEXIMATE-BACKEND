@@ -1,6 +1,6 @@
 import { Router } from 'express';
-import { verifyUserRequired } from '../middlewares/validator.user';
-import { authRequired } from '../middlewares/validator.token';
+import { verifyUserRequired } from '../middlewares/user.middleware';
+import { authRequired } from '../middlewares/token.middleware';
 import { extractTextFromFileController } from '../controllers/userTools.controller';
 
 const userToolsRouter = Router();

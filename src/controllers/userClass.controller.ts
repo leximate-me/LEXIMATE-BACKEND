@@ -1,4 +1,4 @@
-import { logger } from '../configs/loggerConfig';
+import { logger } from '../configs/logger.config';
 import {
   createClassService,
   joinClassService,

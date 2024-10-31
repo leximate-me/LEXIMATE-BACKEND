@@ -1,5 +1,5 @@
 import { createCommentService } from '../services/userComment.service';
-import { logger } from '../configs/loggerConfig';
+import { logger } from '../configs/logger.config';
 import { Request, Response } from 'express';
 
 const createCommentController = async (req: Request, res: Response) => {

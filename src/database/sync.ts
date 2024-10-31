@@ -11,7 +11,7 @@ import { Post } from '../models/post.model';
 import { Comment } from '../models/comment.model';
 import { Tool } from '../models/tool.model';
 import { TaskTool } from '../models/taskTool.model';
-import { logger } from '../configs/loggerConfig';
+import { logger } from '../configs/logger.config';
 import './relationship';
 
 const syncModels = async () => {
