@@ -7,7 +7,7 @@ import { sequelize } from '../database/db';
 import { User } from '../models/user.model';
 import { People } from '../models/people.model';
 import { Role } from '../models/role.model';
-import { TokenPayload } from 'types/express';
+import { TokenPayload } from 'src/types/express';
 
 interface RegisterUserData {
   first_name: string;

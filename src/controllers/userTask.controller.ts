@@ -1,5 +1,3 @@
-import fs from 'fs/promises';
-import { deleteImage, uploadImage } from '../libs/cloudinary';
 import { logger } from '../configs/logger.config';
 import {
   createTaskService,
@@ -9,7 +7,6 @@ import {
   getTaskService,
 } from '../services/userTask.service';
 import { Request, Response } from 'express';
-import { UploadedFile } from 'express-fileupload';
 
 const createTaskController = async (req: Request, res: Response) => {
   try {
@@ -17,17 +14,16 @@ const createTaskController = async (req: Request, res: Response) => {
     const { title, description, status, due_date } = req.body;
     const user = req.user;
 
-    let imageUrl: string | undefined = undefined;
-    let imageId: string | undefined = undefined;
-    let imageProps: UploadedFile | undefined = undefined;
+    console.log(req.file);
 
-    if (req.files?.image) {
-      const image = req.files.image as UploadedFile;
-      const result = await uploadImage(image.tempFilePath);
-      imageProps = image;
-      imageUrl = result?.secure_url;
-      imageId = result?.public_id;
-      await fs.unlink(image.tempFilePath);
+    let imageUrl = undefined;
+    let imageId = undefined;
+    let imageProps = undefined;
+
+    if (req.file && req.file.cloudinaryUrl) {
+      imageUrl = req.file.cloudinaryUrl;
+      imageId = req.file.cloudinaryPublicId;
+      imageProps = req.file;
     }
 
     const taskData = {
@@ -64,15 +60,12 @@ const updateTaskController = async (req: Request, res: Response) => {
     const user = req.user;
     const taskId = parseInt(req.params.taskId);
 
-    let imageUrl: string | undefined = undefined;
-    let imageProps: UploadedFile | undefined = undefined;
+    let imageUrl = undefined;
+    let imageProps = undefined;
 
-    if (req.files?.image) {
-      const image = req.files.image as UploadedFile;
-      const result = await uploadImage(image.tempFilePath);
-      imageProps = image;
-      imageUrl = result?.secure_url;
-      await fs.unlink(image.tempFilePath);
+    if (req.file && req.file.cloudinaryUrl) {
+      imageProps = req.file;
+      imageUrl = req.file.cloudinaryUrl;
     }
 
     const taskData = {
@@ -114,8 +107,9 @@ const deleteTaskController = async (req: Request, res: Response) => {
 
     const task = await deleteTaskService(taskId, user);
 
-    if (task) {
-      await deleteImage(task);
+    if (!task) {
+      res.status(404).json({ error: 'Tarea no encontrada' });
+      return;
     }
 
     res.status(204).end();

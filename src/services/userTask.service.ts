@@ -6,7 +6,7 @@ import { FileTask } from '../models/fileTask.model';
 import { RolePermission } from '../models/rolePermission.model';
 import { Role } from '../models/role.model';
 import { sequelize } from '../database/db';
-import { TokenPayload } from 'types/express';
+import { TokenPayload } from 'src/types/express';
 
 interface TaskData {
   title: string;
@@ -15,7 +15,7 @@ interface TaskData {
   due_date: Date;
   imageUrl?: string;
   imageId?: string;
-  imageProps: any;
+  imageProps?: any;
 }
 
 // Función para crear una tarea

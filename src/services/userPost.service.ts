@@ -5,7 +5,7 @@ import { Class } from '../models/class.model';
 import { RolePermission } from '../models/rolePermission.model';
 import { Role } from '../models/role.model';
 import { sequelize } from '../database/db';
-import { TokenPayload } from 'types/express';
+import { TokenPayload } from 'src/types/express';
 
 interface PostData {
   title: string;

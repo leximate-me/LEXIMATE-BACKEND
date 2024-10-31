@@ -10,12 +10,16 @@ import {
   getTasksByClassController,
   getTaskController,
 } from '../controllers/userTask.controller';
+import { upload } from '../configs/upload.config';
+import { uploadToCloudinary } from '../middlewares/upload.middleware';
 
 const userTaskRouter = Router({ mergeParams: true }); // Permitir el uso de parametros de rutas padres
 
 userTaskRouter.post(
   '/',
   authRequired,
+  upload,
+  uploadToCloudinary,
   verifyUserRequired,
   validateSchema(createTaskSchema),
   createTaskController
@@ -23,6 +27,8 @@ userTaskRouter.post(
 userTaskRouter.put(
   '/:taskId',
   authRequired,
+  upload,
+  uploadToCloudinary,
   verifyUserRequired,
   validateSchema(updateTaskSchema),
   updateTaskController

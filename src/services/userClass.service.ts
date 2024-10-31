@@ -7,7 +7,7 @@ import { Role } from '../models/role.model';
 import { sequelize } from '../database/db';
 import { Task } from '../models/task.model';
 import { Post } from '../models/post.model';
-import { TokenPayload } from 'types/express';
+import { TokenPayload } from 'src/types/express';
 
 interface ClassData {
   name: string;
