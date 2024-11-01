@@ -7,28 +7,15 @@ import { Role } from '../models/role.model';
 import { sequelize } from '../database/db';
 import { Task } from '../models/task.model';
 import { Post } from '../models/post.model';
-import { TokenPayload } from 'src/types/express';
-
-interface ClassData {
-  name: string;
-  description: string;
-}
 
 // Función para crear una clase
-const createClassService = async (classData: ClassData, user: TokenPayload) => {
+const createClassService = async (classData: Class, userId: number) => {
   const transaction = await sequelize.transaction();
   try {
     const { name, description } = classData;
-    if (!name || !description) {
-      throw new Error('Faltan datos');
-    }
-
-    if (!user) {
-      throw new Error('Usuario no encontrado');
-    }
 
     const foundUser = await User.findOne({
-      where: { id: user.id },
+      where: { id: userId },
       transaction,
     });
 
@@ -87,19 +74,11 @@ const createClassService = async (classData: ClassData, user: TokenPayload) => {
 };
 
 // Función para unirse a una clase
-const joinClassService = async (classCode: string, user: TokenPayload) => {
+const joinClassService = async (classCode: string, userId: number) => {
   const transaction = await sequelize.transaction();
   try {
-    if (!classCode) {
-      throw new Error('Código de clase no proporcionado');
-    }
-
-    if (!user) {
-      throw new Error('Usuario no encontrado');
-    }
-
     const foundUser = await User.findOne({
-      where: { id: user.id },
+      where: { id: userId },
       transaction,
     });
 
@@ -156,29 +135,17 @@ const joinClassService = async (classCode: string, user: TokenPayload) => {
     return classData;
   } catch (error) {
     await transaction.rollback();
-    if (error instanceof Error) {
-      throw new Error(error.message);
-    } else {
-      throw new Error('Error desconocido');
-    }
+    throw error;
   }
 };
 
 // Función para salir de una clase
-const leaveClassService = async (classId: number, user: TokenPayload) => {
+const leaveClassService = async (classId: number, userId: number) => {
   const transaction = await sequelize.transaction();
 
   try {
-    if (!classId) {
-      throw new Error('Código de clase no proporcionado');
-    }
-
-    if (!user) {
-      throw new Error('Usuario no encontrado');
-    }
-
     const foundUser = await User.findOne({
-      where: { id: user.id },
+      where: { id: userId },
       transaction,
     });
 
@@ -219,25 +186,17 @@ const leaveClassService = async (classId: number, user: TokenPayload) => {
     return classData;
   } catch (error) {
     await transaction.rollback();
-    if (error instanceof Error) {
-      throw new Error(error.message);
-    } else {
-      throw new Error('Error desconocido');
-    }
+    throw error;
   }
 };
 
 // funcion para obtener las clases de un usuario
-const getClassesByUserService = async (user: TokenPayload) => {
+const getClassesByUserService = async (userId: number) => {
   const transaction = await sequelize.transaction();
 
   try {
-    if (!user) {
-      throw new Error('Usuario no encontrado');
-    }
-
     const foundUser = await User.findOne({
-      where: { id: user.id },
+      where: { id: userId },
       transaction,
     });
 
@@ -282,11 +241,7 @@ const getClassesByUserService = async (user: TokenPayload) => {
     return classes;
   } catch (error) {
     await transaction.rollback();
-    if (error instanceof Error) {
-      throw new Error(error.message);
-    } else {
-      throw new Error('Error desconocido');
-    }
+    throw error;
   }
 };
 
@@ -294,9 +249,6 @@ const getClassesByUserService = async (user: TokenPayload) => {
 const getUsersByClassService = async (classId: number) => {
   const transaction = await sequelize.transaction();
   try {
-    if (!classId) {
-      throw new Error('Código de clase no proporcionado');
-    }
     const classData = await Class.findOne({
       where: { id: classId },
       transaction,
@@ -325,38 +277,22 @@ const getUsersByClassService = async (classId: number) => {
     return users;
   } catch (error) {
     await transaction.rollback();
-    if (error instanceof Error) {
-      throw new Error();
-    } else {
-      throw new Error('Error desconocido');
-    }
+    throw error;
   }
 };
 
 // funcion para actualizar una clase
 const updateClassService = async (
   classId: number,
-  classData: ClassData,
-  user: TokenPayload
+  classData: Class,
+  userId: number
 ) => {
   const transaction = await sequelize.transaction();
   try {
-    if (!classId) {
-      throw new Error('Código de clase no proporcionado');
-    }
-
-    if (!user) {
-      throw new Error('Usuario no encontrado');
-    }
-
-    if (!classData) {
-      throw new Error('Datos de clase no proporcionados');
-    }
-
     const { name, description } = classData;
 
     const foundUser = await User.findOne({
-      where: { id: user.id },
+      where: { id: userId },
       transaction,
     });
 
@@ -404,28 +340,16 @@ const updateClassService = async (
     return classData;
   } catch (error) {
     await transaction.rollback();
-    if (error instanceof Error) {
-      throw new Error(error.message);
-    } else {
-      throw new Error('Error desconocido');
-    }
+    throw error;
   }
 };
 
 // funcion para eliminar una clase
-const deleteClassService = async (classId: number, user: TokenPayload) => {
+const deleteClassService = async (classId: number, userId: number) => {
   const transaction = await sequelize.transaction();
   try {
-    if (!classId) {
-      throw new Error('Código de clase no proporcionado');
-    }
-
-    if (!user) {
-      throw new Error('Usuario no encontrado');
-    }
-
     const foundUser = await User.findOne({
-      where: { id: user.id },
+      where: { id: userId },
       transaction,
     });
 
@@ -485,11 +409,7 @@ const deleteClassService = async (classId: number, user: TokenPayload) => {
     return classFound;
   } catch (error) {
     await transaction.rollback();
-    if (error instanceof Error) {
-      throw new Error(error.message);
-    } else {
-      throw new Error('Error desconocido');
-    }
+    throw error;
   }
 };
 

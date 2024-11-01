@@ -23,19 +23,10 @@ interface RegisterUserData {
   verified: boolean;
 }
 
-interface LoginUserData {
-  email: string;
-  password: string;
-}
-
 const registerUserService = async (userData: RegisterUserData) => {
-  // Iniciar una transacción de la base de datos
   const transaction = await sequelize.transaction();
-  try {
-    if (!userData) {
-      throw new Error('Datos no proporcionados');
-    }
 
+  try {
     const {
       first_name,
       last_name,
@@ -128,7 +119,7 @@ const registerUserService = async (userData: RegisterUserData) => {
   }
 };
 
-const loginUserService = async (userData: LoginUserData) => {
+const loginUserService = async (userData: User) => {
   const transaction = await sequelize.transaction();
   try {
     if (!userData) {
@@ -207,9 +198,6 @@ const getProfileUserService = async (userId: number) => {
   const transaction = await sequelize.transaction();
 
   try {
-    if (!userId) {
-      throw new Error('Usuario no proporcionado');
-    }
     const existingUser = await User.findByPk(userId, { transaction });
 
     if (!existingUser) {
@@ -229,13 +217,10 @@ const logoutUserService = () => {
   return { message: 'Cerró sesión exitosamente' };
 };
 
-const deleteUserService = async (id: number) => {
+const deleteUserService = async (userId: number) => {
   const transaction = await sequelize.transaction();
   try {
-    if (!id) {
-      throw new Error('Usuario no proporcionado');
-    }
-    const user = await User.findByPk(id, { transaction });
+    const user = await User.findByPk(userId, { transaction });
     if (!user) {
       throw new Error('Usuario no encontrado');
     }
@@ -258,13 +243,10 @@ const deleteUserService = async (id: number) => {
   }
 };
 
-const sendEmailVerificationService = async (id: number) => {
+const sendEmailVerificationService = async (userId: number) => {
   const transaction = await sequelize.transaction();
   try {
-    if (!id) {
-      throw new Error('Usuario no proporcionado');
-    }
-    const user = await User.findByPk(id, { transaction });
+    const user = await User.findByPk(userId, { transaction });
 
     if (!user) {
       throw new Error('Usuario no encontrado');

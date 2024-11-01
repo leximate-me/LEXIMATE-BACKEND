@@ -5,26 +5,15 @@ import { Class } from '../models/class.model';
 import { RolePermission } from '../models/rolePermission.model';
 import { Role } from '../models/role.model';
 import { sequelize } from '../database/db';
-import { TokenPayload } from 'src/types/express';
-
-interface PostData {
-  title: string;
-  content: string;
-}
 
 const createPostService = async (
-  postData: PostData,
+  postData: Post,
   classId: number,
-  user: TokenPayload
+  userId: number
 ) => {
   const transaction = await sequelize.transaction();
+
   try {
-    if (!postData || !classId) {
-      throw new Error('Datos no proporcionados');
-    }
-
-    console.log(classId);
-
     const { title, content } = postData;
 
     const existingClass = await Class.findOne({
@@ -37,7 +26,7 @@ const createPostService = async (
     }
 
     const foundUser = await User.findOne({
-      where: { id: user.id },
+      where: { id: userId },
       transaction,
     });
 
@@ -77,12 +66,13 @@ const createPostService = async (
         title,
         content,
         classes_fk: existingUserInClass.classes_fk,
-        users_fk: user.id,
+        users_fk: foundUser.id,
       },
       { transaction }
     );
 
     await transaction.commit();
+
     return post;
   } catch (error) {
     await transaction.rollback();
@@ -90,13 +80,10 @@ const createPostService = async (
   }
 };
 
-const readPostsService = async (classId: number, user: TokenPayload) => {
+const readPostsService = async (classId: number, userId: number) => {
   const transaction = await sequelize.transaction();
-  try {
-    if (!classId) {
-      throw new Error('Datos no proporcionados');
-    }
 
+  try {
     const existingClass = await Class.findOne({
       where: { id: classId },
       transaction,
@@ -107,7 +94,7 @@ const readPostsService = async (classId: number, user: TokenPayload) => {
     }
 
     const foundUser = await User.findOne({
-      where: { id: user.id },
+      where: { id: userId },
       transaction,
     });
 
@@ -148,6 +135,7 @@ const readPostsService = async (classId: number, user: TokenPayload) => {
     });
 
     await transaction.commit();
+
     return posts;
   } catch (error) {
     await transaction.rollback();
@@ -157,16 +145,13 @@ const readPostsService = async (classId: number, user: TokenPayload) => {
 
 const updatePostService = async (
   postId: number,
-  postData: PostData,
+  postData: Post,
   classId: number,
-  user: TokenPayload
+  userId: number
 ) => {
   const transaction = await sequelize.transaction();
-  try {
-    if (!postData || !classId || !postId) {
-      throw new Error('Datos no proporcionados');
-    }
 
+  try {
     const { title, content } = postData;
 
     const existingClass = await Class.findOne({
@@ -179,7 +164,7 @@ const updatePostService = async (
     }
 
     const foundUser = await User.findOne({
-      where: { id: user.id },
+      where: { id: userId },
       transaction,
     });
 
@@ -218,7 +203,7 @@ const updatePostService = async (
       where: {
         id: postId,
         classes_fk: existingUserInClass.classes_fk,
-        users_fk: user.id,
+        users_fk: foundUser.id,
       },
       transaction,
     });
@@ -231,7 +216,9 @@ const updatePostService = async (
     post.content = content;
 
     await post.save({ transaction });
+
     await transaction.commit();
+
     return post;
   } catch (error) {
     await transaction.rollback();
@@ -242,14 +229,11 @@ const updatePostService = async (
 const deletePostService = async (
   postId: number,
   classId: number,
-  user: TokenPayload
+  userId: number
 ) => {
   const transaction = await sequelize.transaction();
-  try {
-    if (!postId || !classId) {
-      throw new Error('Datos no proporcionados');
-    }
 
+  try {
     const existingClass = await Class.findOne({
       where: { id: classId },
       transaction,
@@ -260,7 +244,7 @@ const deletePostService = async (
     }
 
     const foundUser = await User.findOne({
-      where: { id: user.id },
+      where: { id: userId },
       transaction,
     });
 
@@ -308,7 +292,9 @@ const deletePostService = async (
     }
 
     await post.destroy({ transaction });
+
     await transaction.commit();
+
     return post;
   } catch (error) {
     await transaction.rollback();
@@ -317,16 +303,13 @@ const deletePostService = async (
 };
 
 const readPostService = async (
+  userId: number,
   classId: number,
-  user: TokenPayload,
   postId: number
 ) => {
   const transaction = await sequelize.transaction();
-  try {
-    if (!classId) {
-      throw new Error('Datos no proporcionados');
-    }
 
+  try {
     const existingClass = await Class.findOne({
       where: { id: classId },
       transaction,
@@ -337,7 +320,7 @@ const readPostService = async (
     }
 
     const foundUser = await User.findOne({
-      where: { id: user.id },
+      where: { id: userId },
       transaction,
     });
 
@@ -382,6 +365,7 @@ const readPostService = async (
     }
 
     await transaction.commit();
+
     return post;
   } catch (error) {
     await transaction.rollback();

@@ -16,6 +16,7 @@ const createTaskService = async (
   fileProps: any
 ) => {
   const transaction = await sequelize.transaction();
+
   try {
     const { title, description, status, due_date } = taskData;
 
@@ -102,11 +103,8 @@ const updateTaskService = async (
   fileProps: any
 ) => {
   const transaction = await sequelize.transaction();
-  try {
-    if (!taskData) {
-      throw new Error('Faltan datos');
-    }
 
+  try {
     const { title, description, status, due_date } = taskData;
 
     const { fileUrl, fileId, fileType } = fileProps;
@@ -176,6 +174,7 @@ const deleteTaskService = async (
   userId: number
 ) => {
   const transaction = await sequelize.transaction();
+
   try {
     const foundUser = await User.findOne({
       where: { id: userId },
@@ -245,6 +244,7 @@ const deleteTaskService = async (
 // Función para obtener las tareas de una clase
 const getTasksByClassService = async (classId: number, userId: number) => {
   const transaction = await sequelize.transaction();
+
   try {
     const foundUser = await User.findOne({
       where: { id: userId },
@@ -318,6 +318,7 @@ const getTaskService = async (
   userId: number
 ) => {
   const transaction = await sequelize.transaction();
+
   try {
     const foundUser = await User.findOne({
       where: { id: userId },

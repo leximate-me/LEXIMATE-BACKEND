@@ -3,9 +3,13 @@ import {
   extractTextFromDocxService,
 } from '../services/userTool.service';
 import { logger } from '../configs/logger.config';
-import { Request, Response } from 'express';
+import { Request, Response, NextFunction } from 'express';
 
-const extractTextFromFileController = async (req: Request, res: Response) => {
+const extractTextFromFileController = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
   try {
     if (!req.file) {
       throw new Error('No se ha proporcionado ningún archivo');
@@ -28,9 +32,16 @@ const extractTextFromFileController = async (req: Request, res: Response) => {
 
     // Enviar la respuesta JSON
     res.status(200).json(text);
-  } catch (error: Error | any) {
-    logger.error(error, 'Error al extraer texto del archivo');
-    res.status(400).json({ error: error.message });
+  } catch (error) {
+    if (error instanceof Error) {
+      logger.error(error, 'Error en extractTextFromFileController');
+      res.status(400).json({ error: error.message });
+      next(error);
+    } else {
+      logger.error(error, 'Error desconocido en extractTextFromFileController');
+      res.status(500).json({ error: 'Error desconocido' });
+      next(new Error('Error desconocido'));
+    }
   }
 };
 

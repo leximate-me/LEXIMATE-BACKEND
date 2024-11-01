@@ -5,22 +5,15 @@ import { UserClass } from '../models/userClass.model';
 import { sequelize } from '../database/db';
 import { Role } from '../models/role.model';
 import { RolePermission } from '../models/rolePermission.model';
-import { TokenPayload } from 'src/types/express';
-interface CommentData {
-  content: string;
-}
 
 const createCommentService = async (
-  commentData: CommentData,
+  commentData: Comment,
   postId: number,
-  user: TokenPayload
+  userId: number
 ) => {
   const transaction = await sequelize.transaction();
-  try {
-    if (!commentData || !postId || !user) {
-      throw new Error('Datos no proporcionados');
-    }
 
+  try {
     const { content } = commentData;
 
     const existingPost = await Post.findOne({
@@ -33,7 +26,7 @@ const createCommentService = async (
     }
 
     const foundUser = await User.findOne({
-      where: { id: user.id },
+      where: { id: userId },
       transaction,
     });
 
