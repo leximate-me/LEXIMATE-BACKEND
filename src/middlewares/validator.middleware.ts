@@ -2,6 +2,7 @@
 import { Request, Response, NextFunction } from 'express';
 import { Schema, ZodError } from 'zod';
 import { deleteFromCloudinary } from './upload.middleware';
+import { logger } from '../configs/logger.config';
 
 const validateSchema = (schema: Schema) => {
   return async (req: Request, res: Response, next: NextFunction) => {
@@ -14,6 +15,7 @@ const validateSchema = (schema: Schema) => {
         console.log('Archivo eliminado de Cloudinary');
       }
       if (error instanceof ZodError) {
+        logger.error(error.errors, 'Error de validación');
         res.status(400).json({ error: error.errors.map((err) => err.message) });
       } else {
         next(error); // Propagar el error al siguiente middleware o controlador

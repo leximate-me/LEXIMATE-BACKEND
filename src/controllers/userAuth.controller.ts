@@ -41,9 +41,10 @@ const registerUserController = async (
     if (error instanceof Error) {
       logger.error(error, 'Error en registerUserController');
       res.status(400).json({ error: [error.message] });
+    } else {
+      logger.error(error, 'Error desconocido en registerUserController');
+      res.status(500).json({ error: ['Error desconocido'] });
     }
-    logger.error(error, 'Error desconocido en registerUserController');
-    res.status(500).json({ error: ['Error desconocido'] });
   }
 };
 
@@ -61,9 +62,10 @@ const loginUserController = async (req: Request, res: Response) => {
     if (error instanceof Error) {
       logger.error(error, 'Error en loginUserController');
       res.status(400).json({ error: [error.message] });
+    } else {
+      logger.error(error, 'Error desconocido en loginUserController');
+      res.status(500).json({ error: ['Error desconocido'] });
     }
-    logger.error(error, 'Error desconocido en loginUserController');
-    res.status(500).json({ error: ['Error desconocido'] });
   }
 };
 
@@ -77,9 +79,10 @@ const verifyTokenController = async (req: Request, res: Response) => {
     if (error instanceof Error) {
       logger.error(error, 'Error en verifyTokenController');
       res.status(400).json({ error: [error.message] });
+    } else {
+      logger.error(error, 'Error desconocido en verifyTokenController');
+      res.status(500).json({ error: ['Error desconocido'] });
     }
-    logger.error(error, 'Error desconocido en verifyTokenController');
-    res.status(500).json({ error: ['Error desconocido'] });
   }
 };
 
@@ -98,9 +101,10 @@ const getProfileUserController = async (req: Request, res: Response) => {
     if (error instanceof Error) {
       logger.error(error, 'Error en getProfileUserController');
       res.status(404).json({ error: [error.message] });
+    } else {
+      logger.error(error, 'Error desconocido en getProfileUserController');
+      res.status(500).json({ error: ['Error desconocido'] });
     }
-    logger.error(error, 'Error desconocido en getProfileUserController');
-    res.status(500).json({ error: ['Error desconocido'] });
   }
 };
 
@@ -119,9 +123,10 @@ const deleteUserController = async (req: Request, res: Response) => {
     if (error instanceof Error) {
       logger.error(error, 'Error en deleteUserController');
       res.status(404).json({ error: [error.message] });
+    } else {
+      logger.error(error, 'Error desconocido en deleteUserController');
+      res.status(500).json({ error: ['Error desconocido'] });
     }
-    logger.error(error, 'Error desconocido en deleteUserController');
-    res.status(500).json({ error: ['Error desconocido'] });
   }
 };
 
@@ -134,9 +139,10 @@ const logoutUserController = async (_req: Request, res: Response) => {
     if (error instanceof Error) {
       logger.error(error, 'Error en logoutUserController');
       res.status(404).json({ error: [error.message] });
+    } else {
+      logger.error(error, 'Error desconocido en logoutUserController');
+      res.status(500).json({ error: ['Error desconocido'] });
     }
-    logger.error(error, 'Error desconocido en logoutUserController');
-    res.status(500).json({ error: ['Error desconocido'] });
   }
 };
 
@@ -155,9 +161,13 @@ const sendEmailVerificationController = async (req: Request, res: Response) => {
     if (error instanceof Error) {
       logger.error(error, 'Error en sendEmailVerificationController');
       res.status(500).json({ error: [error.message] });
+    } else {
+      logger.error(
+        error,
+        'Error desconocido en sendEmailVerificationController'
+      );
+      res.status(500).json({ error: ['Error desconocido'] });
     }
-    logger.error(error, 'Error desconocido en sendEmailVerificationController');
-    res.status(500).json({ error: ['Error desconocido'] });
   }
 };
 
@@ -176,9 +186,10 @@ const verifyEmailController = async (req: Request, res: Response) => {
     if (error instanceof Error) {
       logger.error(error, 'Error en verifyEmailController');
       res.status(400).json({ error: [error.message] });
+    } else {
+      logger.error(error, 'Error desconocido en verifyEmailController');
+      res.status(500).json({ error: ['Error desconocido'] });
     }
-    logger.error(error, 'Error desconocido en verifyEmailController');
-    res.status(500).json({ error: ['Error desconocido'] });
   }
 };
 

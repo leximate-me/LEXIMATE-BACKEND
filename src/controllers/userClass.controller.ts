@@ -34,9 +34,10 @@ const createClassController = async (req: Request, res: Response) => {
     if (error instanceof Error) {
       logger.error(error, 'Error en createClassController');
       res.status(400).json({ error: [error.message] });
+    } else {
+      logger.error(error, 'Error desconocido en createClassController');
+      res.status(500).json({ error: ['Error desconocido'] });
     }
-    logger.error(error, 'Error desconocido en createClassController');
-    res.status(500).json({ error: ['Error desconocido'] });
   }
 };
 
@@ -69,9 +70,10 @@ const joinClassController = async (req: Request, res: Response) => {
     if (error instanceof Error) {
       logger.error(error, 'Error en joinClassController');
       res.status(400).json({ error: [error.message] });
+    } else {
+      logger.error(error, 'Error desconocido en joinClassController');
+      res.status(500).json({ error: ['Error desconocido'] });
     }
-    logger.error(error, 'Error desconocido en joinClassController');
-    res.status(500).json({ error: ['Error desconocido'] });
   }
 };
 
@@ -103,9 +105,10 @@ const leaveClassController = async (req: Request, res: Response) => {
     if (error instanceof Error) {
       logger.error(error, 'Error en leaveClassController');
       res.status(400).json({ error: [error.message] });
+    } else {
+      logger.error(error, 'Error desconocido en leaveClassController');
+      res.status(500).json({ error: ['Error desconocido'] });
     }
-    logger.error(error, 'Error desconocido en leaveClassController');
-    res.status(500).json({ error: ['Error desconocido'] });
   }
 };
 
@@ -131,9 +134,10 @@ const getClassesByUserController = async (req: Request, res: Response) => {
     if (error instanceof Error) {
       logger.error(error, 'Error en getClassesByUserController');
       res.status(400).json({ error: [error.message] });
+    } else {
+      logger.error(error, 'Error desconocido en getClassesByUserController');
+      res.status(500).json({ error: ['Error desconocido'] });
     }
-    logger.error(error, 'Error desconocido en getClassesByUserController');
-    res.status(500).json({ error: ['Error desconocido'] });
   }
 };
 
@@ -159,9 +163,10 @@ const getUsersByClassController = async (req: Request, res: Response) => {
     if (error instanceof Error) {
       logger.error(error, 'Error en getUsersByClassController');
       res.status(400).json({ error: [error.message] });
+    } else {
+      logger.error(error, 'Error desconocido en getUsersByClassController');
+      res.status(500).json({ error: ['Error desconocido'] });
     }
-    logger.error(error, 'Error desconocido en getUsersByClassController');
-    res.status(500).json({ error: ['Error desconocido'] });
   }
 };
 
@@ -201,9 +206,10 @@ const updateClassController = async (req: Request, res: Response) => {
     if (error instanceof Error) {
       logger.error(error, 'Error en updateClassController');
       res.status(400).json({ error: [error.message] });
+    } else {
+      logger.error(error, 'Error desconocido en updateClassController');
+      res.status(500).json({ error: ['Error desconocido'] });
     }
-    logger.error(error, 'Error desconocido en updateClassController');
-    res.status(500).json({ error: ['Error desconocido'] });
   }
 };
 
@@ -235,9 +241,10 @@ const deleteClassController = async (req: Request, res: Response) => {
     if (error instanceof Error) {
       logger.error(error, 'Error en deleteClassController');
       res.status(400).json({ error: [error.message] });
+    } else {
+      logger.error(error, 'Error desconocido en deleteClassController');
+      res.status(500).json({ error: ['Error desconocido'] });
     }
-    logger.error(error, 'Error desconocido en deleteClassController');
-    res.status(500).json({ error: ['Error desconocido'] });
   }
 };
 

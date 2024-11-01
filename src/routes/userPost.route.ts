@@ -9,6 +9,8 @@ import {
 import { authRequired } from '../middlewares/token.middleware';
 import { verifyUserRequired } from '../middlewares/user.middleware';
 import { userCommentRouter } from './userComment.route';
+import { createPostSchema, updatePostSchema } from '../schemas/post.schema';
+import { validateSchema } from '../middlewares/validator.middleware';
 
 const userPostRouter = Router({ mergeParams: true });
 
@@ -16,6 +18,7 @@ userPostRouter.post(
   '/',
   authRequired,
   verifyUserRequired,
+  validateSchema(createPostSchema),
   createPostController
 );
 
@@ -25,6 +28,7 @@ userPostRouter.put(
   '/:postId',
   authRequired,
   verifyUserRequired,
+  validateSchema(updatePostSchema),
   updatePostController
 );
 

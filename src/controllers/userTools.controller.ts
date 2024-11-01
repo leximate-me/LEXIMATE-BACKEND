@@ -34,9 +34,10 @@ const extractTextFromFileController = async (req: Request, res: Response) => {
     if (error instanceof Error) {
       logger.error(error, 'Error en extractTextFromFileController');
       res.status(400).json({ error: error.message });
+    } else {
+      logger.error(error, 'Error desconocido en extractTextFromFileController');
+      res.status(500).json({ error: 'Error desconocido' });
     }
-    logger.error(error, 'Error desconocido en extractTextFromFileController');
-    res.status(500).json({ error: 'Error desconocido' });
   }
 };
 
