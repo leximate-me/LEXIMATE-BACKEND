@@ -7,13 +7,9 @@ import {
   getTasksByClassService,
   getTaskService,
 } from '../services/userTask.service';
-import { Request, Response, NextFunction } from 'express';
+import { Request, Response } from 'express';
 
-const createTaskController = async (
-  req: Request,
-  res: Response,
-  next: NextFunction
-) => {
+const createTaskController = async (req: Request, res: Response) => {
   try {
     const classId = parseInt(req.params.classId);
 
@@ -75,19 +71,13 @@ const createTaskController = async (
     if (error instanceof Error) {
       logger.error(error, 'Error en createTaskController');
       res.status(400).json({ error: error.message });
-      next(error);
     }
     logger.error(error, 'Error desconocido en createTaskController');
     res.status(500).json({ error: 'Error desconocido' });
-    next(new Error('Error desconocido'));
   }
 };
 
-const updateTaskController = async (
-  req: Request,
-  res: Response,
-  next: NextFunction
-) => {
+const updateTaskController = async (req: Request, res: Response) => {
   try {
     const userId = req.user?.id;
 
@@ -143,20 +133,13 @@ const updateTaskController = async (
     if (error instanceof Error) {
       logger.error(error, 'Error en updateTaskController');
       res.status(400).json({ error: error.message });
-      next(error);
-    } else {
-      logger.error(error, 'Error desconocido en updateTaskController');
-      res.status(500).json({ error: 'Error desconocido' });
-      next(new Error('Error desconocido'));
     }
+    logger.error(error, 'Error desconocido en updateTaskController');
+    res.status(500).json({ error: 'Error desconocido' });
   }
 };
 
-const deleteTaskController = async (
-  req: Request,
-  res: Response,
-  next: NextFunction
-) => {
+const deleteTaskController = async (req: Request, res: Response) => {
   try {
     const taskId = parseInt(req.params.taskId);
 
@@ -191,20 +174,13 @@ const deleteTaskController = async (
     if (error instanceof Error) {
       logger.error(error, 'Error en deleteTaskController');
       res.status(400).json({ error: error.message });
-      next(error);
-    } else {
-      logger.error(error, 'Error desconocido en deleteTaskController');
-      res.status(500).json({ error: 'Error desconocido' });
-      next(new Error('Error desconocido'));
     }
+    logger.error(error, 'Error desconocido en deleteTaskController');
+    res.status(500).json({ error: 'Error desconocido' });
   }
 };
 
-const getTasksByClassController = async (
-  req: Request,
-  res: Response,
-  next: NextFunction
-) => {
+const getTasksByClassController = async (req: Request, res: Response) => {
   try {
     const classId = parseInt(req.params.classId);
 
@@ -232,20 +208,13 @@ const getTasksByClassController = async (
     if (error instanceof Error) {
       logger.error(error, 'Error en getTasksByClassController');
       res.status(400).json({ error: error.message });
-      next(error);
-    } else {
-      logger.error(error, 'Error desconocido en getTasksByClassController');
-      res.status(500).json({ error: 'Error desconocido' });
-      next(new Error('Error desconocido'));
     }
+    logger.error(error, 'Error desconocido en getTasksByClassController');
+    res.status(500).json({ error: 'Error desconocido' });
   }
 };
 
-const getTaskController = async (
-  req: Request,
-  res: Response,
-  next: NextFunction
-) => {
+const getTaskController = async (req: Request, res: Response) => {
   try {
     const taskId = parseInt(req.params.taskId);
 
@@ -280,12 +249,9 @@ const getTaskController = async (
     if (error instanceof Error) {
       logger.error(error, 'Error en getTaskController');
       res.status(400).json({ error: error.message });
-      next(error);
-    } else {
-      logger.error(error, 'Error desconocido en getTaskController');
-      res.status(500).json({ error: 'Error desconocido' });
-      next(new Error('Error desconocido'));
     }
+    logger.error(error, 'Error desconocido en getTaskController');
+    res.status(500).json({ error: 'Error desconocido' });
   }
 };
 

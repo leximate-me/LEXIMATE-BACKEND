@@ -8,14 +8,10 @@ import {
   updateClassService,
   deleteClassService,
 } from '../services/userClass.service';
-import { Request, Response, NextFunction } from 'express';
+import { Request, Response } from 'express';
 
 // controlador para crear una clase
-const createClassController = async (
-  req: Request,
-  res: Response,
-  next: NextFunction
-) => {
+const createClassController = async (req: Request, res: Response) => {
   try {
     const classData = req.body;
 
@@ -38,20 +34,14 @@ const createClassController = async (
     if (error instanceof Error) {
       logger.error(error, 'Error en createClassController');
       res.status(400).json({ error: [error.message] });
-      next(error);
     }
     logger.error(error, 'Error desconocido en createClassController');
     res.status(500).json({ error: ['Error desconocido'] });
-    next(new Error('Error desconocido'));
   }
 };
 
 // controlador para unirse a una clase
-const joinClassController = async (
-  req: Request,
-  res: Response,
-  next: NextFunction
-) => {
+const joinClassController = async (req: Request, res: Response) => {
   try {
     const { classCode } = req.body;
 
@@ -79,20 +69,14 @@ const joinClassController = async (
     if (error instanceof Error) {
       logger.error(error, 'Error en joinClassController');
       res.status(400).json({ error: [error.message] });
-      next(error);
     }
     logger.error(error, 'Error desconocido en joinClassController');
     res.status(500).json({ error: ['Error desconocido'] });
-    next(new Error('Error desconocido'));
   }
 };
 
 // controlador para salir de una clase
-const leaveClassController = async (
-  req: Request,
-  res: Response,
-  next: NextFunction
-) => {
+const leaveClassController = async (req: Request, res: Response) => {
   try {
     const classId = parseInt(req.params.classId);
 
@@ -119,20 +103,14 @@ const leaveClassController = async (
     if (error instanceof Error) {
       logger.error(error, 'Error en leaveClassController');
       res.status(400).json({ error: [error.message] });
-      next(error);
     }
     logger.error(error, 'Error desconocido en leaveClassController');
     res.status(500).json({ error: ['Error desconocido'] });
-    next(new Error('Error desconocido'));
   }
 };
 
 // controlador para obtener las clases de un usuario
-const getClassesByUserController = async (
-  req: Request,
-  res: Response,
-  next: NextFunction
-) => {
+const getClassesByUserController = async (req: Request, res: Response) => {
   try {
     const userId = req.user?.id;
 
@@ -153,20 +131,14 @@ const getClassesByUserController = async (
     if (error instanceof Error) {
       logger.error(error, 'Error en getClassesByUserController');
       res.status(400).json({ error: [error.message] });
-      next(error);
     }
     logger.error(error, 'Error desconocido en getClassesByUserController');
     res.status(500).json({ error: ['Error desconocido'] });
-    next(new Error('Error desconocido'));
   }
 };
 
 // controlador para obtener los usuarios de una clase
-const getUsersByClassController = async (
-  req: Request,
-  res: Response,
-  next: NextFunction
-) => {
+const getUsersByClassController = async (req: Request, res: Response) => {
   try {
     const classId = parseInt(req.params.classId);
 
@@ -187,20 +159,14 @@ const getUsersByClassController = async (
     if (error instanceof Error) {
       logger.error(error, 'Error en getUsersByClassController');
       res.status(400).json({ error: [error.message] });
-      next(error);
     }
     logger.error(error, 'Error desconocido en getUsersByClassController');
     res.status(500).json({ error: ['Error desconocido'] });
-    next(new Error('Error desconocido'));
   }
 };
 
 // controlador para actualizar una clase
-const updateClassController = async (
-  req: Request,
-  res: Response,
-  next: NextFunction
-) => {
+const updateClassController = async (req: Request, res: Response) => {
   try {
     const classData = req.body;
 
@@ -235,20 +201,14 @@ const updateClassController = async (
     if (error instanceof Error) {
       logger.error(error, 'Error en updateClassController');
       res.status(400).json({ error: [error.message] });
-      next(error);
     }
     logger.error(error, 'Error desconocido en updateClassController');
     res.status(500).json({ error: ['Error desconocido'] });
-    next(new Error('Error desconocido'));
   }
 };
 
 // controlador para eliminar una clase
-const deleteClassController = async (
-  req: Request,
-  res: Response,
-  next: NextFunction
-) => {
+const deleteClassController = async (req: Request, res: Response) => {
   try {
     const classId = parseInt(req.params.classId);
 
@@ -275,11 +235,9 @@ const deleteClassController = async (
     if (error instanceof Error) {
       logger.error(error, 'Error en deleteClassController');
       res.status(400).json({ error: [error.message] });
-      next(error);
     }
     logger.error(error, 'Error desconocido en deleteClassController');
     res.status(500).json({ error: ['Error desconocido'] });
-    next(new Error('Error desconocido'));
   }
 };
 

@@ -10,13 +10,12 @@ import {
   sendEmailVerificationService,
   verifyEmailService,
 } from '../services/userAuth.service';
-import { Request, Response, NextFunction } from 'express';
+import { Request, Response } from 'express';
 
 const registerUserController = async (
   req: Request,
-  res: Response,
-  next: NextFunction
-) => {
+  res: Response
+): Promise<void> => {
   try {
     const userData = req.body;
 
@@ -42,19 +41,13 @@ const registerUserController = async (
     if (error instanceof Error) {
       logger.error(error, 'Error en registerUserController');
       res.status(400).json({ error: [error.message] });
-      next(error);
     }
     logger.error(error, 'Error desconocido en registerUserController');
     res.status(500).json({ error: ['Error desconocido'] });
-    next(new Error('Error desconocido'));
   }
 };
 
-const loginUserController = async (
-  req: Request,
-  res: Response,
-  next: NextFunction
-) => {
+const loginUserController = async (req: Request, res: Response) => {
   const userData = req.body;
   try {
     const { user, token } = await loginUserService(userData);
@@ -68,19 +61,13 @@ const loginUserController = async (
     if (error instanceof Error) {
       logger.error(error, 'Error en loginUserController');
       res.status(400).json({ error: [error.message] });
-      next(error);
     }
     logger.error(error, 'Error desconocido en loginUserController');
     res.status(500).json({ error: ['Error desconocido'] });
-    next(new Error('Error desconocido'));
   }
 };
 
-const verifyTokenController = async (
-  req: Request,
-  res: Response,
-  next: NextFunction
-) => {
+const verifyTokenController = async (req: Request, res: Response) => {
   try {
     const token = req.cookies.token;
     const { decoded } = await verifyTokenService(token);
@@ -90,19 +77,13 @@ const verifyTokenController = async (
     if (error instanceof Error) {
       logger.error(error, 'Error en verifyTokenController');
       res.status(400).json({ error: [error.message] });
-      next(error);
     }
     logger.error(error, 'Error desconocido en verifyTokenController');
     res.status(500).json({ error: ['Error desconocido'] });
-    next(new Error('Error desconocido'));
   }
 };
 
-const getProfileUserController = async (
-  req: Request,
-  res: Response,
-  next: NextFunction
-) => {
+const getProfileUserController = async (req: Request, res: Response) => {
   try {
     const userId = req.user?.id;
 
@@ -117,19 +98,13 @@ const getProfileUserController = async (
     if (error instanceof Error) {
       logger.error(error, 'Error en getProfileUserController');
       res.status(404).json({ error: [error.message] });
-      next(error);
     }
     logger.error(error, 'Error desconocido en getProfileUserController');
     res.status(500).json({ error: ['Error desconocido'] });
-    next(new Error('Error desconocido'));
   }
 };
 
-const deleteUserController = async (
-  req: Request,
-  res: Response,
-  next: NextFunction
-) => {
+const deleteUserController = async (req: Request, res: Response) => {
   try {
     const userId = req.user?.id;
 
@@ -144,19 +119,13 @@ const deleteUserController = async (
     if (error instanceof Error) {
       logger.error(error, 'Error en deleteUserController');
       res.status(404).json({ error: [error.message] });
-      next(error);
     }
     logger.error(error, 'Error desconocido en deleteUserController');
     res.status(500).json({ error: ['Error desconocido'] });
-    next(new Error('Error desconocido'));
   }
 };
 
-const logoutUserController = async (
-  _req: Request,
-  res: Response,
-  next: NextFunction
-) => {
+const logoutUserController = async (_req: Request, res: Response) => {
   try {
     const response = logoutUserService();
     res.cookie('token', '', { expires: new Date(0) });
@@ -165,19 +134,13 @@ const logoutUserController = async (
     if (error instanceof Error) {
       logger.error(error, 'Error en logoutUserController');
       res.status(404).json({ error: [error.message] });
-      next(error);
     }
     logger.error(error, 'Error desconocido en logoutUserController');
     res.status(500).json({ error: ['Error desconocido'] });
-    next(new Error('Error desconocido'));
   }
 };
 
-const sendEmailVerificationController = async (
-  req: Request,
-  res: Response,
-  next: NextFunction
-) => {
+const sendEmailVerificationController = async (req: Request, res: Response) => {
   try {
     const userId = req.user?.id;
 
@@ -192,19 +155,13 @@ const sendEmailVerificationController = async (
     if (error instanceof Error) {
       logger.error(error, 'Error en sendEmailVerificationController');
       res.status(500).json({ error: [error.message] });
-      next(error);
     }
     logger.error(error, 'Error desconocido en sendEmailVerificationController');
     res.status(500).json({ error: ['Error desconocido'] });
-    next(new Error('Error desconocido'));
   }
 };
 
-const verifyEmailController = async (
-  req: Request,
-  res: Response,
-  next: NextFunction
-) => {
+const verifyEmailController = async (req: Request, res: Response) => {
   try {
     const token = req.query.token; // Obtener el token de los parámetros de consulta
 
@@ -219,11 +176,9 @@ const verifyEmailController = async (
     if (error instanceof Error) {
       logger.error(error, 'Error en verifyEmailController');
       res.status(400).json({ error: [error.message] });
-      next(error);
     }
     logger.error(error, 'Error desconocido en verifyEmailController');
     res.status(500).json({ error: ['Error desconocido'] });
-    next(new Error('Error desconocido'));
   }
 };
 

@@ -5,14 +5,10 @@ import {
   deletePostService,
   readPostsService,
 } from '../services/userPost.service';
-import { Request, Response, NextFunction } from 'express';
+import { Request, Response } from 'express';
 import { logger } from '../configs/logger.config';
 
-const createPostController = async (
-  req: Request,
-  res: Response,
-  next: NextFunction
-) => {
+const createPostController = async (req: Request, res: Response) => {
   try {
     const postData = req.body;
 
@@ -47,19 +43,13 @@ const createPostController = async (
     if (error instanceof Error) {
       logger.error(error, 'Error en createPostController');
       res.status(400).json({ message: error.message });
-      next(error);
     }
     logger.error(error, 'Error desconocido en createPostController');
     res.status(500).json({ message: 'Error desconocido' });
-    next(new Error('Error desconocido'));
   }
 };
 
-const readPostsController = async (
-  req: Request,
-  res: Response,
-  next: NextFunction
-) => {
+const readPostsController = async (req: Request, res: Response) => {
   try {
     const classId = parseInt(req.params.classId);
 
@@ -87,19 +77,13 @@ const readPostsController = async (
     if (error instanceof Error) {
       logger.error(error, 'Error en readPostsController');
       res.status(400).json({ message: error.message });
-      next(error);
     }
     logger.error(error, 'Error desconocido en readPostsController');
     res.status(500).json({ message: 'Error desconocido' });
-    next(new Error('Error desconocido'));
   }
 };
 
-const updatePostController = async (
-  req: Request,
-  res: Response,
-  next: NextFunction
-) => {
+const updatePostController = async (req: Request, res: Response) => {
   try {
     const postId = parseInt(req.params.postId);
 
@@ -141,20 +125,13 @@ const updatePostController = async (
     if (error instanceof Error) {
       logger.error(error, 'Error en updatePostController');
       res.status(400).json({ message: error.message });
-      next(error);
-    } else {
-      logger.error(error, 'Error desconocido en updatePostController');
-      res.status(500).json({ message: 'Error desconocido' });
-      next(new Error('Error desconocido'));
     }
+    logger.error(error, 'Error desconocido en updatePostController');
+    res.status(500).json({ message: 'Error desconocido' });
   }
 };
 
-const deletePostController = async (
-  req: Request,
-  res: Response,
-  next: NextFunction
-) => {
+const deletePostController = async (req: Request, res: Response) => {
   try {
     const postId = parseInt(req.params.postId);
 
@@ -189,19 +166,13 @@ const deletePostController = async (
     if (error instanceof Error) {
       logger.error(error, 'Error en deletePostController');
       res.status(400).json({ message: error.message });
-      next(error);
     }
     logger.error(error, 'Error desconocido en deletePostController');
     res.status(500).json({ message: 'Error desconocido' });
-    next(new Error('Error desconocido'));
   }
 };
 
-const readPostController = async (
-  req: Request,
-  res: Response,
-  next: NextFunction
-) => {
+const readPostController = async (req: Request, res: Response) => {
   try {
     const userId = req.user?.id;
 
@@ -236,12 +207,9 @@ const readPostController = async (
     if (error instanceof Error) {
       logger.error(error, 'Error en readPostController');
       res.status(400).json({ message: error.message });
-      next(error);
-    } else {
-      logger.error(error, 'Error desconocido en readPostController');
-      res.status(500).json({ message: 'Error desconocido' });
-      next(new Error('Error desconocido'));
     }
+    logger.error(error, 'Error desconocido en readPostController');
+    res.status(500).json({ message: 'Error desconocido' });
   }
 };
 

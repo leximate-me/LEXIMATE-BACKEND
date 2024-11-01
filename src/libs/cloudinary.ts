@@ -38,4 +38,4 @@ const deleteImage = async (publicId: string) => {
   }
 };
 
-export { uploadImage, deleteImage };
+export { uploadImage, deleteImage, cloudinary };

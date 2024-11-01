@@ -1,12 +1,8 @@
 import { createCommentService } from '../services/userComment.service';
 import { logger } from '../configs/logger.config';
-import { Request, Response, NextFunction } from 'express';
+import { Request, Response } from 'express';
 
-const createCommentController = async (
-  req: Request,
-  res: Response,
-  next: NextFunction
-) => {
+const createCommentController = async (req: Request, res: Response) => {
   try {
     const commentData = req.body;
 
@@ -40,11 +36,9 @@ const createCommentController = async (
     if (error instanceof Error) {
       logger.error(error, 'Error en createCommentController');
       res.status(400).json({ error: [error.message] });
-      next(error);
     }
     logger.error(error, 'Error desconocido en createCommentController');
     res.status(500).json({ error: ['Error desconocido'] });
-    next(new Error('Error desconocido'));
   }
 };
 

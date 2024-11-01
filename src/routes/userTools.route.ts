@@ -9,8 +9,8 @@ const userToolsRouter = Router();
 userToolsRouter.post(
   '/extract-text-from-file',
   authRequired,
-  upload,
   verifyUserRequired,
+  upload,
   extractTextFromFileController
 );
 

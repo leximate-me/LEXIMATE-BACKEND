@@ -5,14 +5,11 @@ import {
 import { logger } from '../configs/logger.config';
 import { Request, Response, NextFunction } from 'express';
 
-const extractTextFromFileController = async (
-  req: Request,
-  res: Response,
-  next: NextFunction
-) => {
+const extractTextFromFileController = async (req: Request, res: Response) => {
   try {
     if (!req.file) {
-      throw new Error('No se ha proporcionado ningún archivo');
+      res.status(400).json({ error: 'No se ha proporcionado ningún archivo' });
+      return;
     }
 
     const file = req.file;
@@ -27,7 +24,8 @@ const extractTextFromFileController = async (
     ) {
       text = await extractTextFromDocxService(fileBuffer);
     } else {
-      throw new Error('Tipo de archivo no soportado');
+      res.status(400).json({ error: 'Formato de archivo no soportado' });
+      return;
     }
 
     // Enviar la respuesta JSON
@@ -36,12 +34,9 @@ const extractTextFromFileController = async (
     if (error instanceof Error) {
       logger.error(error, 'Error en extractTextFromFileController');
       res.status(400).json({ error: error.message });
-      next(error);
-    } else {
-      logger.error(error, 'Error desconocido en extractTextFromFileController');
-      res.status(500).json({ error: 'Error desconocido' });
-      next(new Error('Error desconocido'));
     }
+    logger.error(error, 'Error desconocido en extractTextFromFileController');
+    res.status(500).json({ error: 'Error desconocido' });
   }
 };
 

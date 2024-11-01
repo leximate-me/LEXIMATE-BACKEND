@@ -41,7 +41,7 @@ FileTask.init(
       autoIncrement: true,
     },
     file_type: {
-      type: DataTypes.STRING(10),
+      type: DataTypes.STRING(50),
       allowNull: false,
     },
     file_id: {
