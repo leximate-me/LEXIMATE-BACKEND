@@ -198,15 +198,33 @@ const getProfileUserService = async (userId: number) => {
   const transaction = await sequelize.transaction();
 
   try {
-    const existingUser = await User.findByPk(userId, { transaction });
+    const foundUser = await User.findByPk(userId, { transaction });
 
-    if (!existingUser) {
+    if (!foundUser) {
       throw new Error('Usuario no encontrado');
+    }
+    console.log(foundUser.people_fk);
+
+    const existingPerson = await People.findByPk(foundUser.people_fk, {
+      transaction,
+    });
+
+    if (!existingPerson) {
+      throw new Error('Persona no encontrada');
     }
 
     await transaction.commit();
 
-    return existingUser;
+    return {
+      first_name: existingPerson.first_name,
+      last_name: existingPerson.last_name,
+      dni: existingPerson.dni,
+      institute: existingPerson.institute,
+      phone_number: existingPerson.phone_number,
+      birth_date: existingPerson.birth_date,
+      user_name: foundUser.user_name,
+      email: foundUser.email,
+    };
   } catch (error) {
     await transaction.rollback();
     throw error;
@@ -303,6 +321,75 @@ const verifyEmailService = async (token: string) => {
   }
 };
 
+const updateProfileUserService = async (
+  userId: number,
+  userData: RegisterUserData
+) => {
+  const transaction = await sequelize.transaction();
+
+  try {
+    const {
+      first_name,
+      last_name,
+      dni,
+      institute,
+      phone_number,
+      birth_date,
+      user_name,
+      email,
+    } = userData;
+
+    const foundUser = await User.findByPk(userId, { transaction });
+
+    if (!foundUser) {
+      throw new Error('Usuario no encontrado');
+    }
+
+    const existingPerson = await People.findByPk(foundUser.people_fk, {
+      transaction,
+    });
+
+    if (!existingPerson) {
+      throw new Error('Persona no encontrada');
+    }
+
+    const updatedUser = await foundUser.update(
+      {
+        user_name,
+        email,
+      },
+      { transaction }
+    );
+
+    if (!updatedUser) {
+      throw new Error('Error al actualizar el usuario');
+    }
+
+    const updatedPerson = await existingPerson.update(
+      {
+        first_name,
+        last_name,
+        dni,
+        institute,
+        phone_number,
+        birth_date,
+      },
+      { transaction }
+    );
+
+    if (!updatedPerson) {
+      throw new Error('Error al actualizar la persona');
+    }
+
+    await transaction.commit();
+
+    return { message: 'Perfil actualizado exitosamente' };
+  } catch (error) {
+    await transaction.rollback();
+    throw error;
+  }
+};
+
 export {
   loginUserService,
   verifyTokenService,
@@ -312,4 +399,5 @@ export {
   deleteUserService,
   sendEmailVerificationService,
   verifyEmailService,
+  updateProfileUserService,
 };

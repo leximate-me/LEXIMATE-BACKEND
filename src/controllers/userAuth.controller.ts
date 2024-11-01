@@ -9,6 +9,7 @@ import {
   deleteUserService,
   sendEmailVerificationService,
   verifyEmailService,
+  updateProfileUserService,
 } from '../services/userAuth.service';
 import { Request, Response } from 'express';
 
@@ -90,12 +91,18 @@ const getProfileUserController = async (req: Request, res: Response) => {
   try {
     const userId = req.user?.id;
 
-    if (userId === undefined) {
-      throw new Error('Usuario no encontrado');
+    if (!userId) {
+      res.status(400).json({ error: ['Usuario no proporcionado'] });
+      return;
     }
 
     const existingUser = await getProfileUserService(userId);
-    logger.info(existingUser, 'Perfil de usuario obtenido');
+
+    if (!existingUser) {
+      res.status(400).json({ error: ['Usuario no encontrado'] });
+      return;
+    }
+
     res.status(200).json(existingUser);
   } catch (error) {
     if (error instanceof Error) {
@@ -193,6 +200,41 @@ const verifyEmailController = async (req: Request, res: Response) => {
   }
 };
 
+const updateProfileUserController = async (req: Request, res: Response) => {
+  try {
+    const userId = req.user?.id;
+
+    if (!userId) {
+      res.status(400).json({ error: ['Usuario no proporcionado'] });
+      return;
+    }
+
+    const userData = req.body;
+
+    if (!userData) {
+      res.status(400).json({ error: ['Falta la información del usuario'] });
+      return;
+    }
+
+    const updatedUser = await updateProfileUserService(userId, userData);
+
+    if (!updatedUser) {
+      res.status(400).json({ error: ['Error al actualizar el perfil'] });
+      return;
+    }
+
+    res.status(200).json(updatedUser);
+  } catch (error) {
+    if (error instanceof Error) {
+      logger.error(error, 'Error en updateProfileUserController');
+      res.status(400).json({ error: [error.message] });
+    } else {
+      logger.error(error, 'Error desconocido en updateProfileUserController');
+      res.status(500).json({ error: ['Error desconocido'] });
+    }
+  }
+};
+
 export {
   registerUserController,
   loginUserController,
@@ -202,4 +244,5 @@ export {
   logoutUserController,
   sendEmailVerificationController,
   verifyEmailController,
+  updateProfileUserController,
 };

@@ -12,6 +12,7 @@ import {
   logoutUserController,
   sendEmailVerificationController,
   verifyEmailController,
+  updateProfileUserController,
 } from '../controllers/userAuth.controller';
 
 const userAuthRouter = Router();
@@ -21,30 +22,44 @@ userAuthRouter.post(
   validateSchema(registerUserSchema),
   registerUserController
 );
+
 userAuthRouter.post(
   '/login',
   validateSchema(loginUserSchema),
   loginUserController
 );
+
 userAuthRouter.get('/verify-token', verifyTokenController);
+
 userAuthRouter.post('/logout', authRequired, logoutUserController);
+
 userAuthRouter.get(
   '/profile',
   authRequired,
   verifyUserRequired,
   getProfileUserController
 );
+
 userAuthRouter.delete(
   '/delete',
   authRequired,
   verifyUserRequired,
   deleteUserController
 );
+
 userAuthRouter.post(
   '/send-email-verification',
   authRequired,
   sendEmailVerificationController
 );
+
 userAuthRouter.get('/verify-email', verifyEmailController);
+
+userAuthRouter.put(
+  '/update-profile',
+  authRequired,
+  verifyUserRequired,
+  updateProfileUserController
+);
 
 export { userAuthRouter };
