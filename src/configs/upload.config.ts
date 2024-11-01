@@ -1,32 +1,39 @@
+import multer from 'multer';
 import { Request } from 'express';
-import multer, { FileFilterCallback } from 'multer';
 
-// storage
+// Configuración de almacenamiento en memoria
 const storage = multer.memoryStorage();
 
-// limits
+// Configuración de límites de archivo
 const limits = {
   fileSize: 5 * 1024 * 1024, // 5 MB
 };
 
-// filters
+// Filtro de archivos para aceptar solo imágenes
 const fileFilter = (
   _req: Request,
   file: Express.Multer.File,
-  cb: FileFilterCallback
+  cb: multer.FileFilterCallback
 ) => {
-  const allowedMimes = ['image/jpeg', 'image/pjpeg', 'image/png', 'image/gif'];
+  const allowedMimes = [
+    'image/jpeg',
+    'image/png',
+    'image/gif',
+    'application/pdf',
+    'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+  ];
   if (allowedMimes.includes(file.mimetype)) {
     cb(null, true);
   } else {
-    cb(new Error('Invalid file type.'));
+    cb(new Error('Tipo de archivo no permitido.'));
   }
 };
 
+// Configuración de `multer`
 const upload = multer({
   storage,
   limits,
   fileFilter,
-}).single('file'); // Asegúrate de que el campo del archivo en el formulario es 'file'
+}).single('file');
 
 export { upload };

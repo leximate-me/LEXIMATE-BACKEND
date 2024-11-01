@@ -9,7 +9,7 @@ interface PayloadData {
 const createAccessToken = async (payload: PayloadData): Promise<string> => {
   try {
     const token = await new Promise<string>((resolve, reject) => {
-      jwt.sign(payload, JWT_SECRET, { expiresIn: '1h' }, (err, token) => {
+      jwt.sign(payload, JWT_SECRET, { expiresIn: '5h' }, (err, token) => {
         if (err) {
           logger.error(err, 'Error en createAccessToken');
           reject(err);

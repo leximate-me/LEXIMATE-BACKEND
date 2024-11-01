@@ -6,45 +6,23 @@ import { FileTask } from '../models/fileTask.model';
 import { RolePermission } from '../models/rolePermission.model';
 import { Role } from '../models/role.model';
 import { sequelize } from '../database/db';
-import { TokenPayload } from 'src/types/express';
-
-interface TaskData {
-  title: string;
-  description: string;
-  status: boolean;
-  due_date: Date;
-  imageUrl?: string;
-  imageId?: string;
-  imageProps?: any;
-}
+import { deleteFromCloudinary } from '../middlewares/upload.middleware';
 
 // Función para crear una tarea
 const createTaskService = async (
   classId: number,
-  taskData: TaskData,
-  user: TokenPayload
+  userId: number,
+  taskData: Task,
+  fileProps: any
 ) => {
   const transaction = await sequelize.transaction();
   try {
-    const {
-      title,
-      description,
-      status,
-      due_date,
-      imageUrl = '',
-      imageId = '',
-      imageProps,
-    } = taskData;
-    if (!title || !status) {
-      throw new Error('Faltan datos');
-    }
+    const { title, description, status, due_date } = taskData;
 
-    if (!user) {
-      throw new Error('Usuario no proporcionado');
-    }
+    const { fileUrl, fileId, fileType } = fileProps;
 
     const foundUser = await User.findOne({
-      where: { id: user.id },
+      where: { id: userId },
       transaction,
     });
 
@@ -76,7 +54,7 @@ const createTaskService = async (
     }
 
     const classData = await UserClass.findOne({
-      where: { users_fk: user.id, classes_fk: classCodeMatch.id },
+      where: { users_fk: userId, classes_fk: classCodeMatch.id },
       transaction,
     });
 
@@ -95,14 +73,12 @@ const createTaskService = async (
       { transaction }
     );
 
-    if (imageUrl) {
+    if (fileProps) {
       await FileTask.create(
         {
-          file_name: imageProps.name,
-          file_path: imageProps.tempFilePath,
-          file_type: imageProps.mimetype,
-          file_id: imageId,
-          file_url: imageUrl,
+          file_type: fileType,
+          file_id: fileId,
+          file_url: fileUrl,
           tasks_fk: newTask.id,
         },
         { transaction }
@@ -120,31 +96,27 @@ const createTaskService = async (
 
 // Función para actualizar una tarea
 const updateTaskService = async (
+  userId: number,
   taskId: number,
-  taskData: TaskData,
-  user: TokenPayload
+  taskData: Task,
+  fileProps: any
 ) => {
   const transaction = await sequelize.transaction();
   try {
-    const {
-      title,
-      description,
-      status,
-      due_date,
-      imageUrl = '',
-      imageId = '',
-      imageProps,
-    } = taskData;
-    if (!title || !status) {
+    if (!taskData) {
       throw new Error('Faltan datos');
     }
 
-    if (!user) {
-      throw new Error('Usuario no encontrado');
+    const { title, description, status, due_date } = taskData;
+
+    const { fileUrl, fileId, fileType } = fileProps;
+
+    if (!userId) {
+      throw new Error('Usuario no proporcionado');
     }
 
     const foundUser = await User.findOne({
-      where: { id: user.id },
+      where: { id: userId },
       transaction,
     });
 
@@ -177,14 +149,12 @@ const updateTaskService = async (
 
     console.log(updatedTask);
 
-    if (imageUrl) {
+    if (fileProps) {
       await FileTask.update(
         {
-          file_name: imageProps.name,
-          file_path: imageProps.tempFilePath,
-          file_type: imageProps.mimetype,
-          file_id: imageId,
-          file_url: imageUrl,
+          file_type: fileType,
+          file_id: fileId,
+          file_url: fileUrl,
         },
         { where: { tasks_fk: taskId }, transaction }
       );
@@ -200,24 +170,29 @@ const updateTaskService = async (
 };
 
 // Función para eliminar una tarea
-const deleteTaskService = async (taskId: number, user: TokenPayload) => {
+const deleteTaskService = async (
+  taskId: number,
+  classId: number,
+  userId: number
+) => {
   const transaction = await sequelize.transaction();
   try {
-    if (!taskId) {
-      throw new Error('Id de tarea no proporcionado');
-    }
-
-    if (!user) {
-      throw new Error('Usuario no encontrado');
-    }
-
     const foundUser = await User.findOne({
-      where: { id: user.id },
+      where: { id: userId },
       transaction,
     });
 
     if (!foundUser) {
       throw new Error('Usuario no encontrado');
+    }
+
+    const userClass = await UserClass.findOne({
+      where: { users_fk: userId, classes_fk: classId },
+      transaction,
+    });
+
+    if (!userClass) {
+      throw new Error('No perteneces a esta clase');
     }
 
     const verifiedPermission = await RolePermission.findOne({
@@ -249,6 +224,15 @@ const deleteTaskService = async (taskId: number, user: TokenPayload) => {
 
     await Task.destroy({ where: { id: taskId }, transaction });
 
+    if (public_id) {
+      await deleteFromCloudinary(public_id, (e) => {
+        if (e) {
+          throw new Error('Error al eliminar la imagen');
+        }
+        throw new MessageEvent('Imagen eliminada correctamente');
+      });
+    }
+
     await transaction.commit();
 
     return public_id;
@@ -259,33 +243,16 @@ const deleteTaskService = async (taskId: number, user: TokenPayload) => {
 };
 
 // Función para obtener las tareas de una clase
-const getTasksByClassService = async (classId: number, user: TokenPayload) => {
+const getTasksByClassService = async (classId: number, userId: number) => {
   const transaction = await sequelize.transaction();
   try {
-    if (!classId) {
-      throw new Error('Id de clase no proporcionado');
-    }
-
-    if (!user) {
-      throw new Error('Usuario no encontrado');
-    }
-
     const foundUser = await User.findOne({
-      where: { id: user.id },
+      where: { id: userId },
       transaction,
     });
 
     if (!foundUser) {
       throw new Error('Usuario no encontrado');
-    }
-
-    const verifiedRole = await Role.findOne({
-      where: { id: foundUser.roles_fk },
-      transaction,
-    });
-
-    if (!verifiedRole) {
-      throw new Error('Rol no encontrado');
     }
 
     const verifiedPermission = await RolePermission.findOne({
@@ -297,6 +264,15 @@ const getTasksByClassService = async (classId: number, user: TokenPayload) => {
       throw new Error('No tiene permisos para visualizar una tarea');
     }
 
+    const classData = await UserClass.findOne({
+      where: { users_fk: userId, classes_fk: classId },
+      transaction,
+    });
+
+    if (!classData) {
+      throw new Error('No perteneces a esta clase');
+    }
+
     const classCodeMatch = await Class.findOne({
       where: { id: classId },
       transaction,
@@ -304,15 +280,6 @@ const getTasksByClassService = async (classId: number, user: TokenPayload) => {
 
     if (!classCodeMatch) {
       throw new Error('Clase no encontrada');
-    }
-
-    const classData = await UserClass.findOne({
-      where: { users_fk: user.id, classes_fk: classCodeMatch.id },
-      transaction,
-    });
-
-    if (!classData) {
-      throw new Error('No perteneces a esta clase');
     }
 
     const tasks = await Task.findAll({
@@ -345,11 +312,38 @@ const getTasksByClassService = async (classId: number, user: TokenPayload) => {
 };
 
 // Función para obtener una tarea
-const getTaskService = async (taskId: number) => {
+const getTaskService = async (
+  taskId: number,
+  classId: number,
+  userId: number
+) => {
   const transaction = await sequelize.transaction();
   try {
-    if (!taskId) {
-      throw new Error('Id de tarea no proporcionado');
+    const foundUser = await User.findOne({
+      where: { id: userId },
+      transaction,
+    });
+
+    if (!foundUser) {
+      throw new Error('Usuario no encontrado');
+    }
+
+    const userClass = await UserClass.findOne({
+      where: { users_fk: userId, classes_fk: classId },
+      transaction,
+    });
+
+    if (!userClass) {
+      throw new Error('No perteneces a esta clase');
+    }
+
+    const verifiedPermission = await RolePermission.findOne({
+      where: { roles_fk: foundUser.roles_fk, permissions_fk: 2 },
+      transaction,
+    });
+
+    if (!verifiedPermission) {
+      throw new Error('No tiene permisos para visualizar una tarea');
     }
 
     const task = await Task.findOne({

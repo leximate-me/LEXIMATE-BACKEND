@@ -3,8 +3,6 @@ import { sequelize } from '../database/db';
 
 interface FileTaskAttributes {
   id: number;
-  file_name: string;
-  file_path: string;
   file_type: string;
   file_id: string;
   file_url: string;
@@ -25,8 +23,6 @@ class FileTask
   implements FileTaskAttributes
 {
   public id!: number;
-  public file_name!: string;
-  public file_path!: string;
   public file_type!: string;
   public file_id!: string;
   public file_url!: string;
@@ -43,14 +39,6 @@ FileTask.init(
       type: DataTypes.INTEGER,
       primaryKey: true,
       autoIncrement: true,
-    },
-    file_name: {
-      type: DataTypes.STRING(100),
-      allowNull: false,
-    },
-    file_path: {
-      type: DataTypes.STRING(100),
-      allowNull: false,
     },
     file_type: {
       type: DataTypes.STRING(10),
