@@ -3,7 +3,7 @@ import {
   extractTextFromDocxService,
 } from '../services/userTool.service';
 import { logger } from '../configs/logger.config';
-import { Request, Response, NextFunction } from 'express';
+import { Request, Response } from 'express';
 
 const extractTextFromFileController = async (req: Request, res: Response) => {
   try {
