@@ -1,34 +1,20 @@
-import { DataTypes, Model, Optional } from 'sequelize';
+import {
+  CreationOptional,
+  DataTypes,
+  InferAttributes,
+  InferCreationAttributes,
+  Model,
+} from 'sequelize';
 import { sequelize } from '../database/db';
 
-interface CommentAttributes {
-  id: number;
-  content: string;
-  posts_fk: number;
-  users_fk: number;
-  createdAt?: Date;
-  updatedAt?: Date;
-  deletedAt?: Date;
-}
-
-interface CommentCreationAttributes
-  extends Optional<
-    CommentAttributes,
-    'id' | 'createdAt' | 'updatedAt' | 'deletedAt'
-  > {}
-
-class Comment
-  extends Model<CommentAttributes, CommentCreationAttributes>
-  implements CommentAttributes
-{
-  public id!: number;
-  public content!: string;
-  public posts_fk!: number;
-  public users_fk!: number;
-
-  public readonly createdAt!: Date;
-  public readonly updatedAt!: Date;
-  public readonly deletedAt!: Date;
+class Comment extends Model<
+  InferAttributes<Comment>,
+  InferCreationAttributes<Comment>
+> {
+  declare id: CreationOptional<number>;
+  declare content: string;
+  declare posts_fk: number;
+  declare users_fk: number;
 }
 
 Comment.init(
@@ -53,6 +39,7 @@ Comment.init(
   },
   {
     tableName: 'comments',
+    modelName: 'Comment',
     timestamps: true,
     paranoid: true,
     deletedAt: 'deletedAt',
@@ -60,4 +47,4 @@ Comment.init(
   }
 );
 
-export { Comment, CommentAttributes, CommentCreationAttributes };
+export { Comment };

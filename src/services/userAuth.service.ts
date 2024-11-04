@@ -8,7 +8,8 @@ import { User } from '../models/user.model';
 import { People } from '../models/people.model';
 import { Role } from '../models/role.model';
 import { TokenPayload } from 'src/types/express';
-interface RegisterUserData {
+
+interface RegisterUserData extends People {
   first_name: string;
   last_name: string;
   dni: string;

@@ -1,40 +1,23 @@
-import { DataTypes, Model, Optional } from 'sequelize';
+import {
+  CreationOptional,
+  DataTypes,
+  InferAttributes,
+  InferCreationAttributes,
+  Model,
+} from 'sequelize';
 import { sequelize } from '../database/db';
 
-interface PeopleAttributes {
-  id: number;
-  first_name: string;
-  last_name: string;
-  dni: string;
-  institute: string;
-  phone_number: string;
-  birth_date: Date;
-  createdAt?: Date;
-  updatedAt?: Date;
-  deletedAt?: Date;
-}
-
-interface PeopleCreationAttributes
-  extends Optional<
-    PeopleAttributes,
-    'id' | 'createdAt' | 'updatedAt' | 'deletedAt'
-  > {}
-
-class People
-  extends Model<PeopleAttributes, PeopleCreationAttributes>
-  implements PeopleAttributes
-{
-  public id!: number;
-  public first_name!: string;
-  public last_name!: string;
-  public dni!: string;
-  public institute!: string;
-  public phone_number!: string;
-  public birth_date!: Date;
-
-  public readonly createdAt!: Date;
-  public readonly updatedAt!: Date;
-  public readonly deletedAt!: Date;
+class People extends Model<
+  InferAttributes<People>,
+  InferCreationAttributes<People>
+> {
+  declare id: CreationOptional<number>;
+  declare first_name: string;
+  declare last_name: string;
+  declare dni: string;
+  declare institute: string;
+  declare phone_number: string;
+  declare birth_date: Date;
 }
 
 People.init(
@@ -71,6 +54,7 @@ People.init(
   },
   {
     tableName: 'people',
+    modelName: 'People',
     paranoid: true,
     timestamps: true,
     deletedAt: 'deletedAt',
@@ -78,4 +62,4 @@ People.init(
   }
 );
 
-export { People, PeopleAttributes, PeopleCreationAttributes };
+export { People };

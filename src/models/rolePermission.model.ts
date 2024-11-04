@@ -1,32 +1,19 @@
-import { DataTypes, Model, Optional } from 'sequelize';
+import {
+  DataTypes,
+  InferAttributes,
+  InferCreationAttributes,
+  Model,
+  CreationOptional,
+} from 'sequelize';
 import { sequelize } from '../database/db';
 
-interface RolePermissionAttributes {
-  id: number;
-  roles_fk: number;
-  permissions_fk: number;
-  createdAt?: Date;
-  updatedAt?: Date;
-  deletedAt?: Date;
-}
-
-interface RolePermissionCreationAttributes
-  extends Optional<
-    RolePermissionAttributes,
-    'id' | 'createdAt' | 'updatedAt' | 'deletedAt'
-  > {}
-
-class RolePermission
-  extends Model<RolePermissionAttributes, RolePermissionCreationAttributes>
-  implements RolePermissionAttributes
-{
-  public id!: number;
-  public roles_fk!: number;
-  public permissions_fk!: number;
-
-  public readonly createdAt!: Date;
-  public readonly updatedAt!: Date;
-  public readonly deletedAt!: Date;
+class RolePermission extends Model<
+  InferAttributes<RolePermission>,
+  InferCreationAttributes<RolePermission>
+> {
+  declare id: CreationOptional<number>;
+  declare roles_fk: number;
+  declare permissions_fk: number;
 }
 
 RolePermission.init(
@@ -47,6 +34,7 @@ RolePermission.init(
   },
   {
     tableName: 'roles_permissions',
+    modelName: 'RolePermission',
     timestamps: true,
     paranoid: true,
     deletedAt: 'deletedAt',
@@ -54,8 +42,4 @@ RolePermission.init(
   }
 );
 
-export {
-  RolePermission,
-  RolePermissionAttributes,
-  RolePermissionCreationAttributes,
-};
+export { RolePermission };

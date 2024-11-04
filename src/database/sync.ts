@@ -14,7 +14,7 @@ import { TaskTool } from '../models/taskTool.model';
 import { logger } from '../configs/logger.config';
 import './relationship';
 
-const syncModels = async () => {
+async function syncModels() {
   try {
     await People.sync({ force: false });
     await User.sync({ force: false });
@@ -51,6 +51,6 @@ const syncModels = async () => {
   } catch (error) {
     logger.error('Error al sincronizar los modelos:', error);
   }
-};
+}
 
 export { syncModels };

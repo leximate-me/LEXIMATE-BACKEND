@@ -12,7 +12,7 @@ const getEnvVar = (key: string, defaultValue?: string): string => {
   return value;
 };
 
-const PORT = getEnvVar('PORT', '3000');
+const PORT = getEnvVar('PORT');
 const DB_HOST = getEnvVar('DB_HOST');
 const DB_USER = getEnvVar('DB_USER');
 const DB_NAME = getEnvVar('DB_NAME');

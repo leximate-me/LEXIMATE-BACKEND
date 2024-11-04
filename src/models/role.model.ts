@@ -1,32 +1,16 @@
-import { DataTypes, Model, Optional } from 'sequelize';
+import {
+  CreationOptional,
+  DataTypes,
+  InferAttributes,
+  InferCreationAttributes,
+  Model,
+} from 'sequelize';
 import { sequelize } from '../database/db';
 
-interface RoleAttributes {
-  id: number;
-  name: string;
-  description: string;
-  createdAt?: Date;
-  updatedAt?: Date;
-  deletedAt?: Date;
-}
-
-interface RoleCreationAttributes
-  extends Optional<
-    RoleAttributes,
-    'id' | 'createdAt' | 'updatedAt' | 'deletedAt'
-  > {}
-
-class Role
-  extends Model<RoleAttributes, RoleCreationAttributes>
-  implements RoleAttributes
-{
-  public id!: number;
-  public name!: string;
-  public description!: string;
-
-  public readonly createdAt!: Date;
-  public readonly updatedAt!: Date;
-  public readonly deletedAt!: Date;
+class Role extends Model<InferAttributes<Role>, InferCreationAttributes<Role>> {
+  declare id: CreationOptional<number>;
+  declare name: string;
+  declare description: string;
 }
 
 Role.init(
@@ -47,6 +31,7 @@ Role.init(
   },
   {
     tableName: 'roles',
+    modelName: 'Role',
     timestamps: true,
     paranoid: true,
     deletedAt: 'deletedAt',
@@ -54,4 +39,4 @@ Role.init(
   }
 );
 
-export { Role, RoleAttributes, RoleCreationAttributes };
+export { Role };

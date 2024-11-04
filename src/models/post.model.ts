@@ -1,36 +1,18 @@
-import { DataTypes, Model, Optional } from 'sequelize';
+import {
+  CreationOptional,
+  DataTypes,
+  InferAttributes,
+  InferCreationAttributes,
+  Model,
+} from 'sequelize';
 import { sequelize } from '../database/db';
 
-interface PostAttributes {
-  id: number;
-  title: string;
-  content: string;
-  classes_fk: number;
-  users_fk: number;
-  createdAt?: Date;
-  updatedAt?: Date;
-  deletedAt?: Date;
-}
-
-interface PostCreationAttributes
-  extends Optional<
-    PostAttributes,
-    'id' | 'createdAt' | 'updatedAt' | 'deletedAt'
-  > {}
-
-class Post
-  extends Model<PostAttributes, PostCreationAttributes>
-  implements PostAttributes
-{
-  public id!: number;
-  public title!: string;
-  public content!: string;
-  public classes_fk!: number;
-  public users_fk!: number;
-
-  public readonly createdAt!: Date;
-  public readonly updatedAt!: Date;
-  public readonly deletedAt!: Date;
+class Post extends Model<InferAttributes<Post>, InferCreationAttributes<Post>> {
+  declare id: CreationOptional<number>;
+  declare title: string;
+  declare content: string;
+  declare classes_fk: number;
+  declare users_fk: number;
 }
 
 Post.init(
@@ -59,6 +41,7 @@ Post.init(
   },
   {
     tableName: 'posts',
+    modelName: 'Post',
     timestamps: true,
     paranoid: true,
     deletedAt: 'deletedAt',
@@ -66,4 +49,4 @@ Post.init(
   }
 );
 
-export { Post, PostAttributes, PostCreationAttributes };
+export { Post };
