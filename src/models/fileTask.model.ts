@@ -1,40 +1,21 @@
-import { DataTypes, Model, Optional } from 'sequelize';
+import {
+  CreationOptional,
+  DataTypes,
+  InferAttributes,
+  InferCreationAttributes,
+  Model,
+} from 'sequelize';
 import { sequelize } from '../database/db';
 
-interface FileTaskAttributes {
-  id: number;
-  file_name: string;
-  file_path: string;
-  file_type: string;
-  file_id: string;
-  file_url: string;
-  tasks_fk: number;
-  createdAt?: Date;
-  updatedAt?: Date;
-  deletedAt?: Date;
-}
-
-interface FileTaskCreationAttributes
-  extends Optional<
-    FileTaskAttributes,
-    'id' | 'createdAt' | 'updatedAt' | 'deletedAt'
-  > {}
-
-class FileTask
-  extends Model<FileTaskAttributes, FileTaskCreationAttributes>
-  implements FileTaskAttributes
-{
-  public id!: number;
-  public file_name!: string;
-  public file_path!: string;
-  public file_type!: string;
-  public file_id!: string;
-  public file_url!: string;
-  public tasks_fk!: number;
-
-  public readonly createdAt!: Date;
-  public readonly updatedAt!: Date;
-  public readonly deletedAt!: Date;
+class FileTask extends Model<
+  InferAttributes<FileTask>,
+  InferCreationAttributes<FileTask>
+> {
+  declare id: CreationOptional<number>;
+  declare file_type: string;
+  declare file_id: string;
+  declare file_url: string;
+  declare tasks_fk: number;
 }
 
 FileTask.init(
@@ -44,16 +25,8 @@ FileTask.init(
       primaryKey: true,
       autoIncrement: true,
     },
-    file_name: {
-      type: DataTypes.STRING(100),
-      allowNull: false,
-    },
-    file_path: {
-      type: DataTypes.STRING(100),
-      allowNull: false,
-    },
     file_type: {
-      type: DataTypes.STRING(10),
+      type: DataTypes.STRING(50),
       allowNull: false,
     },
     file_id: {
@@ -71,6 +44,7 @@ FileTask.init(
   },
   {
     tableName: 'files_tasks',
+    modelName: 'FileTask',
     timestamps: true,
     paranoid: true,
     deletedAt: 'deletedAt',
@@ -78,4 +52,4 @@ FileTask.init(
   }
 );
 
-export { FileTask, FileTaskAttributes, FileTaskCreationAttributes };
+export { FileTask };

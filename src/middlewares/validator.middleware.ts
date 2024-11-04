@@ -1,6 +1,8 @@
-import { logger } from '../configs/loggerConfig';
+// import { logger } from '../configs/logger.config';
 import { Request, Response, NextFunction } from 'express';
 import { Schema, ZodError } from 'zod';
+import { deleteFromCloudinary } from './upload.middleware';
+import { logger } from '../configs/logger.config';
 
 const validateSchema = (schema: Schema) => {
   return async (req: Request, res: Response, next: NextFunction) => {
@@ -8,12 +10,15 @@ const validateSchema = (schema: Schema) => {
       await schema.parseAsync(req.body);
       next();
     } catch (error) {
+      if (req.file && req.file.cloudinaryPublicId) {
+        await deleteFromCloudinary(req.file.cloudinaryPublicId, next);
+        console.log('Archivo eliminado de Cloudinary');
+      }
       if (error instanceof ZodError) {
-        logger.error(error, 'Error en validateSchema');
-        res.status(400).json({ error: error.errors });
+        logger.error(error.errors, 'Error de validación');
+        res.status(400).json({ error: error.errors.map((err) => err.message) });
       } else {
-        logger.error(error, 'Error desconocido en validateSchema');
-        res.status(500).json({ error: ['Error desconocido'] });
+        next(error); // Propagar el error al siguiente middleware o controlador
       }
     }
   };

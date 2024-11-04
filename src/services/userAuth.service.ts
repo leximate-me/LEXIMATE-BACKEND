@@ -1,15 +1,15 @@
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import { createAccessToken } from '../libs/jwt';
-import { JWT_SECRET } from '../configs/envConfig';
+import { JWT_SECRET } from '../configs/env.config';
 import { resend } from '../libs/resend';
 import { sequelize } from '../database/db';
 import { User } from '../models/user.model';
 import { People } from '../models/people.model';
 import { Role } from '../models/role.model';
-import { TokenPayload } from 'types/express';
+import { TokenPayload } from 'src/types/express';
 
-interface RegisterUserData {
+interface RegisterUserData extends People {
   first_name: string;
   last_name: string;
   dni: string;
@@ -23,19 +23,10 @@ interface RegisterUserData {
   verified: boolean;
 }
 
-interface LoginUserData {
-  email: string;
-  password: string;
-}
-
 const registerUserService = async (userData: RegisterUserData) => {
-  // Iniciar una transacción de la base de datos
   const transaction = await sequelize.transaction();
-  try {
-    if (!userData) {
-      throw new Error('Datos no proporcionados');
-    }
 
+  try {
     const {
       first_name,
       last_name,
@@ -49,41 +40,29 @@ const registerUserService = async (userData: RegisterUserData) => {
       role,
     } = userData;
 
-    // Verificar si el usuario ya existe
-    const existingEmail = await User.findOne({ where: { email }, transaction });
-    if (existingEmail) {
-      throw new Error('El usuario ya existe');
-    }
+    const [existingEmail, existingPerson, existingUser, existingRole] =
+      await Promise.all([
+        User.findOne({ where: { email }, transaction }),
+        People.findOne({ where: { dni }, transaction }),
+        User.findOne({ where: { user_name }, transaction }),
+        Role.findOne({ where: { name: role }, transaction }),
+      ]);
 
-    // Verificar si la persona ya existe
-    const existingPerson = await People.findOne({
-      where: { dni },
-      transaction,
-    });
+    if (existingEmail) {
+      throw new Error('El email ya está en uso');
+    }
 
     if (existingPerson) {
       throw new Error('La persona ya existe');
     }
-
-    // Verificar si el nombre de usuario ya existe
-    const existingUser = await User.findOne({
-      where: { user_name },
-      transaction,
-    });
     if (existingUser) {
       throw new Error('El nombre de usuario ya existe');
     }
 
-    // Verificar si el rol existe
-    const existingRole = await Role.findOne({
-      where: { name: role },
-      transaction,
-    });
     if (!existingRole) {
       throw new Error('El rol no existe');
     }
 
-    // Crear la persona
     const newPerson = await People.create(
       {
         first_name,
@@ -96,10 +75,8 @@ const registerUserService = async (userData: RegisterUserData) => {
       { transaction }
     );
 
-    // Encriptar la contraseña
     const hashedPassword = await bcrypt.hash(password, 12);
 
-    // Crear el usuario
     const newUser = await User.create(
       {
         user_name,
@@ -128,7 +105,7 @@ const registerUserService = async (userData: RegisterUserData) => {
   }
 };
 
-const loginUserService = async (userData: LoginUserData) => {
+const loginUserService = async (userData: User) => {
   const transaction = await sequelize.transaction();
   try {
     if (!userData) {
@@ -137,23 +114,21 @@ const loginUserService = async (userData: LoginUserData) => {
 
     const { email, password } = userData;
 
-    // Verificar si el usuario existe
     const existingUser = await User.findOne({ where: { email }, transaction });
 
     if (!existingUser) {
       throw new Error('No existe un usuario con ese email');
     }
 
-    // Verificar si la contraseña es correcta
     const isValidPassword = await bcrypt.compare(
       password,
       existingUser.password
     );
+
     if (!isValidPassword) {
       throw new Error('Contraseña incorrecta');
     }
 
-    // Verificar si el usuario tiene un rol asignado
     const existingRole = await Role.findByPk(existingUser.roles_fk, {
       transaction,
     });
@@ -162,7 +137,6 @@ const loginUserService = async (userData: LoginUserData) => {
       throw new Error('El usuario no tiene un rol asignado');
     }
 
-    // Crear el token de acceso
     const token = await createAccessToken({
       id: existingUser.id,
       rol: existingRole.id,
@@ -185,9 +159,9 @@ const verifyTokenService = async (token: string) => {
     if (!token) {
       throw new Error('Token no proporcionado');
     }
-    // Verificar el token
+
     const decoded = jwt.verify(token, JWT_SECRET) as TokenPayload;
-    // Buscar el usuario
+
     const existingUser = await User.findByPk(decoded.id, { transaction });
 
     if (!existingUser) {
@@ -196,7 +170,7 @@ const verifyTokenService = async (token: string) => {
 
     await transaction.commit();
 
-    return { decoded, existingUser };
+    return decoded;
   } catch (error) {
     await transaction.rollback();
     throw error;
@@ -207,18 +181,32 @@ const getProfileUserService = async (userId: number) => {
   const transaction = await sequelize.transaction();
 
   try {
-    if (!userId) {
-      throw new Error('Usuario no proporcionado');
-    }
-    const existingUser = await User.findByPk(userId, { transaction });
+    const foundUser = await User.findByPk(userId, { transaction });
 
-    if (!existingUser) {
+    if (!foundUser) {
       throw new Error('Usuario no encontrado');
+    }
+
+    const existingPerson = await People.findByPk(foundUser.people_fk, {
+      transaction,
+    });
+
+    if (!existingPerson) {
+      throw new Error('Persona no encontrada');
     }
 
     await transaction.commit();
 
-    return existingUser;
+    return {
+      first_name: existingPerson.first_name,
+      last_name: existingPerson.last_name,
+      dni: existingPerson.dni,
+      institute: existingPerson.institute,
+      phone_number: existingPerson.phone_number,
+      birth_date: existingPerson.birth_date,
+      user_name: foundUser.user_name,
+      email: foundUser.email,
+    };
   } catch (error) {
     await transaction.rollback();
     throw error;
@@ -229,13 +217,10 @@ const logoutUserService = () => {
   return { message: 'Cerró sesión exitosamente' };
 };
 
-const deleteUserService = async (id: number) => {
+const deleteUserService = async (userId: number) => {
   const transaction = await sequelize.transaction();
   try {
-    if (!id) {
-      throw new Error('Usuario no proporcionado');
-    }
-    const user = await User.findByPk(id, { transaction });
+    const user = await User.findByPk(userId, { transaction });
     if (!user) {
       throw new Error('Usuario no encontrado');
     }
@@ -247,6 +232,7 @@ const deleteUserService = async (id: number) => {
     }
 
     await user.destroy({ transaction });
+
     await person.destroy({ transaction });
 
     await transaction.commit();
@@ -258,13 +244,10 @@ const deleteUserService = async (id: number) => {
   }
 };
 
-const sendEmailVerificationService = async (id: number) => {
+const sendEmailVerificationService = async (userId: number) => {
   const transaction = await sequelize.transaction();
   try {
-    if (!id) {
-      throw new Error('Usuario no proporcionado');
-    }
-    const user = await User.findByPk(id, { transaction });
+    const user = await User.findByPk(userId, { transaction });
 
     if (!user) {
       throw new Error('Usuario no encontrado');
@@ -321,6 +304,75 @@ const verifyEmailService = async (token: string) => {
   }
 };
 
+const updateProfileUserService = async (
+  userId: number,
+  userData: RegisterUserData
+) => {
+  const transaction = await sequelize.transaction();
+
+  try {
+    const {
+      first_name,
+      last_name,
+      dni,
+      institute,
+      phone_number,
+      birth_date,
+      user_name,
+      email,
+    } = userData;
+
+    const foundUser = await User.findByPk(userId, { transaction });
+
+    if (!foundUser) {
+      throw new Error('Usuario no encontrado');
+    }
+
+    const existingPerson = await People.findByPk(foundUser.people_fk, {
+      transaction,
+    });
+
+    if (!existingPerson) {
+      throw new Error('Persona no encontrada');
+    }
+
+    const updatedUser = await foundUser.update(
+      {
+        user_name,
+        email,
+      },
+      { transaction }
+    );
+
+    if (!updatedUser) {
+      throw new Error('Error al actualizar el usuario');
+    }
+
+    const updatedPerson = await existingPerson.update(
+      {
+        first_name,
+        last_name,
+        dni,
+        institute,
+        phone_number,
+        birth_date,
+      },
+      { transaction }
+    );
+
+    if (!updatedPerson) {
+      throw new Error('Error al actualizar la persona');
+    }
+
+    await transaction.commit();
+
+    return { message: 'Perfil actualizado exitosamente' };
+  } catch (error) {
+    await transaction.rollback();
+    throw error;
+  }
+};
+
 export {
   loginUserService,
   verifyTokenService,
@@ -330,4 +382,5 @@ export {
   deleteUserService,
   sendEmailVerificationService,
   verifyEmailService,
+  updateProfileUserService,
 };

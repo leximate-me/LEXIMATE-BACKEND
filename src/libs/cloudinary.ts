@@ -1,10 +1,10 @@
-import { v2 as cloudinary } from 'cloudinary';
+import { v2 as cloudinary, UploadApiResponse } from 'cloudinary';
 import {
   CLOUDINARY_CLOUD_NAME,
   CLOUDINARY_API_KEY,
   CLOUDINARY_API_SECRET,
-} from '../configs/envConfig';
-import { logger } from '../configs/loggerConfig';
+} from '../configs/env.config';
+import { logger } from '../configs/logger.config';
 
 cloudinary.config({
   cloud_name: CLOUDINARY_CLOUD_NAME,
@@ -12,15 +12,21 @@ cloudinary.config({
   api_secret: CLOUDINARY_API_SECRET,
 });
 
-const uploadImage = async (filePath: string) => {
-  try {
-    const result = await cloudinary.uploader.upload(filePath, {
-      folder: 'api',
-    });
-    return result;
-  } catch (error) {
-    return logger.child({ error }).error('Error al subir la imagen');
-  }
+const uploadImage = (buffer: Buffer): Promise<UploadApiResponse> => {
+  return new Promise((resolve, reject) => {
+    const stream = cloudinary.uploader.upload_stream(
+      { folder: 'api' },
+      (error, result) => {
+        if (error) {
+          logger.child({ error }).error('Error al subir la imagen');
+          reject(error);
+        }
+        return result ? resolve(result) : reject('Error al devolver la imagen');
+      }
+    );
+
+    stream.end(buffer);
+  });
 };
 
 const deleteImage = async (publicId: string) => {
@@ -32,4 +38,4 @@ const deleteImage = async (publicId: string) => {
   }
 };
 
-export { uploadImage, deleteImage };
+export { uploadImage, deleteImage, cloudinary };

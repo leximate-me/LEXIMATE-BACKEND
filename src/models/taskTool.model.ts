@@ -1,32 +1,19 @@
-import { DataTypes, Model, Optional } from 'sequelize';
+import {
+  DataTypes,
+  Model,
+  InferAttributes,
+  InferCreationAttributes,
+  CreationOptional,
+} from 'sequelize';
 import { sequelize } from '../database/db';
 
-interface TaskToolAttributes {
-  id: number;
-  tasks_fk: number;
-  tools_fk: number;
-  createdAt?: Date;
-  updatedAt?: Date;
-  deletedAt?: Date;
-}
-
-interface TaskToolCreationAttributes
-  extends Optional<
-    TaskToolAttributes,
-    'id' | 'createdAt' | 'updatedAt' | 'deletedAt'
-  > {}
-
-class TaskTool
-  extends Model<TaskToolAttributes, TaskToolCreationAttributes>
-  implements TaskToolAttributes
-{
-  public id!: number;
-  public tasks_fk!: number;
-  public tools_fk!: number;
-
-  public readonly createdAt!: Date;
-  public readonly updatedAt!: Date;
-  public readonly deletedAt!: Date;
+class TaskTool extends Model<
+  InferAttributes<TaskTool>,
+  InferCreationAttributes<TaskTool>
+> {
+  declare id: CreationOptional<number>;
+  declare tasks_fk: number;
+  declare tools_fk: number;
 }
 
 TaskTool.init(
@@ -47,6 +34,7 @@ TaskTool.init(
   },
   {
     tableName: 'tasks_tools',
+    modelName: 'TaskTool',
     timestamps: true,
     paranoid: true,
     deletedAt: 'deletedAt',
@@ -54,4 +42,4 @@ TaskTool.init(
   }
 );
 
-export { TaskTool, TaskToolAttributes, TaskToolCreationAttributes };
+export { TaskTool };

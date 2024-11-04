@@ -1,32 +1,19 @@
-import { DataTypes, Model, Optional } from 'sequelize';
+import {
+  DataTypes,
+  Model,
+  InferAttributes,
+  InferCreationAttributes,
+  CreationOptional,
+} from 'sequelize';
 import { sequelize } from '../database/db';
 
-interface UserClassAttributes {
-  id: number;
-  users_fk: number;
-  classes_fk: number;
-  createdAt?: Date;
-  updatedAt?: Date;
-  deletedAt?: Date;
-}
-
-interface UserClassCreationAttributes
-  extends Optional<
-    UserClassAttributes,
-    'id' | 'createdAt' | 'updatedAt' | 'deletedAt'
-  > {}
-
-class UserClass
-  extends Model<UserClassAttributes, UserClassCreationAttributes>
-  implements UserClassAttributes
-{
-  public id!: number;
-  public users_fk!: number;
-  public classes_fk!: number;
-
-  public readonly createdAt!: Date;
-  public readonly updatedAt!: Date;
-  public readonly deletedAt!: Date;
+class UserClass extends Model<
+  InferAttributes<UserClass>,
+  InferCreationAttributes<UserClass>
+> {
+  declare id: CreationOptional<number>;
+  declare users_fk: number;
+  declare classes_fk: number;
 }
 
 UserClass.init(
@@ -47,6 +34,7 @@ UserClass.init(
   },
   {
     tableName: 'users_classes',
+    modelName: 'UserClass',
     timestamps: true,
     paranoid: true,
     deletedAt: 'deletedAt',
@@ -54,4 +42,4 @@ UserClass.init(
   }
 );
 
-export { UserClass, UserClassAttributes, UserClassCreationAttributes };
+export { UserClass };

@@ -1,6 +1,5 @@
-import fs from 'fs/promises';
-import { deleteImage, uploadImage } from '../libs/cloudinary';
-import { logger } from '../configs/loggerConfig';
+// import { deleteFromCloudinary } from '../middlewares/upload.middleware';
+import { logger } from '../configs/logger.config';
 import {
   createTaskService,
   updateTaskService,
@@ -9,43 +8,64 @@ import {
   getTaskService,
 } from '../services/userTask.service';
 import { Request, Response } from 'express';
-import { UploadedFile } from 'express-fileupload';
 
 const createTaskController = async (req: Request, res: Response) => {
   try {
     const classId = parseInt(req.params.classId);
-    const { title, description, status, due_date } = req.body;
-    const user = req.user;
 
-    let imageUrl: string | undefined = undefined;
-    let imageId: string | undefined = undefined;
-    let imageProps: UploadedFile | undefined = undefined;
-
-    if (req.files?.image) {
-      const image = req.files.image as UploadedFile;
-      const result = await uploadImage(image.tempFilePath);
-      imageProps = image;
-      imageUrl = result?.secure_url;
-      imageId = result?.public_id;
-      await fs.unlink(image.tempFilePath);
+    if (!classId) {
+      res.status(400).json({ error: 'Falta el id de la clase' });
+      return;
     }
 
-    const taskData = {
-      title,
-      description,
-      status,
-      due_date,
-      imageUrl: imageUrl || '',
-      imageId: imageId || '',
-      imageProps,
-    };
+    const taskData = req.body;
 
-    if (!user) {
+    if (!taskData) {
+      res.status(400).json({ error: 'Falta la información de la tarea' });
+      return;
+    }
+
+    const userId = req.user?.id;
+
+    if (!userId) {
       res.status(401).json({ error: 'Usuario no autenticado' });
       return;
     }
 
-    const newTask = await createTaskService(classId, taskData, user);
+    let fileUrl = undefined;
+    let fileId = undefined;
+    let fileType = undefined;
+
+    if (req.file) {
+      try {
+        fileUrl = req.file.cloudinaryUrl;
+        fileId = req.file.cloudinaryPublicId;
+        fileType = req.file.mimetype;
+      } catch (error) {
+        logger.error(error, 'Error al subir archivo a Cloudinary');
+        res.status(400).json({ error: 'Error al subir archivo a Cloudinary' });
+        return;
+      }
+    }
+
+    const fileProps = {
+      fileUrl: fileUrl || '',
+      fileId: fileId || '',
+      fileType: fileType || '',
+    };
+
+    const newTask = await createTaskService(
+      classId,
+      userId,
+      taskData,
+      fileProps
+    );
+
+    if (!newTask) {
+      res.status(404).json({ error: 'No se pudo crear la tarea' });
+      return;
+    }
+
     res.status(201).json(newTask);
   } catch (error) {
     if (error instanceof Error) {
@@ -60,36 +80,55 @@ const createTaskController = async (req: Request, res: Response) => {
 
 const updateTaskController = async (req: Request, res: Response) => {
   try {
-    const { title, description, status, due_date } = req.body;
-    const user = req.user;
-    const taskId = parseInt(req.params.taskId);
+    const userId = req.user?.id;
 
-    let imageUrl: string | undefined = undefined;
-    let imageProps: UploadedFile | undefined = undefined;
-
-    if (req.files?.image) {
-      const image = req.files.image as UploadedFile;
-      const result = await uploadImage(image.tempFilePath);
-      imageProps = image;
-      imageUrl = result?.secure_url;
-      await fs.unlink(image.tempFilePath);
-    }
-
-    const taskData = {
-      title,
-      description,
-      status,
-      due_date,
-      imageUrl: imageUrl || '',
-      imageProps,
-    };
-
-    if (!user) {
+    if (!userId) {
       res.status(401).json({ error: 'Usuario no autenticado' });
       return;
     }
 
-    const updatedTask = await updateTaskService(taskId, taskData, user);
+    const taskId = parseInt(req.params.taskId);
+
+    if (!taskId) {
+      res.status(400).json({ error: 'Falta el id de la tarea' });
+      return;
+    }
+
+    const taskData = req.body;
+
+    if (!taskData) {
+      res.status(400).json({ error: 'Falta la información de la tarea' });
+      return;
+    }
+
+    let fileUrl = undefined;
+    let fileId = undefined;
+    let fileType = undefined;
+
+    if (req.file && req.file.cloudinaryUrl) {
+      fileUrl = req.file.cloudinaryUrl;
+      fileId = req.file.cloudinaryPublicId;
+      fileType = req.file.mimetype;
+    }
+
+    const fileProps = {
+      fileUrl: fileUrl || '',
+      fileId: fileId || '',
+      fileType: fileType || '',
+    };
+
+    const updatedTask = await updateTaskService(
+      userId,
+      taskId,
+      taskData,
+      fileProps
+    );
+
+    if (!updatedTask) {
+      res.status(404).json({ error: 'Tarea no encontrada' });
+      return;
+    }
+
     res.status(200).json(updatedTask);
   } catch (error) {
     if (error instanceof Error) {
@@ -105,17 +144,31 @@ const updateTaskController = async (req: Request, res: Response) => {
 const deleteTaskController = async (req: Request, res: Response) => {
   try {
     const taskId = parseInt(req.params.taskId);
-    const user = req.user;
 
-    if (!user) {
+    if (!taskId) {
+      res.status(400).json({ error: 'Falta el id de la tarea' });
+      return;
+    }
+
+    const classId = parseInt(req.params.classId);
+
+    if (!classId) {
+      res.status(400).json({ error: 'Falta el id de la clase' });
+      return;
+    }
+
+    const userId = req.user?.id;
+
+    if (!userId) {
       res.status(401).json({ error: 'Usuario no autenticado' });
       return;
     }
 
-    const task = await deleteTaskService(taskId, user);
+    const task = await deleteTaskService(taskId, classId, userId);
 
-    if (task) {
-      await deleteImage(task);
+    if (!task) {
+      res.status(404).json({ error: 'Tarea no encontrada' });
+      return;
     }
 
     res.status(204).end();
@@ -133,14 +186,26 @@ const deleteTaskController = async (req: Request, res: Response) => {
 const getTasksByClassController = async (req: Request, res: Response) => {
   try {
     const classId = parseInt(req.params.classId);
-    const user = req.user;
 
-    if (!user) {
+    if (!classId) {
+      res.status(400).json({ error: 'Falta el id de la clase' });
+      return;
+    }
+
+    const userId = req.user?.id;
+
+    if (!userId) {
       res.status(401).json({ error: 'Usuario no autenticado' });
       return;
     }
 
-    const tasks = await getTasksByClassService(classId, user);
+    const tasks = await getTasksByClassService(classId, userId);
+
+    if (!tasks) {
+      res.status(404).json({ error: 'No se encontraron tareas' });
+      return;
+    }
+
     res.status(200).json(tasks);
   } catch (error) {
     if (error instanceof Error) {
@@ -156,7 +221,33 @@ const getTasksByClassController = async (req: Request, res: Response) => {
 const getTaskController = async (req: Request, res: Response) => {
   try {
     const taskId = parseInt(req.params.taskId);
-    const task = await getTaskService(taskId);
+
+    if (!taskId) {
+      res.status(400).json({ error: 'Falta el id de la tarea' });
+      return;
+    }
+
+    const classId = parseInt(req.params.classId);
+
+    if (!classId) {
+      res.status(400).json({ error: 'Falta el id de la clase' });
+      return;
+    }
+
+    const userId = req.user?.id;
+
+    if (!userId) {
+      res.status(401).json({ error: 'Usuario no autenticado' });
+      return;
+    }
+
+    const task = await getTaskService(taskId, classId, userId);
+
+    if (!task) {
+      res.status(404).json({ error: 'Tarea no encontrada' });
+      return;
+    }
+
     res.status(200).json(task);
   } catch (error) {
     if (error instanceof Error) {

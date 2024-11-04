@@ -1,40 +1,20 @@
-import { DataTypes, Optional, Model } from 'sequelize';
+import {
+  DataTypes,
+  Model,
+  InferAttributes,
+  InferCreationAttributes,
+  CreationOptional,
+} from 'sequelize';
 import { sequelize } from '../database/db';
 
-interface UserAttributes {
-  id: number;
-  user_name: string;
-  email: string;
-  password: string;
-  verified: boolean;
-  people_fk: number;
-  roles_fk: number;
-  createdAt?: Date;
-  updatedAt?: Date;
-  deletedAt?: Date;
-}
-
-interface UserCreationAttributes
-  extends Optional<
-    UserAttributes,
-    'id' | 'createdAt' | 'updatedAt' | 'deletedAt'
-  > {}
-
-class User
-  extends Model<UserAttributes, UserCreationAttributes>
-  implements UserAttributes
-{
-  public id!: number;
-  public user_name!: string;
-  public email!: string;
-  public password!: string;
-  public verified!: boolean;
-  public people_fk!: number;
-  public roles_fk!: number;
-
-  public readonly createdAt!: Date;
-  public readonly updatedAt!: Date;
-  public readonly deletedAt!: Date;
+class User extends Model<InferAttributes<User>, InferCreationAttributes<User>> {
+  declare id: CreationOptional<number>;
+  declare user_name: string;
+  declare email: string;
+  declare password: string;
+  declare verified: boolean;
+  declare people_fk: number;
+  declare roles_fk: number;
 }
 
 User.init(
@@ -72,6 +52,7 @@ User.init(
   },
   {
     tableName: 'users',
+    modelName: 'User',
     timestamps: true,
     paranoid: true,
     deletedAt: 'deletedAt',
@@ -79,4 +60,4 @@ User.init(
   }
 );
 
-export { User, UserAttributes, UserCreationAttributes };
+export { User };

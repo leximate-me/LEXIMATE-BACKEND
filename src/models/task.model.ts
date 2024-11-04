@@ -1,38 +1,19 @@
-import { DataTypes, Model, Optional } from 'sequelize';
+import {
+  DataTypes,
+  Model,
+  InferAttributes,
+  InferCreationAttributes,
+  CreationOptional,
+} from 'sequelize';
 import { sequelize } from '../database/db';
 
-interface TaskAttributes {
-  id: number;
-  title: string;
-  description: string;
-  status: boolean;
-  due_date: Date;
-  classes_fk: number;
-  createdAt?: Date;
-  updatedAt?: Date;
-  deletedAt?: Date;
-}
-
-interface TaskCreationAttributes
-  extends Optional<
-    TaskAttributes,
-    'id' | 'createdAt' | 'updatedAt' | 'deletedAt'
-  > {}
-
-class Task
-  extends Model<TaskAttributes, TaskCreationAttributes>
-  implements TaskAttributes
-{
-  public id!: number;
-  public title!: string;
-  public description!: string;
-  public status!: boolean;
-  public due_date!: Date;
-  public classes_fk!: number;
-
-  public readonly createdAt!: Date;
-  public readonly updatedAt!: Date;
-  public readonly deletedAt!: Date;
+class Task extends Model<InferAttributes<Task>, InferCreationAttributes<Task>> {
+  declare id: CreationOptional<number>;
+  declare title: string;
+  declare description: string;
+  declare status: boolean;
+  declare due_date: Date;
+  declare classes_fk: number;
 }
 
 Task.init(
@@ -65,6 +46,7 @@ Task.init(
   },
   {
     tableName: 'tasks',
+    modelName: 'Task',
     paranoid: true,
     timestamps: true,
     deletedAt: 'deletedAt',

@@ -1,16 +1,13 @@
-import fs from 'fs/promises';
 import pdf from 'pdf-parse';
 import mammoth from 'mammoth';
 
 const extractTextFromPdfService = async (
-  pdfPath: string
+  pdfBuffer: Buffer
 ): Promise<string[]> => {
   try {
-    const dataBuffer = await fs.readFile(pdfPath);
-    const data = await pdf(dataBuffer);
+    const data = await pdf(pdfBuffer);
 
     let text = data.text;
-    console.log(typeof text);
     text = text.replace(/\n/g, '  '); // Usar expresión regular global
 
     const textArray = text.split('  ');
@@ -26,14 +23,12 @@ const extractTextFromPdfService = async (
 };
 
 const extractTextFromDocxService = async (
-  docxPath: string
+  docxBuffer: Buffer
 ): Promise<string[]> => {
   try {
-    const dataBuffer = await fs.readFile(docxPath);
-    const data = await mammoth.extractRawText({ buffer: dataBuffer });
+    const data = await mammoth.extractRawText({ buffer: docxBuffer });
 
     let text = data.value;
-    console.log(typeof text);
     text = text.replace(/\n/g, '  '); // Usar expresión regular global
 
     const textArray = text.split('  ');

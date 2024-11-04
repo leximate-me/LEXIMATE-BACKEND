@@ -1,6 +1,6 @@
 import { Router } from 'express';
-import { verifyUserRequired } from '../middlewares/validator.user';
-import { authRequired } from '../middlewares/validator.token';
+import { verifyUserRequired } from '../middlewares/user.middleware';
+import { authRequired } from '../middlewares/token.middleware';
 import { validateSchema } from '../middlewares/validator.middleware';
 import { createTaskSchema, updateTaskSchema } from '../schemas/task.schema';
 import {
@@ -10,12 +10,16 @@ import {
   getTasksByClassController,
   getTaskController,
 } from '../controllers/userTask.controller';
+import { upload } from '../configs/upload.config';
+import { uploadToCloudinary } from '../middlewares/upload.middleware';
 
 const userTaskRouter = Router({ mergeParams: true }); // Permitir el uso de parametros de rutas padres
 
 userTaskRouter.post(
   '/',
   authRequired,
+  upload,
+  uploadToCloudinary,
   verifyUserRequired,
   validateSchema(createTaskSchema),
   createTaskController
@@ -23,6 +27,8 @@ userTaskRouter.post(
 userTaskRouter.put(
   '/:taskId',
   authRequired,
+  upload,
+  uploadToCloudinary,
   verifyUserRequired,
   validateSchema(updateTaskSchema),
   updateTaskController

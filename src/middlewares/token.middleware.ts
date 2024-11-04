@@ -1,8 +1,8 @@
 import jwt from 'jsonwebtoken';
-import { JWT_SECRET } from '../configs/envConfig';
-import { logger } from '../configs/loggerConfig';
+import { JWT_SECRET } from '../configs/env.config';
+import { logger } from '../configs/logger.config';
 import { Request, Response, NextFunction } from 'express';
-import { TokenPayload } from 'types/express';
+import { TokenPayload } from 'src/types/express';
 
 const authRequired = async (
   req: Request,
