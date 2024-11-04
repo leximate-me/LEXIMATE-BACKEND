@@ -76,6 +76,12 @@ const verifyTokenController = async (
 ): Promise<void> => {
   try {
     const token = req.cookies.token as string;
+
+    if (!token) {
+      res.status(400).json({ error: ['Token no proporcionado'] });
+      return;
+    }
+
     const decoded = await verifyTokenService(token);
 
     logger.info(decoded, 'Token verificado');
@@ -99,6 +105,11 @@ const getProfileUserController = async (
   try {
     const userId = req.user?.id as number;
 
+    if (!userId) {
+      res.status(400).json({ error: ['Usuario no encontrado'] });
+      return;
+    }
+
     const existingUser = await getProfileUserService(userId);
 
     res.status(200).json(existingUser);
@@ -119,6 +130,11 @@ const deleteUserController = async (
 ): Promise<void> => {
   try {
     const userId = req.user?.id as number;
+
+    if (!userId) {
+      res.status(400).json({ error: ['Usuario no encontrado'] });
+      return;
+    }
 
     const response = await deleteUserService(userId);
 
@@ -164,6 +180,11 @@ const sendEmailVerificationController = async (
   try {
     const userId = req.user?.id as number;
 
+    if (!userId) {
+      res.status(400).json({ error: ['Usuario no encontrado'] });
+      return;
+    }
+
     const response = await sendEmailVerificationService(userId);
 
     logger.child({ response }).info('Email de verificación enviado');
@@ -190,6 +211,11 @@ const verifyEmailController = async (
   try {
     const token = req.query.token as string;
 
+    if (!token) {
+      res.status(400).json({ error: ['Token no proporcionado'] });
+      return;
+    }
+
     const response = await verifyEmailService(token);
 
     logger.child({ response }).info('Email verificado');
@@ -212,15 +238,14 @@ const updateProfileUserController = async (
 ): Promise<void> => {
   try {
     const userId = req.user?.id as number;
-
     const userData = req.body;
 
-    const updatedUser = await updateProfileUserService(userId, userData);
-
-    if (!updatedUser) {
-      res.status(400).json({ error: ['Error al actualizar el perfil'] });
+    if (!userId) {
+      res.status(400).json({ error: ['Usuario no encontrado'] });
       return;
     }
+
+    const updatedUser = await updateProfileUserService(userId, userData);
 
     res.status(200).json(updatedUser);
   } catch (error) {
