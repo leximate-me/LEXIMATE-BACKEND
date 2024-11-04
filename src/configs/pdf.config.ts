@@ -1,10 +1,11 @@
-import { PDFREST_API_KEY } from './env.config';
+import { ILOVEPDF_API_PUBLIC_KEY, ILOVEPDF_API_SECRET_KEY } from './env.config';
 
-const PDFREST_URL = 'https://api.pdfrest.com';
+const ILOVEPDF_URL = 'https://api.ilovepdf.com/v1';
 
-const PDF_CONFIG = {
-  url: PDFREST_URL,
-  apiKey: PDFREST_API_KEY,
+const pdfConfig = {
+  url: ILOVEPDF_URL,
+  publicKey: ILOVEPDF_API_PUBLIC_KEY,
+  secretKey: ILOVEPDF_API_SECRET_KEY,
 };
 
-export { PDF_CONFIG };
+export { pdfConfig };

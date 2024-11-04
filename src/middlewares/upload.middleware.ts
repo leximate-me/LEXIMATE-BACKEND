@@ -15,8 +15,6 @@ const uploadToCloudinary = async (
     const result: UploadApiResponse = await uploadImage(req.file.buffer);
     req.file.cloudinaryUrl = result.secure_url;
     req.file.cloudinaryPublicId = result.public_id;
-    // console.log(result);
-    // console.log(req.file);
 
     next();
   } catch (error) {

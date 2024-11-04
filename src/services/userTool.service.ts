@@ -1,32 +1,74 @@
-// import pdf from 'pdf-parse';
-import { PDF_CONFIG } from '../configs/pdf.config';
+import { pdfConfig } from '../configs/pdf.config';
 
 const extractTextFromPdfService = async (
   pdfBuffer: Buffer
 ): Promise<string[]> => {
   try {
+    // Paso 1: Autenticación
+    const authResponse = await fetch(`${pdfConfig.url}/auth`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        public_key: pdfConfig.publicKey,
+        secret_key: pdfConfig.secretKey,
+      }),
+    });
+
+    if (!authResponse.ok) {
+      throw new Error(`Error de autenticación: ${authResponse.statusText}`);
+    }
+
+    const authData = await authResponse.json();
+    const token = authData.token;
+
+    // Paso 2: Subir el archivo
     const formData = new FormData();
     formData.append(
       'file',
       new Blob([pdfBuffer], { type: 'application/pdf' }),
       'file.pdf'
     );
-    formData.append('word_style', 'on');
-    formData.append('output_type', 'json');
 
-    const response = await fetch(`${PDF_CONFIG.url}/extracted-text`, {
+    const uploadResponse = await fetch(`${pdfConfig.url}/upload`, {
       method: 'POST',
       headers: {
-        'Api-Key': PDF_CONFIG.apiKey,
+        Authorization: `Bearer ${token}`,
       },
       body: formData,
     });
 
-    if (!response.ok) {
-      throw new Error(`Error: ${response.statusText}`);
+    if (!uploadResponse.ok) {
+      throw new Error(
+        `Error al subir el archivo: ${uploadResponse.statusText}`
+      );
     }
-    const data = await response.json();
-    return data;
+
+    const uploadData = await uploadResponse.json();
+    const fileId = uploadData.server_filename;
+
+    // Paso 3: Extraer texto
+    const taskResponse = await fetch(`${pdfConfig.url}/extract-text`, {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${token}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        files: [{ server_filename: fileId }],
+      }),
+    });
+
+    if (!taskResponse.ok) {
+      throw new Error(`Error al extraer texto: ${taskResponse.statusText}`);
+    }
+
+    const taskData = await taskResponse.json();
+    const text = taskData.text;
+    const textArray = text.split('\n');
+
+    return textArray;
   } catch (error) {
     if (error instanceof Error) {
       throw new Error(error.message);

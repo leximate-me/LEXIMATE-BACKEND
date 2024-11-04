@@ -1,6 +1,6 @@
-import DopplerSDK from '@dopplerhq/node-sdk';
-import fs from 'fs';
-import dotenv from 'dotenv';
+const DopplerSDK = require('@dopplerhq/node-sdk');
+const fs = require('fs');
+const dotenv = require('dotenv');
 
 dotenv.config();
 
