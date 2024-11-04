@@ -10,9 +10,7 @@ const createTaskSchema = z.object({
       10,
       'La descripción es obligatoria y debe tener al menos 10 caracteres'
     ),
-  status: z
-    .string()
-    .min(5, 'El estado es obligatorio y debe tener al menos 5 caracteres'),
+  status: z.boolean().optional(),
   due_date: z
     .string()
     .min(

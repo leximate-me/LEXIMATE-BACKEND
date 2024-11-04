@@ -1,7 +1,4 @@
-import {
-  extractTextFromPdfService,
-  extractTextFromDocxService,
-} from '../services/userTool.service';
+import { extractTextFromPdfService } from '../services/userTool.service';
 import { logger } from '../configs/logger.config';
 import { Request, Response } from 'express';
 
@@ -15,16 +12,25 @@ const extractTextFromFileController = async (req: Request, res: Response) => {
     const file = req.file;
     const fileBuffer = file.buffer;
 
-    let text;
-    if (file.mimetype === 'application/pdf') {
-      text = await extractTextFromPdfService(fileBuffer);
-    } else if (
-      file.mimetype ===
-      'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
-    ) {
-      text = await extractTextFromDocxService(fileBuffer);
-    } else {
-      res.status(400).json({ error: 'Formato de archivo no soportado' });
+    // let text;
+    // if (file.mimetype === 'application/pdf') {
+    //   text = await extractTextFromPdfService(fileBuffer);
+    // } else if (
+    //   file.mimetype ===
+    //   'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
+    // ) {
+    //   text = await extractTextFromDocxService(fileBuffer);
+    // } else {
+    //   res.status(400).json({ error: 'Formato de archivo no soportado' });
+    //   return;
+    // }
+
+    const text = await extractTextFromPdfService(fileBuffer);
+    console.log(text);
+    if (!text) {
+      res
+        .status(400)
+        .json({ error: 'No se ha podido extraer el texto del archivo' });
       return;
     }
 

@@ -34,6 +34,7 @@ Task.init(
     status: {
       type: DataTypes.BOOLEAN,
       allowNull: false,
+      defaultValue: false,
     },
     due_date: {
       type: DataTypes.DATE,

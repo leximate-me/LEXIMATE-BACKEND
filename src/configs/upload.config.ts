@@ -6,7 +6,7 @@ const storage = multer.memoryStorage();
 
 // Configuración de límites de archivo
 const limits = {
-  fileSize: 5 * 1024 * 1024, // 5 MB
+  fileSize: 10 * 1024 * 1024, // 5 MB
 };
 
 // Filtro de archivos para aceptar solo imágenes
