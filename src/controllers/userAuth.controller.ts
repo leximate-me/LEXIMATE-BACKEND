@@ -20,11 +20,6 @@ const registerUserController = async (
   try {
     const userData = req.body;
 
-    if (!userData) {
-      res.status(400).json({ error: ['Falta la información del usuario'] });
-      return;
-    }
-
     const { newUser, token } = await registerUserService(userData);
 
     res.cookie('token', token, {
@@ -34,7 +29,7 @@ const registerUserController = async (
     });
 
     if (!newUser) {
-      throw new Error('Error al registrar usuario');
+      res.status(400).json({ error: ['Error al registrar el usuario'] });
     }
 
     res.status(201).json(newUser);
@@ -44,37 +39,47 @@ const registerUserController = async (
       res.status(400).json({ error: [error.message] });
     } else {
       logger.error(error, 'Error desconocido en registerUserController');
-      res.status(500).json({ error: ['Error desconocido'] });
+      res.status(500).json({ error: ['Error interno del servidor'] });
     }
   }
 };
 
-const loginUserController = async (req: Request, res: Response) => {
-  const userData = req.body;
+const loginUserController = async (
+  req: Request,
+  res: Response
+): Promise<void> => {
   try {
+    const userData = req.body;
     const { user, token } = await loginUserService(userData);
+
     res.cookie('token', token, {
       httpOnly: true,
       secure: true,
       sameSite: 'lax',
     });
+
     res.status(200).json(user);
   } catch (error) {
     if (error instanceof Error) {
-      logger.error(error, 'Error en loginUserController');
+      logger.error(error.message, 'Error en loginUserController');
       res.status(400).json({ error: [error.message] });
     } else {
       logger.error(error, 'Error desconocido en loginUserController');
-      res.status(500).json({ error: ['Error desconocido'] });
+      res.status(500).json({ error: ['Error interno del servidor'] });
     }
   }
 };
 
-const verifyTokenController = async (req: Request, res: Response) => {
+const verifyTokenController = async (
+  req: Request,
+  res: Response
+): Promise<void> => {
   try {
-    const token = req.cookies.token;
-    const { decoded } = await verifyTokenService(token);
+    const token = req.cookies.token as string;
+    const decoded = await verifyTokenService(token);
+
     logger.info(decoded, 'Token verificado');
+
     res.status(200).json(decoded);
   } catch (error) {
     if (error instanceof Error) {
@@ -82,49 +87,43 @@ const verifyTokenController = async (req: Request, res: Response) => {
       res.status(400).json({ error: [error.message] });
     } else {
       logger.error(error, 'Error desconocido en verifyTokenController');
-      res.status(500).json({ error: ['Error desconocido'] });
+      res.status(500).json({ error: ['Error interno del servidor'] });
     }
   }
 };
 
-const getProfileUserController = async (req: Request, res: Response) => {
+const getProfileUserController = async (
+  req: Request,
+  res: Response
+): Promise<void> => {
   try {
-    const userId = req.user?.id;
-
-    if (!userId) {
-      res.status(400).json({ error: ['Usuario no proporcionado'] });
-      return;
-    }
+    const userId = req.user?.id as number;
 
     const existingUser = await getProfileUserService(userId);
-
-    if (!existingUser) {
-      res.status(400).json({ error: ['Usuario no encontrado'] });
-      return;
-    }
 
     res.status(200).json(existingUser);
   } catch (error) {
     if (error instanceof Error) {
       logger.error(error, 'Error en getProfileUserController');
-      res.status(404).json({ error: [error.message] });
+      res.status(400).json({ error: [error.message] });
     } else {
       logger.error(error, 'Error desconocido en getProfileUserController');
-      res.status(500).json({ error: ['Error desconocido'] });
+      res.status(500).json({ error: ['Error interno del servidor'] });
     }
   }
 };
 
-const deleteUserController = async (req: Request, res: Response) => {
+const deleteUserController = async (
+  req: Request,
+  res: Response
+): Promise<void> => {
   try {
-    const userId = req.user?.id;
-
-    if (userId === undefined) {
-      throw new Error('Usuario no encontrado');
-    }
+    const userId = req.user?.id as number;
 
     const response = await deleteUserService(userId);
+
     res.cookie('token', '', { expires: new Date(0) });
+
     res.status(200).json(response);
   } catch (error) {
     if (error instanceof Error) {
@@ -132,15 +131,20 @@ const deleteUserController = async (req: Request, res: Response) => {
       res.status(404).json({ error: [error.message] });
     } else {
       logger.error(error, 'Error desconocido en deleteUserController');
-      res.status(500).json({ error: ['Error desconocido'] });
+      res.status(500).json({ error: ['Error interno del servidor'] });
     }
   }
 };
 
-const logoutUserController = async (_req: Request, res: Response) => {
+const logoutUserController = async (
+  _req: Request,
+  res: Response
+): Promise<void> => {
   try {
     const response = logoutUserService();
+
     res.cookie('token', '', { expires: new Date(0) });
+
     res.status(200).json(response);
   } catch (error) {
     if (error instanceof Error) {
@@ -153,16 +157,17 @@ const logoutUserController = async (_req: Request, res: Response) => {
   }
 };
 
-const sendEmailVerificationController = async (req: Request, res: Response) => {
+const sendEmailVerificationController = async (
+  req: Request,
+  res: Response
+): Promise<void> => {
   try {
-    const userId = req.user?.id;
-
-    if (userId === undefined) {
-      throw new Error('Usuario no encontrado');
-    }
+    const userId = req.user?.id as number;
 
     const response = await sendEmailVerificationService(userId);
+
     logger.child({ response }).info('Email de verificación enviado');
+
     res.status(200).json(response);
   } catch (error) {
     if (error instanceof Error) {
@@ -178,16 +183,17 @@ const sendEmailVerificationController = async (req: Request, res: Response) => {
   }
 };
 
-const verifyEmailController = async (req: Request, res: Response) => {
+const verifyEmailController = async (
+  req: Request,
+  res: Response
+): Promise<void> => {
   try {
-    const token = req.query.token; // Obtener el token de los parámetros de consulta
-
-    if (typeof token !== 'string') {
-      throw new Error('Token no proporcionado');
-    }
+    const token = req.query.token as string;
 
     const response = await verifyEmailService(token);
+
     logger.child({ response }).info('Email verificado');
+
     res.redirect(`${FRONTEND_URL}`);
   } catch (error) {
     if (error instanceof Error) {
@@ -200,21 +206,14 @@ const verifyEmailController = async (req: Request, res: Response) => {
   }
 };
 
-const updateProfileUserController = async (req: Request, res: Response) => {
+const updateProfileUserController = async (
+  req: Request,
+  res: Response
+): Promise<void> => {
   try {
-    const userId = req.user?.id;
-
-    if (!userId) {
-      res.status(400).json({ error: ['Usuario no proporcionado'] });
-      return;
-    }
+    const userId = req.user?.id as number;
 
     const userData = req.body;
-
-    if (!userData) {
-      res.status(400).json({ error: ['Falta la información del usuario'] });
-      return;
-    }
 
     const updatedUser = await updateProfileUserService(userId, userData);
 

@@ -1,34 +1,20 @@
-import { DataTypes, Model, Optional } from 'sequelize';
+import {
+  CreationOptional,
+  DataTypes,
+  InferAttributes,
+  InferCreationAttributes,
+  Model,
+} from 'sequelize';
 import { sequelize } from '../database/db';
 
-interface ClassAttributes {
-  id: number;
-  name: string;
-  description: string;
-  class_code: string;
-  createdAt?: Date;
-  updatedAt?: Date;
-  deletedAt?: Date;
-}
-
-interface ClassCreationAttributes
-  extends Optional<
-    ClassAttributes,
-    'id' | 'createdAt' | 'updatedAt' | 'deletedAt'
-  > {}
-
-class Class
-  extends Model<ClassAttributes, ClassCreationAttributes>
-  implements ClassAttributes
-{
-  public id!: number;
-  public name!: string;
-  public description!: string;
-  public class_code!: string;
-
-  public readonly createdAt!: Date;
-  public readonly updatedAt!: Date;
-  public readonly deletedAt!: Date;
+class Class extends Model<
+  InferAttributes<Class>,
+  InferCreationAttributes<Class>
+> {
+  declare id: CreationOptional<number>;
+  declare name: string;
+  declare description: string;
+  declare class_code: string;
 }
 
 Class.init(
@@ -53,6 +39,7 @@ Class.init(
   },
   {
     tableName: 'classes',
+    modelName: 'Class',
     paranoid: true,
     timestamps: true,
     deletedAt: 'deletedAt',
@@ -60,4 +47,4 @@ Class.init(
   }
 );
 
-export { Class, ClassAttributes, ClassCreationAttributes };
+export { Class };

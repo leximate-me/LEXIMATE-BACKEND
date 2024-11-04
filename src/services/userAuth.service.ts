@@ -8,7 +8,6 @@ import { User } from '../models/user.model';
 import { People } from '../models/people.model';
 import { Role } from '../models/role.model';
 import { TokenPayload } from 'src/types/express';
-
 interface RegisterUserData {
   first_name: string;
   last_name: string;
@@ -40,41 +39,29 @@ const registerUserService = async (userData: RegisterUserData) => {
       role,
     } = userData;
 
-    // Verificar si el usuario ya existe
-    const existingEmail = await User.findOne({ where: { email }, transaction });
-    if (existingEmail) {
-      throw new Error('El usuario ya existe');
-    }
+    const [existingEmail, existingPerson, existingUser, existingRole] =
+      await Promise.all([
+        User.findOne({ where: { email }, transaction }),
+        People.findOne({ where: { dni }, transaction }),
+        User.findOne({ where: { user_name }, transaction }),
+        Role.findOne({ where: { name: role }, transaction }),
+      ]);
 
-    // Verificar si la persona ya existe
-    const existingPerson = await People.findOne({
-      where: { dni },
-      transaction,
-    });
+    if (existingEmail) {
+      throw new Error('El email ya está en uso');
+    }
 
     if (existingPerson) {
       throw new Error('La persona ya existe');
     }
-
-    // Verificar si el nombre de usuario ya existe
-    const existingUser = await User.findOne({
-      where: { user_name },
-      transaction,
-    });
     if (existingUser) {
       throw new Error('El nombre de usuario ya existe');
     }
 
-    // Verificar si el rol existe
-    const existingRole = await Role.findOne({
-      where: { name: role },
-      transaction,
-    });
     if (!existingRole) {
       throw new Error('El rol no existe');
     }
 
-    // Crear la persona
     const newPerson = await People.create(
       {
         first_name,
@@ -87,10 +74,8 @@ const registerUserService = async (userData: RegisterUserData) => {
       { transaction }
     );
 
-    // Encriptar la contraseña
     const hashedPassword = await bcrypt.hash(password, 12);
 
-    // Crear el usuario
     const newUser = await User.create(
       {
         user_name,
@@ -128,23 +113,21 @@ const loginUserService = async (userData: User) => {
 
     const { email, password } = userData;
 
-    // Verificar si el usuario existe
     const existingUser = await User.findOne({ where: { email }, transaction });
 
     if (!existingUser) {
       throw new Error('No existe un usuario con ese email');
     }
 
-    // Verificar si la contraseña es correcta
     const isValidPassword = await bcrypt.compare(
       password,
       existingUser.password
     );
+
     if (!isValidPassword) {
       throw new Error('Contraseña incorrecta');
     }
 
-    // Verificar si el usuario tiene un rol asignado
     const existingRole = await Role.findByPk(existingUser.roles_fk, {
       transaction,
     });
@@ -153,7 +136,6 @@ const loginUserService = async (userData: User) => {
       throw new Error('El usuario no tiene un rol asignado');
     }
 
-    // Crear el token de acceso
     const token = await createAccessToken({
       id: existingUser.id,
       rol: existingRole.id,
@@ -176,9 +158,9 @@ const verifyTokenService = async (token: string) => {
     if (!token) {
       throw new Error('Token no proporcionado');
     }
-    // Verificar el token
+
     const decoded = jwt.verify(token, JWT_SECRET) as TokenPayload;
-    // Buscar el usuario
+
     const existingUser = await User.findByPk(decoded.id, { transaction });
 
     if (!existingUser) {
@@ -187,7 +169,7 @@ const verifyTokenService = async (token: string) => {
 
     await transaction.commit();
 
-    return { decoded, existingUser };
+    return decoded;
   } catch (error) {
     await transaction.rollback();
     throw error;
@@ -203,7 +185,6 @@ const getProfileUserService = async (userId: number) => {
     if (!foundUser) {
       throw new Error('Usuario no encontrado');
     }
-    console.log(foundUser.people_fk);
 
     const existingPerson = await People.findByPk(foundUser.people_fk, {
       transaction,
@@ -250,6 +231,7 @@ const deleteUserService = async (userId: number) => {
     }
 
     await user.destroy({ transaction });
+
     await person.destroy({ transaction });
 
     await transaction.commit();

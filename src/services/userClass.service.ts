@@ -8,7 +8,15 @@ import { sequelize } from '../database/db';
 import { Task } from '../models/task.model';
 import { Post } from '../models/post.model';
 
-// Función para crear una clase
+
+/**
+ * Crea una nueva clase.
+ * @param classData - Los datos de la clase a crear.
+ * @param userId - El ID del usuario que crea la clase.
+ * @returns La clase creada.
+ * @throws Si ocurre un error durante la creación de la clase.
+ */
+
 const createClassService = async (classData: Class, userId: number) => {
   const transaction = await sequelize.transaction();
   try {
@@ -65,11 +73,7 @@ const createClassService = async (classData: Class, userId: number) => {
     return newClass;
   } catch (error) {
     await transaction.rollback();
-    if (error instanceof Error) {
-      throw new Error(error.message);
-    } else {
-      throw new Error('Error desconocido');
-    }
+    throw error;
   }
 };
 
@@ -77,6 +81,14 @@ const createClassService = async (classData: Class, userId: number) => {
 const joinClassService = async (classCode: string, userId: number) => {
   const transaction = await sequelize.transaction();
   try {
+    if (!classCode) {
+      throw new Error('Código de clase no proporcionado');
+    }
+
+    if (!userId) {
+      throw new Error('Usuario no proporcionado');
+    }
+
     const foundUser = await User.findOne({
       where: { id: userId },
       transaction,
@@ -86,37 +98,28 @@ const joinClassService = async (classCode: string, userId: number) => {
       throw new Error('Usuario no encontrado');
     }
 
-    const verifiedRole = await Role.findOne({
-      where: { id: foundUser.roles_fk },
-      transaction,
-    });
-
-    if (!verifiedRole) {
-      throw new Error('Rol no encontrado');
-    }
-
-    const verifiedPermission = await RolePermission.findOne({
-      where: { roles_fk: verifiedRole.id, permissions_fk: 3 },
-      transaction,
-    });
+    const [classData, foundUserClass, verifiedPermission] = await Promise.all([
+      Class.findOne({
+        where: { class_code: classCode },
+        transaction,
+      }),
+      UserClass.findOne({
+        where: { users_fk: foundUser.id },
+        transaction,
+      }),
+      RolePermission.findOne({
+        where: { roles_fk: foundUser.roles_fk, permissions_fk: 3 },
+        transaction,
+      }),
+    ]);
 
     if (!verifiedPermission) {
       throw new Error('No tienes los permisos para crear una clase');
     }
 
-    const classData = await Class.findOne({
-      where: { class_code: classCode },
-      transaction,
-    });
-
     if (!classData) {
       throw new Error('Clase no encontrada');
     }
-
-    const foundUserClass = await UserClass.findOne({
-      where: { users_fk: foundUser.id, classes_fk: classData.id },
-      transaction,
-    });
 
     if (foundUserClass) {
       throw new Error('Ya estás en esta clase');
@@ -144,6 +147,14 @@ const leaveClassService = async (classId: number, userId: number) => {
   const transaction = await sequelize.transaction();
 
   try {
+    if (!classId) {
+      throw new Error('Clase no proporcionada');
+    }
+
+    if (!userId) {
+      throw new Error('Usuario no proporcionado');
+    }
+
     const foundUser = await User.findOne({
       where: { id: userId },
       transaction,
@@ -153,24 +164,20 @@ const leaveClassService = async (classId: number, userId: number) => {
       throw new Error('Usuario no encontrado');
     }
 
-    const verifiedRole = await Role.findOne({
-      where: { id: foundUser.roles_fk },
-      transaction,
-    });
-
-    const verifiedPermission = await RolePermission.findOne({
-      where: { roles_fk: verifiedRole?.id, permissions_fk: 3 },
-      transaction,
-    });
+    const [verifiedPermission, classData] = await Promise.all([
+      RolePermission.findOne({
+        where: { roles_fk: foundUser.roles_fk, permissions_fk: 3 },
+        transaction,
+      }),
+      Class.findOne({
+        where: { id: classId },
+        transaction,
+      }),
+    ]);
 
     if (!verifiedPermission) {
       throw new Error('No tienes los permisos para crear una clase');
     }
-
-    const classData = await Class.findOne({
-      where: { id: classId },
-      transaction,
-    });
 
     if (!classData) {
       throw new Error('Clase no encontrada');
@@ -204,37 +211,25 @@ const getClassesByUserService = async (userId: number) => {
       throw new Error('Usuario no encontrado');
     }
 
-    const verifiedRole = await Role.findOne({
-      where: { id: foundUser.roles_fk },
-      transaction,
-    });
-
-    if (!verifiedRole) {
-      throw new Error('Rol no encontrado');
-    }
-
-    const verifiedPermission = await RolePermission.findOne({
-      where: { roles_fk: verifiedRole.id, permissions_fk: 2 },
-      transaction,
-    });
+    const [verifiedPermission, userClass, classes] = await Promise.all([
+      RolePermission.findOne({
+        where: { roles_fk: foundUser.roles_fk, permissions_fk: 2 },
+        transaction,
+      }),
+      UserClass.findAll({
+        where: { users_fk: foundUser.id },
+        transaction,
+      }),
+      Class.findAll({ transaction }),
+    ]);
 
     if (!verifiedPermission) {
       throw new Error('No tienes los permisos para ver una clase');
     }
 
-    const userClass = await UserClass.findAll({
-      where: { users_fk: foundUser.id },
-      transaction,
-    });
-
     if (userClass.length === 0) {
       throw new Error('No tienes clases');
     }
-
-    const classes = await Class.findAll({
-      where: { id: userClass.map((classData) => classData.classes_fk) },
-      transaction,
-    });
 
     await transaction.commit();
 
@@ -249,28 +244,27 @@ const getClassesByUserService = async (userId: number) => {
 const getUsersByClassService = async (classId: number) => {
   const transaction = await sequelize.transaction();
   try {
-    const classData = await Class.findOne({
-      where: { id: classId },
-      transaction,
-    });
+    const classData = await Class.findByPk(classId, { transaction });
 
     if (!classData) {
       throw new Error('Clase no encontrada');
     }
 
-    const userClass = await UserClass.findAll({
-      where: { classes_fk: classData.id },
-      transaction,
-    });
+    const [userClass, users] = await Promise.all([
+      UserClass.findAll({
+        where: { classes_fk: classData.id },
+        transaction,
+      }),
+      User.findAll({ transaction }),
+    ]);
 
     if (userClass.length === 0) {
       throw new Error('No hay usuarios en esta clase');
     }
 
-    const users = await User.findAll({
-      where: { id: userClass.map((user) => user.users_fk) },
-      transaction,
-    });
+    if (users.length === 0) {
+      throw new Error('No hay usuarios');
+    }
 
     await transaction.commit();
 
@@ -288,8 +282,17 @@ const updateClassService = async (
   userId: number
 ) => {
   const transaction = await sequelize.transaction();
+
   try {
     const { name, description } = classData;
+
+    if (!userId) {
+      throw new Error('Usuario no proporcionado');
+    }
+
+    if (!classId || !classData) {
+      throw new Error('Clase no proporcionada');
+    }
 
     const foundUser = await User.findOne({
       where: { id: userId },
@@ -300,28 +303,17 @@ const updateClassService = async (
       throw new Error('Usuario no encontrado');
     }
 
-    const verifiedRole = await Role.findOne({
-      where: { id: foundUser.roles_fk },
-      transaction,
-    });
-
-    if (!verifiedRole) {
-      throw new Error('Rol no encontrado');
-    }
-
-    const verifiedPermission = await RolePermission.findOne({
-      where: { roles_fk: verifiedRole.id, permissions_fk: 3 },
-      transaction,
-    });
+    const [verifiedPermission, classFound] = await Promise.all([
+      RolePermission.findOne({
+        where: { roles_fk: foundUser.roles_fk, permissions_fk: 3 },
+        transaction,
+      }),
+      Class.findByPk(classId, { transaction }),
+    ]);
 
     if (!verifiedPermission) {
       throw new Error('No tienes los permisos para actualizar una clase');
     }
-
-    const classFound = await Class.findOne({
-      where: { id: classId },
-      transaction,
-    });
 
     if (!classFound) {
       throw new Error('Clase no encontrada');
@@ -348,61 +340,46 @@ const updateClassService = async (
 const deleteClassService = async (classId: number, userId: number) => {
   const transaction = await sequelize.transaction();
   try {
-    const foundUser = await User.findOne({
-      where: { id: userId },
-      transaction,
-    });
+    const foundUser = await User.findByPk(userId, { transaction });
 
     if (!foundUser) {
       throw new Error('Usuario no encontrado');
     }
 
-    const verifiedRole = await Role.findOne({
-      where: { id: foundUser.roles_fk },
-      transaction,
-    });
-
-    if (!verifiedRole) {
-      throw new Error('Rol no encontrado');
-    }
-
-    const verifiedPermission = await RolePermission.findOne({
-      where: { roles_fk: verifiedRole.id, permissions_fk: 4 },
-      transaction,
-    });
+    const [verifiedPermission, classFound] = await Promise.all([
+      RolePermission.findOne({
+        where: { roles_fk: foundUser.roles_fk, permissions_fk: 4 },
+        transaction,
+      }),
+      Class.findByPk(classId, { transaction }),
+    ]);
 
     if (!verifiedPermission) {
       throw new Error('No tienes los permisos para eliminar una clase');
     }
 
-    const classFound = await Class.findOne({
-      where: { id: classId },
-      transaction,
-    });
-
     if (!classFound) {
       throw new Error('Clase no encontrada');
     }
 
-    await Class.destroy({
-      where: { id: classId },
-      transaction,
-    });
-
-    await UserClass.destroy({
-      where: { classes_fk: classFound.id },
-      transaction,
-    });
-
-    await Task.destroy({
-      where: { classes_fk: classFound.id },
-      transaction,
-    });
-
-    await Post.destroy({
-      where: { classes_fk: classFound.id },
-      transaction,
-    });
+    Promise.all([
+      Class.destroy({
+        where: { id: classId },
+        transaction,
+      }),
+      UserClass.destroy({
+        where: { classes_fk: classFound.id },
+        transaction,
+      }),
+      Task.destroy({
+        where: { classes_fk: classFound.id },
+        transaction,
+      }),
+      Post.destroy({
+        where: { classes_fk: classFound.id },
+        transaction,
+      }),
+    ]);
 
     await transaction.commit();
 

@@ -1,32 +1,16 @@
-import { DataTypes, Model, Optional } from 'sequelize';
+import {
+  DataTypes,
+  Model,
+  InferAttributes,
+  InferCreationAttributes,
+  CreationOptional,
+} from 'sequelize';
 import { sequelize } from '../database/db';
 
-interface ToolAttributes {
-  id: number;
-  name: string;
-  description: string;
-  createdAt?: Date;
-  updatedAt?: Date;
-  deletedAt?: Date;
-}
-
-interface ToolCreationAttributes
-  extends Optional<
-    ToolAttributes,
-    'id' | 'createdAt' | 'updatedAt' | 'deletedAt'
-  > {}
-
-class Tool
-  extends Model<ToolAttributes, ToolCreationAttributes>
-  implements ToolAttributes
-{
-  public id!: number;
-  public name!: string;
-  public description!: string;
-
-  public readonly createdAt!: Date;
-  public readonly updatedAt!: Date;
-  public readonly deletedAt!: Date;
+class Tool extends Model<InferAttributes<Tool>, InferCreationAttributes<Tool>> {
+  declare id: CreationOptional<number>;
+  declare name: string;
+  declare description: string;
 }
 
 Tool.init(
@@ -47,6 +31,7 @@ Tool.init(
   },
   {
     tableName: 'tools',
+    modelName: 'Tool',
     timestamps: true,
     paranoid: true,
     deletedAt: 'deletedAt',
@@ -54,4 +39,4 @@ Tool.init(
   }
 );
 
-export { Tool, ToolAttributes, ToolCreationAttributes };
+export { Tool };
