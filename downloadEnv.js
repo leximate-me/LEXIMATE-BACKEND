@@ -1,6 +1,6 @@
-const DopplerSDK = require('@dopplerhq/node-sdk');
-const fs = require('fs');
 const dotenv = require('dotenv');
+const fs = require('fs');
+const { DopplerSDK } = require('@dopplerhq/node-sdk');
 
 dotenv.config();
 
