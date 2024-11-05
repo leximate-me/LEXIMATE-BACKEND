@@ -29,6 +29,29 @@ const uploadImage = (buffer: Buffer): Promise<UploadApiResponse> => {
   });
 };
 
+const uploadPdfBufferAsImages = async (
+  fileBuffer: Buffer
+): Promise<UploadApiResponse> => {
+  return new Promise((resolve, reject) => {
+    const result = cloudinary.uploader.upload_stream(
+      {
+        folder: 'api',
+        resource_type: 'auto',
+        format: 'png',
+      },
+      (error, result) => {
+        if (error) {
+          logger.child({ error }).error('Error al subir la imagen');
+          reject(error);
+        }
+        return result ? resolve(result) : reject('Error al devolver la imagen');
+      }
+    );
+
+    result.end(fileBuffer);
+  });
+};
+
 const deleteImage = async (publicId: string) => {
   try {
     const result = await cloudinary.uploader.destroy(publicId);
@@ -38,4 +61,4 @@ const deleteImage = async (publicId: string) => {
   }
 };
 
-export { uploadImage, deleteImage, cloudinary };
+export { uploadImage, deleteImage, cloudinary, uploadPdfBufferAsImages };

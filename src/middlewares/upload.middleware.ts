@@ -1,6 +1,11 @@
-import { uploadImage, deleteImage } from '../libs/cloudinary';
+import {
+  uploadImage,
+  deleteImage,
+  uploadPdfBufferAsImages,
+} from '../libs/cloudinary';
 import { Request, Response, NextFunction } from 'express';
 import { UploadApiResponse } from 'cloudinary';
+import { logger } from '../configs/logger.config';
 
 const uploadToCloudinary = async (
   req: Request,
@@ -12,11 +17,18 @@ const uploadToCloudinary = async (
   }
 
   try {
+    if (req.file.mimetype === 'application/pdf') {
+      const result = await uploadPdfBufferAsImages(req.file.buffer);
+      req.file.cloudinaryUrl = result.secure_url;
+      req.file.cloudinaryPublicId = result.public_id;
+      logger.info('Archivo pdf subido a Cloudinary como imagen');
+      return next();
+    }
     const result: UploadApiResponse = await uploadImage(req.file.buffer);
     req.file.cloudinaryUrl = result.secure_url;
     req.file.cloudinaryPublicId = result.public_id;
 
-    next();
+    return next();
   } catch (error) {
     next(error);
   }
