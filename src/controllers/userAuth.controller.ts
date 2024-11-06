@@ -240,12 +240,25 @@ const updateProfileUserController = async (
     const userId = req.user?.id as number;
     const userData = req.body;
 
-    if (!userId) {
-      res.status(400).json({ error: ['Usuario no encontrado'] });
-      return;
+    let fileUrl, fileId, fileType;
+
+    if (req.file && req.file.cloudinaryUrl) {
+      fileUrl = req.file.cloudinaryUrl;
+      fileId = req.file.cloudinaryPublicId;
+      fileType = req.file.mimetype;
     }
 
-    const updatedUser = await updateProfileUserService(userId, userData);
+    const imageProps = {
+      fileUrl: fileUrl || '',
+      fileId: fileId || '',
+      fileType: fileType || '',
+    };
+
+    const updatedUser = await updateProfileUserService(
+      userId,
+      userData,
+      imageProps
+    );
 
     res.status(200).json(updatedUser);
   } catch (error) {

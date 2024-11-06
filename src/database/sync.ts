@@ -17,20 +17,20 @@ import './relationship';
 
 async function syncModels() {
   try {
-    // await People.sync({ alter: true });
-    // await User.sync({ alter: true });
-    // await Role.sync({ alter: true });
-    // await Permission.sync({ alter: true });
-    // await RolePermission.sync({ alter: true });
-    // await Class.sync({ alter: true });
-    // await Task.sync({ alter: true });
-    // await UserClass.sync({ alter: true });
-    // await FileTask.sync({ alter: true });
-    // await Post.sync({ alter: true });
-    // await Comment.sync({ alter: true });
-    // await Tool.sync({ alter: true });
-    // await TaskTool.sync({ alter: true });
-    // await FileUser.sync({ alter: true });
+    await People.sync({ alter: true });
+    await User.sync({ alter: true });
+    await Role.sync({ alter: true });
+    await Permission.sync({ alter: true });
+    await RolePermission.sync({ alter: true });
+    await Class.sync({ alter: true });
+    await Task.sync({ alter: true });
+    await UserClass.sync({ alter: true });
+    await FileTask.sync({ alter: true });
+    await Post.sync({ alter: true });
+    await Comment.sync({ alter: true });
+    await Tool.sync({ alter: true });
+    await TaskTool.sync({ alter: true });
+    await FileUser.sync({ alter: true });
 
     /* descomenta esto si quieres reiniciar la base de datos
       await People.sync({ force: false });
@@ -48,20 +48,6 @@ async function syncModels() {
       await TaskTool.sync({ force: true });
 
     */
-    await People.sync({ force: false });
-    await User.sync({ force: false });
-    await Role.sync({ force: false });
-    await Permission.sync({ force: false });
-    await RolePermission.sync({ force: false });
-    await Class.sync({ force: true });
-    await Task.sync({ force: true });
-    await UserClass.sync({ force: true });
-    await FileTask.sync({ force: true });
-    await Post.sync({ force: true });
-    await Comment.sync({ force: true });
-    await Tool.sync({ force: true });
-    await TaskTool.sync({ force: true });
-    await FileUser.sync({ force: true });
 
     logger.info('Modelos sincronizados correctamente.');
   } catch (error) {

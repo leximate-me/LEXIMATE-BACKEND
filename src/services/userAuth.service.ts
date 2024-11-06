@@ -349,11 +349,20 @@ const verifyEmailService = async (token: string) => {
 
 const updateProfileUserService = async (
   userId: number,
-  userData: RegisterUserData
+  userData: RegisterUserData,
+  imageProps: any
 ) => {
   const transaction = await sequelize.transaction();
 
   try {
+    if (!userId) {
+      throw new Error('Usuario no proporcionado');
+    }
+
+    if (!userData) {
+      throw new Error('Datos no proporcionados');
+    }
+
     const {
       first_name,
       last_name,
@@ -364,6 +373,8 @@ const updateProfileUserService = async (
       user_name,
       email,
     } = userData;
+
+    const { fileUrl, fileId, fileType } = imageProps;
 
     const foundUser = await User.findByPk(userId, { transaction });
 
@@ -405,6 +416,24 @@ const updateProfileUserService = async (
 
     if (!updatedPerson) {
       throw new Error('Error al actualizar la persona');
+    }
+
+    if (imageProps) {
+      const userAvatar = await FileUser.findOne({
+        where: { users_fk: foundUser.id },
+        transaction,
+      });
+
+      if (userAvatar) {
+        await userAvatar.update(
+          {
+            file_id: fileId,
+            file_url: fileUrl,
+            file_type: fileType,
+          },
+          { transaction }
+        );
+      }
     }
 
     await transaction.commit();

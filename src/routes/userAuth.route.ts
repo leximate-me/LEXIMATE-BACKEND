@@ -14,6 +14,8 @@ import {
   verifyEmailController,
   updateProfileUserController,
 } from '../controllers/userAuth.controller';
+import { upload } from '../configs/upload.config';
+import { uploadToCloudinary } from '../middlewares/upload.middleware';
 
 const userAuthRouter = Router();
 
@@ -53,6 +55,8 @@ userAuthRouter.get('/verify-email', verifyEmailController);
 userAuthRouter.put(
   '/update-profile',
   authRequired,
+  upload,
+  uploadToCloudinary,
   verifyUserRequired,
   updateProfileUserController
 );

@@ -17,7 +17,7 @@ const verifyUserRequired = async (
       res.status(401).json({ error: ['Usuario no verificado'] });
     }
 
-    next();
+    return next();
   } catch (error) {
     if (error instanceof Error) {
       logger.error(error, 'Error en verifyUserRequired');
