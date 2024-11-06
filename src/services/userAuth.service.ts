@@ -8,6 +8,8 @@ import { User } from '../models/user.model';
 import { People } from '../models/people.model';
 import { Role } from '../models/role.model';
 import { TokenPayload } from 'src/types/express';
+import { FileUser } from '../models/fileUser';
+import { uploadImage } from '../libs/cloudinary';
 
 interface RegisterUserData extends People {
   first_name: string;
@@ -88,6 +90,34 @@ const registerUserService = async (userData: RegisterUserData) => {
       },
       { transaction }
     );
+
+    const response = await fetch(
+      `https://api.dicebear.com/9.x/notionists/svg?seed=${newUser.id},gestureProbability=50, beardProbability=30`
+    );
+
+    if (!response.ok) {
+      throw new Error('Error al generar el avatar');
+    }
+
+    const avatarSvg = await response.text();
+
+    const buffer = Buffer.from(avatarSvg, 'utf8');
+
+    const uploadAvatar = await uploadImage(buffer);
+
+    const uploadedAvatar = await FileUser.create(
+      {
+        file_type: uploadAvatar.format,
+        file_id: uploadAvatar.public_id,
+        file_url: uploadAvatar.secure_url,
+        users_fk: newUser.id,
+      },
+      { transaction }
+    );
+
+    if (!uploadedAvatar) {
+      throw new Error('Error al generar el avatar');
+    }
 
     // Crear el token de acceso
     const token = await createAccessToken({
@@ -195,17 +225,30 @@ const getProfileUserService = async (userId: number) => {
       throw new Error('Persona no encontrada');
     }
 
+    const userAvatar = await FileUser.findOne({
+      where: { users_fk: foundUser.id },
+      transaction,
+    });
+
     await transaction.commit();
 
     return {
-      first_name: existingPerson.first_name,
-      last_name: existingPerson.last_name,
-      dni: existingPerson.dni,
-      institute: existingPerson.institute,
-      phone_number: existingPerson.phone_number,
-      birth_date: existingPerson.birth_date,
-      user_name: foundUser.user_name,
-      email: foundUser.email,
+      user: {
+        id: foundUser.id,
+        user_name: foundUser.user_name,
+        email: foundUser.email,
+        verified: foundUser.verified,
+        role: foundUser.roles_fk,
+        person: {
+          first_name: existingPerson.first_name,
+          last_name: existingPerson.last_name,
+          dni: existingPerson.dni,
+          institute: existingPerson.institute,
+          phone_number: existingPerson.phone_number,
+          birth_date: existingPerson.birth_date,
+        },
+        avatar: userAvatar,
+      },
     };
   } catch (error) {
     await transaction.rollback();

@@ -33,12 +33,7 @@ userAuthRouter.get('/verify-token', verifyTokenController);
 
 userAuthRouter.post('/logout', authRequired, logoutUserController);
 
-userAuthRouter.get(
-  '/profile',
-  authRequired,
-  verifyUserRequired,
-  getProfileUserController
-);
+userAuthRouter.get('/profile', authRequired, getProfileUserController);
 
 userAuthRouter.delete(
   '/delete',
