@@ -4,17 +4,14 @@ import { Request, Response } from 'express';
 
 const extractTextFromFileController = async (req: Request, res: Response) => {
   try {
-    if (!req.file) {
-      res.status(400).json({ error: 'No se ha proporcionado ningún archivo' });
+    const imageUrl = req.query.imageUrl as string;
+
+    if (!imageUrl) {
+      res.status(400).json({ error: 'Falta la URL de la imagen' });
       return;
     }
 
-    const file = req.file;
-    const fileBuffer = file.buffer;
-
-    let text;
-
-    text = await extractTextFromImageService(fileBuffer);
+    const text = await extractTextFromImageService(imageUrl);
 
     // Enviar la respuesta JSON
     res.status(200).json(text);

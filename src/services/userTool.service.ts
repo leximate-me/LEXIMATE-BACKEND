@@ -1,7 +1,16 @@
+import { logger } from '../configs/logger.config';
 import Tesseract from 'tesseract.js';
 
-const extractTextFromImageService = async (imageBuffer: Buffer) => {
+const extractTextFromImageService = async (imageUrl: string) => {
   try {
+    const response = await fetch(imageUrl);
+    if (!response.ok) {
+      throw new Error('La imagen no se pudo cargar');
+    }
+
+    const arrayBuffer = await response.arrayBuffer();
+    const imageBuffer = Buffer.from(arrayBuffer);
+
     const { data } = await Tesseract.recognize(imageBuffer, 'spa');
     const { words } = data;
 
@@ -30,7 +39,8 @@ const extractTextFromImageService = async (imageBuffer: Buffer) => {
         classification,
       };
     });
-    console.log(textItems.map((item) => item.text).join(' '));
+    const textProcess = textItems.map((item) => item.text).join(' ');
+    logger.info(textProcess);
     return textItems;
   } catch (error) {
     throw error;
