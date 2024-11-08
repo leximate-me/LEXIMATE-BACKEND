@@ -43,7 +43,7 @@ userClassRouter.get(
   getClassesByUserController
 );
 userClassRouter.get(
-  '/user/:classId',
+  '/:classId/user',
   authRequired,
   verifyUserRequired,
   getUsersByClassController
