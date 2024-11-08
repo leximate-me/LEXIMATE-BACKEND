@@ -6,7 +6,7 @@
   "type": "commonjs",
   "scripts": {
     "build": "tsc",
-    "dev": "ts-node src/index",
+    "dev": "ts-node-dev src/index",
     "start": "nodemon dist/index.js",
     "pull-keys": "node downloadEnv.js"
   },
