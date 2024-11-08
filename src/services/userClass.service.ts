@@ -7,7 +7,7 @@ import { Role } from '../models/role.model';
 import { sequelize } from '../database/db';
 import { Task } from '../models/task.model';
 import { Post } from '../models/post.model';
-
+import { People } from '../models/people.model';
 
 /**
  * Crea una nueva clase.
@@ -255,7 +255,14 @@ const getUsersByClassService = async (classId: number) => {
         where: { classes_fk: classData.id },
         transaction,
       }),
-      User.findAll({ transaction }),
+      User.findAll({
+        include: {
+          model: People,
+          attributes: { exclude: ['dni', 'institute'] },
+        },
+        attributes: { exclude: ['password', 'email'] },
+        transaction,
+      }),
     ]);
 
     if (userClass.length === 0) {
