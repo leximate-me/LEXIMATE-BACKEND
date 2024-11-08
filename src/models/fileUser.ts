@@ -1,24 +1,24 @@
 import {
-  CreationOptional,
   DataTypes,
+  Model,
   InferAttributes,
   InferCreationAttributes,
-  Model,
+  CreationOptional,
 } from 'sequelize';
 import { sequelize } from '../database/db';
 
-class FileTask extends Model<
-  InferAttributes<FileTask>,
-  InferCreationAttributes<FileTask>
+class FileUser extends Model<
+  InferAttributes<FileUser>,
+  InferCreationAttributes<FileUser>
 > {
   declare id: CreationOptional<number>;
   declare file_id: string;
   declare file_url: string;
   declare file_type: string;
-  declare tasks_fk: number;
+  declare users_fk: number;
 }
 
-FileTask.init(
+FileUser.init(
   {
     id: {
       type: DataTypes.INTEGER,
@@ -26,7 +26,7 @@ FileTask.init(
       autoIncrement: true,
     },
     file_id: {
-      type: DataTypes.STRING(100),
+      type: DataTypes.STRING(50),
       allowNull: false,
     },
     file_url: {
@@ -37,14 +37,14 @@ FileTask.init(
       type: DataTypes.STRING(50),
       allowNull: false,
     },
-    tasks_fk: {
+    users_fk: {
       type: DataTypes.INTEGER,
       allowNull: false,
     },
   },
   {
-    tableName: 'files_tasks',
-    modelName: 'FileTask',
+    tableName: 'users_files',
+    modelName: 'FileUser',
     timestamps: true,
     paranoid: true,
     deletedAt: 'deletedAt',
@@ -52,4 +52,4 @@ FileTask.init(
   }
 );
 
-export { FileTask };
+export { FileUser };

@@ -9,16 +9,18 @@ const authRequired = async (
   res: Response,
   next: NextFunction
 ): Promise<void> => {
-  const token = req.cookies.token;
-
-  if (!token) {
-    res.status(401).json({ error: ['No autorizado'] });
-    return;
-  }
   try {
+    const token = req.cookies.token;
+    console.log(token);
+
+    if (!token) {
+      res.status(401).json({ error: ['No autorizado'] });
+      return;
+    }
+
     const decoded = jwt.verify(token, JWT_SECRET) as TokenPayload;
 
-    if (!decoded.id || !decoded.rol || !decoded.verify) {
+    if (!decoded) {
       res.status(401).json({ error: ['Token inválido'] });
       return;
     }

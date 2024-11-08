@@ -11,6 +11,7 @@ import { Post } from '../models/post.model';
 import { Comment } from '../models/comment.model';
 import { Tool } from '../models/tool.model';
 import { TaskTool } from '../models/taskTool.model';
+import { FileUser } from '../models/fileUser';
 
 User.belongsTo(People, { foreignKey: 'people_fk' });
 
@@ -41,3 +42,5 @@ Tool.belongsTo(Task, { foreignKey: 'tasks_fk' });
 TaskTool.belongsTo(Task, { foreignKey: 'tasks_fk' });
 
 TaskTool.belongsTo(Tool, { foreignKey: 'tools_fk' });
+
+FileUser.belongsTo(User, { foreignKey: 'users_fk' });

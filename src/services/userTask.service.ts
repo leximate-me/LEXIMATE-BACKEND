@@ -18,7 +18,7 @@ const createTaskService = async (
   const transaction = await sequelize.transaction();
 
   try {
-    const { title, description, status, due_date } = taskData;
+    const { title, description, due_date } = taskData;
 
     const { fileUrl, fileId, fileType } = fileProps;
 
@@ -67,7 +67,6 @@ const createTaskService = async (
       {
         title,
         description,
-        status,
         due_date,
         classes_fk: classData.classes_fk,
       },

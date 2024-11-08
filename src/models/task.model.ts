@@ -11,8 +11,9 @@ class Task extends Model<InferAttributes<Task>, InferCreationAttributes<Task>> {
   declare id: CreationOptional<number>;
   declare title: string;
   declare description: string;
-  declare status: boolean;
+  declare status: CreationOptional<boolean>;
   declare due_date: Date;
+  declare qualification: CreationOptional<number>;
   declare classes_fk: number;
 }
 
@@ -38,6 +39,10 @@ Task.init(
     },
     due_date: {
       type: DataTypes.DATE,
+      allowNull: true,
+    },
+    qualification: {
+      type: DataTypes.INTEGER,
       allowNull: true,
     },
     classes_fk: {

@@ -1,102 +1,50 @@
-import { pdfConfig } from '../configs/pdf.config';
+import { logger } from '../configs/logger.config';
+import Tesseract from 'tesseract.js';
 
-const extractTextFromPdfService = async (
-  pdfBuffer: Buffer
-): Promise<string[]> => {
+const extractTextFromImageService = async (imageUrl: string) => {
   try {
-    // Paso 1: Autenticación
-    const authResponse = await fetch(`${pdfConfig.url}/auth`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        public_key: pdfConfig.publicKey,
-        secret_key: pdfConfig.secretKey,
-      }),
-    });
-
-    if (!authResponse.ok) {
-      throw new Error(`Error de autenticación: ${authResponse.statusText}`);
+    const response = await fetch(imageUrl);
+    if (!response.ok) {
+      throw new Error('La imagen no se pudo cargar');
     }
 
-    const authData = await authResponse.json();
-    const token = authData.token;
+    const arrayBuffer = await response.arrayBuffer();
+    const imageBuffer = Buffer.from(arrayBuffer);
 
-    // Paso 2: Subir el archivo
-    const formData = new FormData();
-    formData.append(
-      'file',
-      new Blob([pdfBuffer], { type: 'application/pdf' }),
-      'file.pdf'
-    );
+    const { data } = await Tesseract.recognize(imageBuffer, 'spa');
+    const { words } = data;
 
-    const uploadResponse = await fetch(`${pdfConfig.url}/upload`, {
-      method: 'POST',
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-      body: formData,
+    const textItems = words.map((word: any) => {
+      const { text, confidence, bbox } = word;
+
+      // Verificar que bbox esté presente y sea un objeto
+      if (!bbox || typeof bbox !== 'object') {
+        throw new Error('bbox is not an object');
+      }
+
+      const { x0, y0, x1, y1 } = bbox;
+
+      // Clasificación básica basada en el tamaño de la fuente y la posición
+      let classification = 'paragraph';
+      if (confidence > 80 && y1 - y0 > 20) {
+        classification = 'title';
+      } else if (confidence > 60 && y1 - y0 > 15) {
+        classification = 'subtitle';
+      }
+
+      return {
+        text,
+        confidence,
+        coordinates: { x0, y0, x1, y1 },
+        classification,
+      };
     });
-
-    if (!uploadResponse.ok) {
-      throw new Error(
-        `Error al subir el archivo: ${uploadResponse.statusText}`
-      );
-    }
-
-    const uploadData = await uploadResponse.json();
-    const fileId = uploadData.server_filename;
-
-    // Paso 3: Extraer texto
-    const taskResponse = await fetch(`${pdfConfig.url}/extract-text`, {
-      method: 'POST',
-      headers: {
-        Authorization: `Bearer ${token}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        files: [{ server_filename: fileId }],
-      }),
-    });
-
-    if (!taskResponse.ok) {
-      throw new Error(`Error al extraer texto: ${taskResponse.statusText}`);
-    }
-
-    const taskData = await taskResponse.json();
-    const text = taskData.text;
-    const textArray = text.split('\n');
-
-    return textArray;
+    const textProcess = textItems.map((item) => item.text).join(' ');
+    logger.info(textProcess);
+    return textItems;
   } catch (error) {
-    if (error instanceof Error) {
-      throw new Error(error.message);
-    } else {
-      throw new Error('Error desconocido al extraer texto del archivo PDF');
-    }
+    throw error;
   }
 };
 
-// const extractTextFromDocxService = async (
-//   docxBuffer: Buffer
-// ): Promise<string[]> => {
-//   try {
-//     const data = await mammoth.extractRawText({ buffer: docxBuffer });
-
-//     let text = data.value;
-//     text = text.replace(/\n/g, '  '); // Usar expresión regular global
-
-//     const textArray = text.split('  ');
-
-//     return textArray; // Retorna el texto extraído
-//   } catch (error) {
-//     if (error instanceof Error) {
-//       throw new Error(error.message);
-//     } else {
-//       throw new Error('Error desconocido al extraer texto del archivo DOCX');
-//     }
-//   }
-// };
-
-export { extractTextFromPdfService };
+export { extractTextFromImageService };
