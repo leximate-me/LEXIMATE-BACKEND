@@ -16,44 +16,29 @@ const createPostService = async (
   try {
     const { title, content } = postData;
 
-    const existingClass = await Class.findOne({
-      where: { id: classId },
-      transaction,
-    });
+    const [existingClass, foundUser, existingUserInClass] = await Promise.all([
+      Class.findOne({ where: { id: classId }, transaction }),
+      User.findOne({ where: { id: userId }, transaction }),
+      UserClass.findOne({
+        where: { users_fk: userId, classes_fk: classId },
+        transaction,
+      }),
+    ]);
 
     if (!existingClass) {
       throw new Error('Clase no encontrada');
     }
 
-    const foundUser = await User.findOne({
-      where: { id: userId },
-      transaction,
-    });
-
     if (!foundUser) {
       throw new Error('Usuario no encontrado');
     }
-
-    const existingUserInClass = await UserClass.findOne({
-      where: { users_fk: foundUser.id, classes_fk: existingClass.id },
-      transaction,
-    });
 
     if (!existingUserInClass) {
       throw new Error('El usuario no pertenece a la clase');
     }
 
-    const verifiedRole = await Role.findOne({
-      where: { id: foundUser.roles_fk },
-      transaction,
-    });
-
-    if (!verifiedRole) {
-      throw new Error('Rol no encontrado');
-    }
-
     const verifiedPermission = await RolePermission.findOne({
-      where: { roles_fk: verifiedRole.id, permissions_fk: 1 },
+      where: { roles_fk: foundUser.roles_fk, permissions_fk: 1 },
       transaction,
     });
 
