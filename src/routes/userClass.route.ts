@@ -31,7 +31,7 @@ userClassRouter.post(
   joinClassController
 );
 userClassRouter.post(
-  '/leave/:classId',
+  '/:classId/leave',
   authRequired,
   verifyUserRequired,
   leaveClassController
@@ -43,7 +43,7 @@ userClassRouter.get(
   getClassesByUserController
 );
 userClassRouter.get(
-  '/user/:classId',
+  '/:classId/user',
   authRequired,
   verifyUserRequired,
   getUsersByClassController
