@@ -1,0 +1,31 @@
+{
+  "version": 2,
+  "builds": [
+    {
+      "src": "dist/**/*.js",
+      "use": "@vercel/node"
+    }
+  ],
+  "routes": [
+    {
+      "src": "/api/auth/(.*)",
+      "dest": "dist/routes/userAuth.route.js"
+    },
+    {
+      "src": "/api/class/(.*)",
+      "dest": "dist/routes/userClass.route.js"
+    },
+    {
+      "src": "/api/tool/(.*)",
+      "dest": "dist/routes/userTools.route.js"
+    },
+    {
+      "src": "/api/post/(.*)",
+      "dest": "dist/routes/userPost.route.js"
+    },
+    {
+      "src": "/(.*)",
+      "dest": "dist/index.js"
+    }
+  ]
+}
