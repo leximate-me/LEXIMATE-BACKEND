@@ -15,28 +15,25 @@ const extractTextFromImageService = async (imageUrl: string) => {
     const { words } = data;
 
     const textItems = words.map((word: any) => {
-      const { text, bbox } = word;
+      const { text, bbox, font_size } = word;
 
       // Verificar que bbox esté presente y sea un objeto
       if (!bbox || typeof bbox !== 'object') {
         throw new Error('bbox is not an object');
       }
 
-      const { x0, y0, x1, y1 } = bbox;
-
       // Clasificación básica basada en el tamaño de la fuente y la posición
       let classification;
-      if (y1 - y0 > 10 && y1 - y0 <= 20) {
-        classification = 'text';
-      } else if (y1 - y0 > 20 && y1 - y0 <= 30) {
+      if (font_size > 30) {
         classification = 'title';
+      } else if (font_size > 20) {
+        classification = 'text';
       } else {
         classification = 'subtitle';
       }
 
       return {
         text,
-        coordinates: { x0, y0, x1, y1 },
         classification,
       };
     });
