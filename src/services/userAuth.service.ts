@@ -349,32 +349,12 @@ const verifyEmailService = async (token: string) => {
 
 const updateProfileUserService = async (
   userId: number,
-  userData: RegisterUserData,
-  imageProps: any
+  userData: Partial<RegisterUserData>,
+  imageProps?: any,
+  transaction?: any
 ) => {
-  const transaction = await sequelize.transaction();
-
   try {
-    if (!userId) {
-      throw new Error('Usuario no proporcionado');
-    }
-
-    if (!userData) {
-      throw new Error('Datos no proporcionados');
-    }
-
-    const {
-      first_name,
-      last_name,
-      dni,
-      institute,
-      phone_number,
-      birth_date,
-      user_name,
-      email,
-    } = userData;
-
-    const { fileUrl, fileId, fileType } = imageProps;
+    const { fileUrl, fileId, fileType } = imageProps || {};
 
     const foundUser = await User.findByPk(userId, { transaction });
 
@@ -390,29 +370,45 @@ const updateProfileUserService = async (
       throw new Error('Persona no encontrada');
     }
 
-    const updatedUser = await foundUser.update(
-      {
-        user_name,
-        email,
-      },
-      { transaction }
-    );
+    // Filtrar los campos de usuario que no están vacíos
+    const userUpdateData: Partial<RegisterUserData> = {};
+    if (userData.user_name && userData.user_name.trim() !== '') {
+      userUpdateData.user_name = userData.user_name;
+    }
+    if (userData.email && userData.email.trim() !== '') {
+      userUpdateData.email = userData.email;
+    }
+
+    const updatedUser = await foundUser.update(userUpdateData, { transaction });
 
     if (!updatedUser) {
       throw new Error('Error al actualizar el usuario');
     }
 
-    const updatedPerson = await existingPerson.update(
-      {
-        first_name,
-        last_name,
-        dni,
-        institute,
-        phone_number,
-        birth_date,
-      },
-      { transaction }
-    );
+    // Filtrar los campos de persona que no están vacíos
+    const personUpdateData: Partial<RegisterUserData> = {};
+    if (userData.first_name && userData.first_name.trim() !== '') {
+      personUpdateData.first_name = userData.first_name;
+    }
+    if (userData.last_name && userData.last_name.trim() !== '') {
+      personUpdateData.last_name = userData.last_name;
+    }
+    if (userData.dni && userData.dni.trim() !== '') {
+      personUpdateData.dni = userData.dni;
+    }
+    if (userData.institute && userData.institute.trim() !== '') {
+      personUpdateData.institute = userData.institute;
+    }
+    if (userData.phone_number && userData.phone_number.trim() !== '') {
+      personUpdateData.phone_number = userData.phone_number;
+    }
+    if (userData.birth_date) {
+      personUpdateData.birth_date = userData.birth_date;
+    }
+
+    const updatedPerson = await existingPerson.update(personUpdateData, {
+      transaction,
+    });
 
     if (!updatedPerson) {
       throw new Error('Error al actualizar la persona');
@@ -427,8 +423,18 @@ const updateProfileUserService = async (
       if (userAvatar) {
         await userAvatar.update(
           {
-            file_id: fileId,
             file_url: fileUrl,
+            file_id: fileId,
+            file_type: fileType,
+          },
+          { transaction }
+        );
+      } else {
+        await FileUser.create(
+          {
+            users_fk: foundUser.id,
+            file_url: fileUrl,
+            file_id: fileId,
             file_type: fileType,
           },
           { transaction }
@@ -436,11 +442,8 @@ const updateProfileUserService = async (
       }
     }
 
-    await transaction.commit();
-
-    return { message: 'Perfil actualizado exitosamente' };
+    return { updatedUser, updatedPerson };
   } catch (error) {
-    await transaction.rollback();
     throw error;
   }
 };
