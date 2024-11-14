@@ -1,0 +1,16 @@
+{
+  "name": "Node.js & TypeScript",
+  "dockerFile": "Dockerfile",
+  "context": "..",
+  "customizations": {
+    "vscode": {
+      "settings": {
+        "terminal.integrated.shell.linux": "/bin/bash"
+      },
+      "extensions": ["dbaeumer.vscode-eslint", "esbenp.prettier-vscode"]
+    }
+  },
+  "postCreateCommand": "npm install",
+  "forwardPorts": [8080],
+  "remoteUser": "node"
+}
