@@ -19,7 +19,7 @@ jobs:
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
+          password: ${{ secrets.LEXIMATE_TOKEN }}
 
       - name: Build Docker image
         run: docker build . -t ghcr.io/leximate-me/leximate:latest
