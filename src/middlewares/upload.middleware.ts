@@ -13,7 +13,7 @@ const uploadToCloudinary = async (
   next: NextFunction
 ): Promise<void> => {
   if (!req.file) {
-    return next(new Error('No se ha subido ningún archivo.'));
+    return next();
   }
 
   try {
