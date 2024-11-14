@@ -9,18 +9,10 @@ export interface TokenPayload {
 declare module 'express-serve-static-core' {
   interface Request {
     user?: TokenPayload;
-  }
-}
-
-declare global {
-  namespace Express {
-    interface MulterFile extends Multer.File {
+    file?: Express.Multer.File & {
+      // Añade campos opcionales directamente
       cloudinaryUrl?: string;
       cloudinaryPublicId?: string;
-    }
-
-    interface Request {
-      file?: MulterFile;
-    }
+    };
   }
 }

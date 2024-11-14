@@ -21,7 +21,6 @@ const downloadEnvVariables = async () => {
 
     if (secretsResponse) {
       const secrets = secretsResponse;
-      console.log(secrets);
 
       // Leer las variables de entorno existentes del archivo .env
       const existingEnv = dotenv.parse(fs.readFileSync('.env'));
