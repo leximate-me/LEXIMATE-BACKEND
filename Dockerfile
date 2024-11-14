@@ -13,21 +13,11 @@ COPY package*.json ./
 # Instala las dependencias del proyecto
 RUN npm install
 
-
 # Copia el resto del código de la aplicación
 COPY . .
 
 # Compila el proyecto TypeScript
 RUN npm run build
-
-# Etapa de producción
-FROM node:23.0.0-alpine3.20
-
-# Establece el directorio de trabajo en /app
-WORKDIR /app
-
-# Copia los archivos compilados desde la etapa de desarrollo
-COPY --from=builder /app .
 
 # Expone el puerto en el que la aplicación se ejecutará
 EXPOSE 8080
