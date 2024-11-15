@@ -15,7 +15,7 @@ const extractTextFromImageService = async (imageUrl: string) => {
     const { words } = data;
 
     const textItems = words.map((word: any) => {
-      const { text, bbox, font_size } = word;
+      let { text, bbox, font_size } = word;
 
       // Verificar que bbox esté presente y sea un objeto
       if (!bbox || typeof bbox !== 'object') {
@@ -30,6 +30,10 @@ const extractTextFromImageService = async (imageUrl: string) => {
         classification = 'text';
       } else {
         classification = 'subtitle';
+      }
+
+      if (text.endsWith('.')) {
+        text = +'\n';
       }
 
       return {

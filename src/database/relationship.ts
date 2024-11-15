@@ -47,3 +47,5 @@ TaskTool.belongsTo(Task, { foreignKey: 'tasks_fk', as: 'task' });
 TaskTool.belongsTo(Tool, { foreignKey: 'tools_fk', as: 'tool' });
 
 FileUser.belongsTo(User, { foreignKey: 'users_fk', as: 'user' });
+
+User.hasMany(FileUser, { foreignKey: 'users_fk', as: 'fileUser' });
