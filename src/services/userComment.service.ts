@@ -4,6 +4,7 @@ import { User } from '../models/user.model';
 import { UserClass } from '../models/userClass.model';
 import { sequelize } from '../database/db';
 import { People } from '../models/people.model';
+import { FileUser } from '../models/fileUser';
 // import { Role } from '../models/role.model';
 // import { RolePermission } from '../models/rolePermission.model';
 
@@ -96,6 +97,10 @@ const readCommentsService = async (postId: number) => {
               model: People,
               as: 'people',
             },
+            {
+              model: FileUser,
+              as: 'fileUser',
+            },
           ],
         },
         {
@@ -128,6 +133,10 @@ const readCommentService = async (commentId: number) => {
             {
               model: People,
               as: 'people',
+            },
+            {
+              model: FileUser,
+              as: 'fileUser',
             },
           ],
         },
