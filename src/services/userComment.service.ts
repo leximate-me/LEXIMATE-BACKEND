@@ -113,6 +113,16 @@ const readCommentService = async (commentId: number) => {
   try {
     const existingComment = await Comment.findOne({
       where: { id: commentId },
+      include: [
+        {
+          model: User,
+          as: 'user',
+        },
+        {
+          model: Post,
+          as: 'post',
+        },
+      ],
       transaction,
     });
 
