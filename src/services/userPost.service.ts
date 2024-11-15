@@ -116,6 +116,16 @@ const readPostsService = async (classId: number, userId: number) => {
 
     const posts = await Post.findAll({
       where: { classes_fk: existingUserInClass.classes_fk },
+      include: [
+        {
+          model: User,
+          as: 'user',
+        },
+        {
+          model: Class,
+          as: 'class',
+        },
+      ],
       transaction,
     });
 
@@ -338,6 +348,16 @@ const readPostService = async (
 
     const post = await Post.findOne({
       where: { id: postId, classes_fk: existingUserInClass.classes_fk },
+      include: [
+        {
+          model: User,
+          as: 'user',
+        },
+        {
+          model: Class,
+          as: 'class',
+        },
+      ],
       transaction,
     });
 

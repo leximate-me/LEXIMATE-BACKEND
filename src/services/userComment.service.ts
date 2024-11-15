@@ -89,7 +89,11 @@ const readCommentsService = async (postId: number) => {
       include: [
         {
           model: User,
-          attributes: ['user_name'],
+          as: 'user',
+        },
+        {
+          model: Post,
+          as: 'post',
         },
       ],
       transaction,

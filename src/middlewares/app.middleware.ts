@@ -13,7 +13,7 @@ const applyMiddlewares = (app: Application) => {
   app.use(
     cors({
       credentials: true,
-      origin: '*',
+      origin: true,
     })
   );
   app.use(morgan('dev'));
