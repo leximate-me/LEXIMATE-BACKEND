@@ -33,7 +33,7 @@ const extractTextFromImageService = async (imageUrl: string) => {
       }
 
       if (text.endsWith('.')) {
-        text = +'\n';
+        text = text + '\n';
       }
 
       return {
