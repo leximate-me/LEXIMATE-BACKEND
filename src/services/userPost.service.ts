@@ -5,6 +5,7 @@ import { Class } from '../models/class.model';
 import { RolePermission } from '../models/rolePermission.model';
 import { Role } from '../models/role.model';
 import { sequelize } from '../database/db';
+import { People } from '../models/people.model';
 
 const createPostService = async (
   postData: Post,
@@ -120,6 +121,12 @@ const readPostsService = async (classId: number, userId: number) => {
         {
           model: User,
           as: 'user',
+          include: [
+            {
+              model: People,
+              as: 'people',
+            },
+          ],
         },
         {
           model: Class,
@@ -352,6 +359,12 @@ const readPostService = async (
         {
           model: User,
           as: 'user',
+          include: [
+            {
+              model: People,
+              as: 'people',
+            },
+          ],
         },
         {
           model: Class,
