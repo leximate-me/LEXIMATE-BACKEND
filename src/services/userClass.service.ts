@@ -258,9 +258,9 @@ const getUsersByClassService = async (classId: number) => {
       User.findAll({
         include: {
           model: People,
-          attributes: { exclude: ['dni', 'institute'] },
+          as: 'people',
         },
-        attributes: { exclude: ['password', 'email'] },
+
         transaction,
       }),
     ]);
