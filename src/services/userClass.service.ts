@@ -228,7 +228,7 @@ const getClassesByUserService = async (userId: number) => {
     }
 
     if (userClass.length === 0) {
-      throw new Error('No tienes clases');
+      return { message: 'No tienes clases' };
     }
 
     await transaction.commit();
@@ -250,27 +250,28 @@ const getUsersByClassService = async (classId: number) => {
       throw new Error('Clase no encontrada');
     }
 
-    const [userClass, users] = await Promise.all([
-      UserClass.findAll({
-        where: { classes_fk: classData.id },
-        transaction,
-      }),
-      User.findAll({
-        include: {
-          model: People,
-          as: 'people',
-        },
-
-        transaction,
-      }),
-    ]);
+    const userClass = await UserClass.findAll({
+      where: { classes_fk: classData.id },
+      transaction,
+    });
 
     if (userClass.length === 0) {
       throw new Error('No hay usuarios en esta clase');
     }
 
+    const userIds = userClass.map((uc) => uc.users_fk);
+
+    const users = await User.findAll({
+      where: { id: userIds },
+      include: {
+        model: People,
+        as: 'people',
+      },
+      transaction,
+    });
+
     if (users.length === 0) {
-      throw new Error('No hay usuarios');
+      return { message: 'No hay usuarios en esta clase' };
     }
 
     await transaction.commit();
