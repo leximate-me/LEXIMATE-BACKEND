@@ -211,24 +211,35 @@ const getClassesByUserService = async (userId: number) => {
       throw new Error('Usuario no encontrado');
     }
 
-    const [verifiedPermission, userClass, classes] = await Promise.all([
-      RolePermission.findOne({
-        where: { roles_fk: foundUser.roles_fk, permissions_fk: 2 },
-        transaction,
-      }),
-      UserClass.findAll({
-        where: { users_fk: foundUser.id },
-        transaction,
-      }),
-      Class.findAll({ transaction }),
-    ]);
+    const verifiedPermission = await RolePermission.findOne({
+      where: { roles_fk: foundUser.roles_fk, permissions_fk: 2 },
+      transaction,
+    });
 
     if (!verifiedPermission) {
       throw new Error('No tienes los permisos para ver una clase');
     }
 
-    if (userClass.length === 0) {
-      throw new Error('No tienes clases');
+    const userClasses = await UserClass.findAll({
+      where: { users_fk: foundUser.id },
+      include: [
+        {
+          model: Class,
+          as: 'class',
+        },
+      ],
+      transaction,
+    });
+
+    const classIds = userClasses.map((uc) => uc.classes_fk);
+
+    const classes = await Class.findAll({
+      where: { id: classIds },
+      transaction,
+    });
+
+    if (classes.length === 0) {
+      return { message: 'No tienes clases' };
     }
 
     await transaction.commit();
@@ -250,27 +261,28 @@ const getUsersByClassService = async (classId: number) => {
       throw new Error('Clase no encontrada');
     }
 
-    const [userClass, users] = await Promise.all([
-      UserClass.findAll({
-        where: { classes_fk: classData.id },
-        transaction,
-      }),
-      User.findAll({
-        include: {
-          model: People,
-          as: 'people',
-        },
-
-        transaction,
-      }),
-    ]);
+    const userClass = await UserClass.findAll({
+      where: { classes_fk: classData.id },
+      transaction,
+    });
 
     if (userClass.length === 0) {
       throw new Error('No hay usuarios en esta clase');
     }
 
+    const userIds = userClass.map((uc) => uc.users_fk);
+
+    const users = await User.findAll({
+      where: { id: userIds },
+      include: {
+        model: People,
+        as: 'people',
+      },
+      transaction,
+    });
+
     if (users.length === 0) {
-      throw new Error('No hay usuarios');
+      return { message: 'No hay usuarios en esta clase' };
     }
 
     await transaction.commit();
