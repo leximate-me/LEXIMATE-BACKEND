@@ -189,7 +189,7 @@ const sendEmailVerificationController = async (
 
     logger.child({ response }).info('Email de verificación enviado');
 
-    res.status(200).json(response);
+    res.redirect(`${FRONTEND_URL}`);
   } catch (error) {
     if (error instanceof Error) {
       logger.error(error, 'Error en sendEmailVerificationController');
