@@ -12,8 +12,15 @@ const applyMiddlewares = (app: Application) => {
   app.use(express.urlencoded({ extended: true }));
   app.use(
     cors({
-      credentials: true,
       origin: FRONTEND_URL_PROD,
+      methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+      credentials: true,
+      allowedHeaders: [
+        'Content-Type',
+        'Authorization',
+        'Accept',
+        'X-Requested-With',
+      ],
     })
   );
   app.use(morgan('dev'));
