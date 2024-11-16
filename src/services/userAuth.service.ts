@@ -302,7 +302,7 @@ const sendEmailVerificationService = async (userId: number) => {
       from: 'Leximate <no-reply@leximate.me>',
       to: [user.email],
       subject: 'Verificación de correo electrónico',
-      html: `<strong>Por favor, verifica tu correo electrónico haciendo clic en el siguiente enlace:</strong> <a href="https://leximate-backend.onrender.com//api/auth/verify-email?token=${token}">Verificar correo electrónico</a>`,
+      html: `<strong>Por favor, verifica tu correo electrónico haciendo clic en el siguiente enlace:</strong> <a href="https://leximate-backend.onrender.com/api/auth/verify-email?token=${token}">Verificar correo electrónico</a>`,
     });
 
     if (error) {

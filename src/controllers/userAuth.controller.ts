@@ -159,7 +159,12 @@ const logoutUserController = async (
   try {
     const response = logoutUserService();
 
-    res.cookie('token', '', { expires: new Date(0) });
+    res.cookie('token', '', {
+      expires: new Date(0),
+      httpOnly: true,
+      secure: true,
+      sameSite: 'none',
+    });
 
     res.status(200).json(response);
   } catch (error) {
