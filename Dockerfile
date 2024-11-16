@@ -2,7 +2,7 @@
 FROM node:23.0.0-alpine3.20
 
 # Establece el entorno de desarrollo
-ENV NODE_ENV=development
+ENV NODE_ENV=production
 
 # Establece el directorio de trabajo en /app
 WORKDIR /app
@@ -23,4 +23,4 @@ RUN npm run build
 EXPOSE 8080
 
 # Define el comando para ejecutar la aplicación
-CMD ["node", "dist/index.js"]
+CMD ["npm", "run", "start"]

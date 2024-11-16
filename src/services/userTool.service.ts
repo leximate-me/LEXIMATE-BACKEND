@@ -1,4 +1,3 @@
-import { logger } from '../configs/logger.config';
 import Tesseract from 'tesseract.js';
 
 const extractTextFromImageService = async (imageUrl: string) => {
@@ -14,22 +13,46 @@ const extractTextFromImageService = async (imageUrl: string) => {
     const { data } = await Tesseract.recognize(imageBuffer, 'spa');
     const { words } = data;
 
+    // Calcular los tamaños de fuente mínimos y máximos
+    let minFontSize = Infinity;
+    let maxFontSize = -Infinity;
+
+    words.forEach((word: any) => {
+      const { font_size } = word;
+      if (font_size < minFontSize) {
+        minFontSize = font_size;
+      }
+      if (font_size > maxFontSize) {
+        maxFontSize = font_size;
+      }
+    });
+
     const textItems = words.map((word: any) => {
-      const { text, bbox, font_size } = word;
+      let { text, bbox, font_size } = word;
+
+      text = text.toUpperCase();
 
       // Verificar que bbox esté presente y sea un objeto
       if (!bbox || typeof bbox !== 'object') {
         throw new Error('bbox is not an object');
       }
 
-      // Clasificación básica basada en el tamaño de la fuente y la posición
+      // Clasificación basada en el tamaño de la fuente y la posición
       let classification;
-      if (font_size > 30) {
+      const fontSizeRange = maxFontSize - minFontSize;
+      const titleThreshold = minFontSize + fontSizeRange * 0.7;
+      const subtitleThreshold = minFontSize + fontSizeRange * 0.4;
+
+      if (font_size >= titleThreshold) {
         classification = 'title';
-      } else if (font_size > 20) {
-        classification = 'text';
-      } else {
+      } else if (font_size >= subtitleThreshold) {
         classification = 'subtitle';
+      } else {
+        classification = 'text';
+      }
+
+      if (text.endsWith('.')) {
+        text = text + '\n';
       }
 
       return {
@@ -37,8 +60,7 @@ const extractTextFromImageService = async (imageUrl: string) => {
         classification,
       };
     });
-    const textProcess = textItems.map((item) => item.text).join(' ');
-    logger.info(textProcess);
+
     return textItems;
   } catch (error) {
     throw error;
