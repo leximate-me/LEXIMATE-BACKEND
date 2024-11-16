@@ -27,7 +27,7 @@ const registerUserSchema = z.object({
     .min(8, 'La contraseña es obligatoria y debe tener al menos 8 caracteres')
     .regex(
       /(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[-_?*$])/,
-      'La contraseña debe tener al menos una letra mayúscula, una minúscula, un número y un caracter especial(-_?*$)'
+      'La contraseña debe tener al menos una mayúscula, una minúscula, un número y un caracter especial(-_?*$)'
     ),
   role: z.string().min(1, 'El rol es obligatorio'),
 });

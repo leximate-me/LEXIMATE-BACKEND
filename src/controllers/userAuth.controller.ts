@@ -1,4 +1,4 @@
-import { FRONTEND_URL } from '../configs/env.config';
+import { FRONTEND_URL_PROD } from '../configs/env.config';
 import { logger } from '../configs/logger.config';
 import {
   loginUserService,
@@ -25,7 +25,7 @@ const registerUserController = async (
     res.cookie('token', token, {
       httpOnly: true,
       secure: true,
-      sameSite: 'lax',
+      sameSite: 'none',
     });
 
     if (!newUser) {
@@ -55,7 +55,7 @@ const loginUserController = async (
     res.cookie('token', token, {
       httpOnly: true,
       secure: true,
-      sameSite: 'lax',
+      sameSite: 'none',
     });
 
     res.status(200).json(user);
@@ -159,7 +159,12 @@ const logoutUserController = async (
   try {
     const response = logoutUserService();
 
-    res.cookie('token', '', { expires: new Date(0) });
+    res.cookie('token', '', {
+      expires: new Date(0),
+      httpOnly: true,
+      secure: true,
+      sameSite: 'none',
+    });
 
     res.status(200).json(response);
   } catch (error) {
@@ -220,7 +225,7 @@ const verifyEmailController = async (
 
     logger.child({ response }).info('Email verificado');
 
-    res.redirect(`${FRONTEND_URL}`);
+    res.redirect(`${FRONTEND_URL_PROD}`);
   } catch (error) {
     if (error instanceof Error) {
       logger.error(error, 'Error en verifyEmailController');
