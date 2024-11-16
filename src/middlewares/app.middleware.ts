@@ -15,13 +15,7 @@ const applyMiddlewares = (app: Application) => {
   app.use(
     cors({
       credentials: true,
-      origin: (origin, callback) => {
-        if (!origin || allowedOrigins.includes(origin)) {
-          callback(null, true);
-        } else {
-          callback(new Error('Not allowed by CORS'));
-        }
-      },
+      origin: [...allowedOrigins],
     })
   );
   app.use(morgan('dev'));
