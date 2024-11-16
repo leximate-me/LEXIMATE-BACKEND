@@ -25,7 +25,7 @@ const registerUserController = async (
     res.cookie('token', token, {
       httpOnly: true,
       secure: true,
-      sameSite: 'lax',
+      sameSite: 'none',
     });
 
     if (!newUser) {
@@ -55,7 +55,7 @@ const loginUserController = async (
     res.cookie('token', token, {
       httpOnly: true,
       secure: true,
-      sameSite: 'lax',
+      sameSite: 'none',
     });
 
     res.status(200).json(user);
