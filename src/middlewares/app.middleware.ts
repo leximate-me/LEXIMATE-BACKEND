@@ -3,10 +3,8 @@ import express from 'express';
 import cors from 'cors';
 import morgan from 'morgan';
 import cookieParser from 'cookie-parser';
-import { FRONTEND_URL, FRONTEND_URL_PROD } from '../configs/env.config';
+import { FRONTEND_URL_PROD } from '../configs/env.config';
 import { Application } from 'express';
-
-const allowedOrigins = [FRONTEND_URL, FRONTEND_URL_PROD];
 
 const applyMiddlewares = (app: Application) => {
   app.use(cookieParser());
@@ -15,7 +13,7 @@ const applyMiddlewares = (app: Application) => {
   app.use(
     cors({
       credentials: true,
-      origin: [...allowedOrigins],
+      origin: FRONTEND_URL_PROD,
     })
   );
   app.use(morgan('dev'));
