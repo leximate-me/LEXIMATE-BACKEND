@@ -414,7 +414,7 @@ const updateProfileUserService = async (
       throw new Error('Error al actualizar la persona');
     }
 
-    if (imageProps) {
+    if (imageProps && fileUrl && fileId && fileType) {
       const userAvatar = await FileUser.findOne({
         where: { users_fk: foundUser.id },
         transaction,

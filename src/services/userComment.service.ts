@@ -3,6 +3,8 @@ import { Comment } from '../models/comment.model';
 import { User } from '../models/user.model';
 import { UserClass } from '../models/userClass.model';
 import { sequelize } from '../database/db';
+import { People } from '../models/people.model';
+import { FileUser } from '../models/fileUser';
 // import { Role } from '../models/role.model';
 // import { RolePermission } from '../models/rolePermission.model';
 
@@ -89,7 +91,21 @@ const readCommentsService = async (postId: number) => {
       include: [
         {
           model: User,
-          attributes: ['user_name'],
+          as: 'user',
+          include: [
+            {
+              model: People,
+              as: 'people',
+            },
+            {
+              model: FileUser,
+              as: 'fileUser',
+            },
+          ],
+        },
+        {
+          model: Post,
+          as: 'post',
         },
       ],
       transaction,
@@ -109,6 +125,26 @@ const readCommentService = async (commentId: number) => {
   try {
     const existingComment = await Comment.findOne({
       where: { id: commentId },
+      include: [
+        {
+          model: User,
+          as: 'user',
+          include: [
+            {
+              model: People,
+              as: 'people',
+            },
+            {
+              model: FileUser,
+              as: 'fileUser',
+            },
+          ],
+        },
+        {
+          model: Post,
+          as: 'post',
+        },
+      ],
       transaction,
     });
 
