@@ -238,9 +238,9 @@ const getClassesByUserService = async (userId: number) => {
       transaction,
     });
 
-    if (classes.length === 0) {
-      return { message: 'No tienes clases' };
-    }
+    // if (classes.length === 0) {
+    //   return { message: 'No tienes clases' };
+    // }
 
     await transaction.commit();
 
@@ -281,9 +281,9 @@ const getUsersByClassService = async (classId: number) => {
       transaction,
     });
 
-    if (users.length === 0) {
-      return { message: 'No hay usuarios en esta clase' };
-    }
+    // if (users.length === 0) {
+    //   return { message: 'No hay usuarios en esta clase' };
+    // }
 
     await transaction.commit();
 
@@ -381,7 +381,7 @@ const deleteClassService = async (classId: number, userId: number) => {
       throw new Error('Clase no encontrada');
     }
 
-    Promise.all([
+    await Promise.all([
       Class.destroy({
         where: { id: classId },
         transaction,
