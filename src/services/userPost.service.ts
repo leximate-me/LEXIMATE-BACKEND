@@ -5,6 +5,7 @@ import { Class } from '../models/class.model';
 import { RolePermission } from '../models/rolePermission.model';
 import { Role } from '../models/role.model';
 import { sequelize } from '../database/db';
+import { People } from '../models/people.model';
 
 const createPostService = async (
   postData: Post,
@@ -116,6 +117,22 @@ const readPostsService = async (classId: number, userId: number) => {
 
     const posts = await Post.findAll({
       where: { classes_fk: existingUserInClass.classes_fk },
+      include: [
+        {
+          model: User,
+          as: 'user',
+          include: [
+            {
+              model: People,
+              as: 'people',
+            },
+          ],
+        },
+        {
+          model: Class,
+          as: 'class',
+        },
+      ],
       transaction,
     });
 
@@ -338,6 +355,22 @@ const readPostService = async (
 
     const post = await Post.findOne({
       where: { id: postId, classes_fk: existingUserInClass.classes_fk },
+      include: [
+        {
+          model: User,
+          as: 'user',
+          include: [
+            {
+              model: People,
+              as: 'people',
+            },
+          ],
+        },
+        {
+          model: Class,
+          as: 'class',
+        },
+      ],
       transaction,
     });
 
