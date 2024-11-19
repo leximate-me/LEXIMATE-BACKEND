@@ -3,7 +3,7 @@ import express from 'express';
 import cors from 'cors';
 import morgan from 'morgan';
 import cookieParser from 'cookie-parser';
-import { FRONTEND_URL } from '../configs/env.config';
+import { FRONTEND_URL_PROD } from '../configs/env.config';
 import { Application } from 'express';
 
 const applyMiddlewares = (app: Application) => {
@@ -12,7 +12,7 @@ const applyMiddlewares = (app: Application) => {
   app.use(express.urlencoded({ extended: true }));
   app.use(
     cors({
-      origin: FRONTEND_URL,
+      origin: FRONTEND_URL_PROD,
       methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
       credentials: true,
       allowedHeaders: [
