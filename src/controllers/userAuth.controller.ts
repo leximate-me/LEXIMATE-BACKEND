@@ -1,4 +1,4 @@
-import { FRONTEND_URL_PROD } from '../configs/env.config';
+import { FRONTEND_URL } from '../configs/env.config';
 import { logger } from '../configs/logger.config';
 import {
   loginUserService,
@@ -194,7 +194,7 @@ const sendEmailVerificationController = async (
 
     logger.child({ response }).info('Email de verificación enviado');
 
-    res.redirect(`${FRONTEND_URL}`);
+    res.status(200).json(response);
   } catch (error) {
     if (error instanceof Error) {
       logger.error(error, 'Error en sendEmailVerificationController');
@@ -225,7 +225,7 @@ const verifyEmailController = async (
 
     logger.child({ response }).info('Email verificado');
 
-    res.redirect(`${FRONTEND_URL_PROD}`);
+    res.redirect(`${FRONTEND_URL}`);
   } catch (error) {
     if (error instanceof Error) {
       logger.error(error, 'Error en verifyEmailController');
