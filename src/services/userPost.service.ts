@@ -236,15 +236,6 @@ const deletePostService = async (
   const transaction = await sequelize.transaction();
 
   try {
-    const existingClass = await Class.findOne({
-      where: { id: classId },
-      transaction,
-    });
-
-    if (!existingClass) {
-      throw new Error('El usuario no pertenece a la clase');
-    }
-
     const foundUser = await User.findOne({
       where: { id: userId },
       transaction,
@@ -252,6 +243,15 @@ const deletePostService = async (
 
     if (!foundUser) {
       throw new Error('Usuario no encontrado');
+    }
+
+    const existingClass = await Class.findOne({
+      where: { id: classId },
+      transaction,
+    });
+
+    if (!existingClass) {
+      throw new Error('El usuario no pertenece a la clase');
     }
 
     const existingUserInClass = await UserClass.findOne({
@@ -284,20 +284,24 @@ const deletePostService = async (
       throw new Error('No tiene permisos para eliminar una publicación');
     }
 
-    const post = await Post.findOne({
+    const existingPost = await Post.findOne({
       where: { id: postId, classes_fk: existingUserInClass.classes_fk },
       transaction,
     });
 
-    if (!post) {
+    if (!existingPost) {
       throw new Error('Publicación no encontrada');
     }
 
-    await post.destroy({ transaction });
+    if (existingPost.users_fk !== foundUser.id && verifiedRole.id !== 3) {
+      throw new Error('No tiene permisos para eliminar esta publicación');
+    }
+
+    await existingPost.destroy({ transaction });
 
     await transaction.commit();
 
-    return post;
+    return { message: 'Publicación eliminada correctamente' };
   } catch (error) {
     await transaction.rollback();
     throw error;

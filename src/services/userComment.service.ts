@@ -225,7 +225,7 @@ const deleteCommentService = async (commentId: number, userId: number) => {
       throw new Error('Usuario no encontrado');
     }
 
-    if (existingComment.users_fk !== foundUser.id) {
+    if (existingComment.users_fk !== foundUser.id && foundUser.roles_fk !== 3) {
       throw new Error('No tiene permisos para eliminar este comentario');
     }
 
