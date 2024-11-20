@@ -3,23 +3,23 @@ import { z } from 'zod';
 const registerUserSchema = z.object({
   first_name: z
     .string()
-    .min(5, 'El nombre es obligatorio y debe tener al menos 5 caracteres'),
+    .min(3, 'El nombre es obligatorio y debe tener al menos 3 caracteres'),
   last_name: z
     .string()
-    .min(5, 'El apellido es obligatorio y debe tener al menos 5 caracteres'),
+    .min(3, 'El apellido es obligatorio y debe tener al menos 3 caracteres'),
   dni: z
     .string()
     .min(7, 'El DNI es obligatorio y debe tener al menos 7 caracteres'),
   institute: z
     .string()
-    .min(2, 'El instituto es obligatorio y debe tener al menos 2 caracteres'),
+    .min(3, 'El instituto es obligatorio y debe tener al menos 3 caracteres'),
   phone_number: z.string().min(10, 'El número de teléfono es obligatorio'),
   birth_date: z.string().min(10, 'La fecha de nacimiento es obligatoria'),
   user_name: z
     .string()
     .min(
       4,
-      'El nombre de usuario es obligatorio  y debe tener al menos 10 caracteres'
+      'El nombre de usuario es obligatorio  y debe tener al menos 4 caracteres'
     ),
   email: z.string().email('El email es obligatorio y debe ser válido'),
   password: z
