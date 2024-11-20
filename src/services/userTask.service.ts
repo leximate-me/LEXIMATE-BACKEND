@@ -36,6 +36,10 @@ const createTaskService = async (
       transaction,
     });
 
+    if (verifiedRole?.name !== 'Teacher') {
+      throw new Error('No eres profesor para crear una tarea en esta clase');
+    }
+
     const verifiedPermission = await RolePermission.findOne({
       where: { roles_fk: verifiedRole?.id, permissions_fk: 1 },
       transaction,
