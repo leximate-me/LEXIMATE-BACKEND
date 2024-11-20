@@ -12,7 +12,7 @@ const registerUserSchema = z.object({
     .min(7, 'El DNI es obligatorio y debe tener al menos 7 caracteres'),
   institute: z
     .string()
-    .min(4, 'El instituto es obligatorio y debe tener al menos 4 caracteres'),
+    .min(3, 'El instituto es obligatorio y debe tener al menos 3 caracteres'),
   phone_number: z.string().min(10, 'El número de teléfono es obligatorio'),
   birth_date: z.string().min(10, 'La fecha de nacimiento es obligatoria'),
   user_name: z
