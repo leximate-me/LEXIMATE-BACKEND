@@ -1,7 +1,7 @@
-import { PORT } from './configs/env.config';
-import { App } from './app';
-import { connectDB } from './database/db';
-import { syncModels } from './database/sync';
+import { PORT } from "./configs/env.config";
+import { App } from "./app";
+import { connectDB } from "./database/db";
+import { syncModels } from "./database/sync";
 
 async function main() {
   // Creamos una nueva instancia de la clase App y le pasamos el puerto
