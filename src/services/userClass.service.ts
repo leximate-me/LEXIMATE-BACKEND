@@ -98,13 +98,9 @@ const joinClassService = async (classCode: string, userId: number) => {
       throw new Error('Usuario no encontrado');
     }
 
-    const [classData, foundUserClass, verifiedPermission] = await Promise.all([
+    const [classData, verifiedPermission] = await Promise.all([
       Class.findOne({
         where: { class_code: classCode },
-        transaction,
-      }),
-      UserClass.findOne({
-        where: { users_fk: foundUser.id },
         transaction,
       }),
       RolePermission.findOne({
@@ -119,10 +115,6 @@ const joinClassService = async (classCode: string, userId: number) => {
 
     if (!classData) {
       throw new Error('Clase no encontrada');
-    }
-
-    if (foundUserClass) {
-      throw new Error('Ya estás en esta clase');
     }
 
     await UserClass.create(
