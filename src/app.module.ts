@@ -5,6 +5,12 @@ import { CommonModule } from './common/common.module';
 import { EnvConfiguration } from './config/env.config';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { UserModule } from './user/user.module';
+import { CourseModule } from './course/course.module';
+import { PostModule } from './post/post.module';
+import { CommentModule } from './comment/comment.module';
+import { TaskModule } from './task/task.module';
+import { ToolModule } from './tool/tool.module';
 
 @Module({
   imports: [
@@ -24,6 +30,12 @@ import { TypeOrmModule } from '@nestjs/typeorm';
       inject: [ConfigService],
     }),
     CommonModule,
+    UserModule,
+    CourseModule,
+    PostModule,
+    CommentModule,
+    TaskModule,
+    ToolModule,
   ],
   controllers: [AppController],
   providers: [AppService],
