@@ -33,14 +33,14 @@ export class TaskSubmission {
   qualification?: number;
 
   @ManyToOne(() => Task, (task) => task.taskSubmissions)
-  @JoinColumn({ name: 'task_fk' })
+  @JoinColumn()
   task: Task;
 
   @ManyToOne(() => User, (user) => user.taskSubmissions)
-  @JoinColumn({ name: 'user_fk' })
+  @JoinColumn()
   user: User;
 
-  @OneToMany(() => SubmissionFile, (file) => file.submission, {
+  @OneToMany(() => SubmissionFile, (file) => file.taskSubmission, {
     cascade: ['insert', 'update'],
   })
   files: SubmissionFile[];
@@ -49,7 +49,7 @@ export class TaskSubmission {
   createdAt: Date;
 
   @UpdateDateColumn()
-  updatedAt?: Date;
+  updatedAt: Date;
 
   @DeleteDateColumn()
   deleteAt?: Date;

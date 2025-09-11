@@ -3,6 +3,7 @@ import {
   CreateDateColumn,
   DeleteDateColumn,
   Entity,
+  JoinColumn,
   ManyToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
@@ -17,7 +18,7 @@ export class SubmissionFile {
   @Column({
     type: 'varchar',
   })
-  filename: string;
+  fileName: string;
 
   @Column({
     type: 'varchar',
@@ -27,7 +28,7 @@ export class SubmissionFile {
   @Column({
     type: 'varchar',
   })
-  mimetype: string;
+  mimeType: string;
 
   @Column({
     type: 'varchar',
@@ -37,14 +38,6 @@ export class SubmissionFile {
   @ManyToOne(() => TaskSubmission, (submission) => submission.files, {
     onDelete: 'CASCADE',
   })
-  submission: TaskSubmission;
-
-  @CreateDateColumn()
-  createdAt: Date;
-
-  @UpdateDateColumn()
-  updatedAt?: Date;
-
-  @DeleteDateColumn()
-  deleteAt?: Date;
+  @JoinColumn()
+  taskSubmission: TaskSubmission;
 }

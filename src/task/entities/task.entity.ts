@@ -33,20 +33,20 @@ export class Task {
   @Column({
     type: 'date',
   })
-  due_date: Date;
+  dueDate: Date;
+
+  @ManyToOne(() => Course, (course) => course.tasks)
+  @JoinColumn()
+  course: Course;
 
   @OneToMany(() => TaskSubmission, (submission) => submission.task)
   taskSubmissions: TaskSubmission[];
-
-  @ManyToOne(() => Course, (course) => course.tasks)
-  @JoinColumn({ name: 'course_fk' })
-  course: Course;
 
   @CreateDateColumn()
   createdAt: Date;
 
   @UpdateDateColumn()
-  updatedAt?: Date;
+  updatedAt: Date;
 
   @DeleteDateColumn()
   deleteAt?: Date;

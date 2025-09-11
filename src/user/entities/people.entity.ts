@@ -17,13 +17,13 @@ export class People {
     type: 'varchar',
     length: 50,
   })
-  first_name: string;
+  firstName: string;
 
   @Column({
     type: 'varchar',
     length: 50,
   })
-  last_name: string;
+  lastName: string;
 
   @Column({
     type: 'varchar',
@@ -41,12 +41,12 @@ export class People {
     type: 'varchar',
     length: 15,
   })
-  phone_number: string;
+  phoneNumber: string;
 
   @Column({
     type: 'date',
   })
-  birth_date: Date;
+  birthDate: Date;
 
   @OneToOne(() => User, (user) => user.people)
   user: User;
@@ -55,7 +55,7 @@ export class People {
   createdAt: Date;
 
   @UpdateDateColumn()
-  updatedAt?: Date;
+  updatedAt: Date;
 
   @DeleteDateColumn()
   deleteAt?: Date;

@@ -11,6 +11,7 @@ import { PostModule } from './post/post.module';
 import { CommentModule } from './comment/comment.module';
 import { TaskModule } from './task/task.module';
 import { ToolModule } from './tool/tool.module';
+import { SnakeNamingStrategy } from 'typeorm-naming-strategies';
 
 @Module({
   imports: [
@@ -26,6 +27,7 @@ import { ToolModule } from './tool/tool.module';
         database: configService.get('dbName'),
         autoLoadEntities: true,
         synchronize: true,
+        namingStrategy: new SnakeNamingStrategy(),
       }),
       inject: [ConfigService],
     }),

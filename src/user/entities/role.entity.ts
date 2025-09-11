@@ -28,7 +28,7 @@ export class Role {
   createdAt: Date;
 
   @UpdateDateColumn()
-  updatedAt?: Date;
+  updatedAt: Date;
 
   @DeleteDateColumn()
   deleteAt?: Date;
