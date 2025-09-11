@@ -6,11 +6,13 @@ import {
   Entity,
   JoinColumn,
   ManyToOne,
+  OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
 import { Task } from './task.entity';
 import { User } from 'src/user/entities';
+import { SubmissionFile } from './submission-file.entity';
 
 @Entity()
 export class TaskSubmission {
@@ -37,6 +39,11 @@ export class TaskSubmission {
   @ManyToOne(() => User, (user) => user.taskSubmissions)
   @JoinColumn({ name: 'user_fk' })
   user: User;
+
+  @OneToMany(() => SubmissionFile, (file) => file.submission, {
+    cascade: ['insert', 'update'],
+  })
+  files: SubmissionFile[];
 
   @CreateDateColumn()
   createdAt: Date;

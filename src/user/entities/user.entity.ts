@@ -36,7 +36,18 @@ export class User {
   role: Role;
 
   @ManyToMany(() => Course, (course) => course.users)
-  @JoinTable()
+  @JoinTable({
+    // Opcional: para cambiar el nombre de la tabla intermedia
+    // name: 'user_courses_course',
+    joinColumn: {
+      name: 'user_fk', // Nombre de la columna para la entidad User
+      referencedColumnName: 'id',
+    },
+    inverseJoinColumn: {
+      name: 'course_fk', // Nombre de la columna para la entidad Course
+      referencedColumnName: 'id',
+    },
+  })
   courses: Course[];
 
   @Column({
