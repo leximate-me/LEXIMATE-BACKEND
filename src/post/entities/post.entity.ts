@@ -33,7 +33,9 @@ export class Post {
   @JoinColumn()
   course: Course;
 
-  @OneToMany(() => Comment, (comment) => comment.post)
+  @OneToMany(() => Comment, (comment) => comment.post, {
+    cascade: ['insert', 'update', 'soft-remove'],
+  })
   comments: Comment[];
 
   @CreateDateColumn()

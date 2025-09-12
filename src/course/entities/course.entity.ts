@@ -39,10 +39,14 @@ export class Course {
   })
   courseCode: string;
 
-  @OneToMany(() => Task, (task) => task.course)
+  @OneToMany(() => Task, (task) => task.course, {
+    cascade: ['soft-remove'],
+  })
   tasks: Task;
 
-  @OneToMany(() => Post, (post) => post.course)
+  @OneToMany(() => Post, (post) => post.course, {
+    cascade: ['soft-remove'],
+  })
   posts: Post[];
 
   @ManyToMany(() => User, (user) => user.courses)
