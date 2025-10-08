@@ -1,40 +1,13 @@
 services:
-  backend:
-    build:
-      context: .
-      dockerfile: Dockerfile
-    ports:
-      - '${PORT}:3000' # Mapea el puerto 8080 del host al puerto 3000 del contenedor
-    environment:
-      DB_HOST: db
-      DB_PORT: 5432
-      DB_NAME: ${DB_NAME}
-      DB_USER: ${DB_USER}
-      DB_PASSWORD: ${DB_PASSWORD}
-      PORT: 3000 # Internamente el contenedor siempre usará el puerto 3000
-    depends_on:
-      db:
-        condition: service_healthy # Asegura que la base de datos esté lista antes de iniciar el backend
-    volumes:
-      - .:/usr/src/app # Monta el código fuente para desarrollo
-
   db:
     image: postgres:16-alpine
     restart: always
     ports:
-      - '${DB_PORT}:5432' # Mapea el puerto 5442 del host al puerto 5432 del contenedor
+      - '${DB_PORT}:5432'
     environment:
       POSTGRES_DB: ${DB_NAME}
       POSTGRES_USER: ${DB_USER}
       POSTGRES_PASSWORD: ${DB_PASSWORD}
     container_name: leximatedb
     volumes:
-      - ./postgres:/var/lib/postgresql/data # Corrige el path para PostgreSQL
-    healthcheck:
-      test: ['CMD', 'pg_isready', '-U', '${DB_USER}']
-      interval: 10s
-      timeout: 5s
-      retries: 5
-
-volumes:
-  postgres:
+      - ./postgres:/var/lib/postgres/data
