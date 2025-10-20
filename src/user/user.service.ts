@@ -3,6 +3,7 @@ import {
   Inject,
   Injectable,
   InternalServerErrorException,
+  Logger,
 } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
@@ -11,9 +12,11 @@ import { People, Role, User } from './entities';
 import { DataSource, Repository } from 'typeorm';
 import { Role as RoleEnum } from 'src/common/enums/role.enum';
 import type { HashAdapter } from 'src/common/interfaces/hash.interface';
+import { LoginUserDto } from './dto/login-user.dto';
 
 @Injectable()
 export class UserService {
+  private readonly logger = new Logger(UserService.name);
   constructor(
     @InjectRepository(Role)
     private readonly roleRepository: Repository<Role>,
@@ -30,6 +33,8 @@ export class UserService {
 
     await queryRunner.connect();
     await queryRunner.startTransaction();
+
+    this.logger.log('Creando usuario...');
 
     try {
       const roleToFind = createUserDto.role || RoleEnum.GUEST;
@@ -50,7 +55,9 @@ export class UserService {
       });
 
       if (existingUser) {
-        throw new Error('User with this email or username already exists');
+        throw new BadRequestException(
+          'Usuario con este email o username ya existe',
+        );
       }
 
       const existingPeople = await queryRunner.manager.findOne(People, {
@@ -94,16 +101,23 @@ export class UserService {
 
       return userWithoutPassword;
     } catch (error) {
-      console.error('Error en create user:', error); // 👈 Mejor logging
       await queryRunner.rollbackTransaction();
+      await queryRunner.release();
 
-      // Re-lanzar la excepción para que el controlador la maneje
+      this.logger.error('Error al crear usuario', error.message);
+
       if (error instanceof BadRequestException) {
         throw error;
       }
 
       throw new InternalServerErrorException('Error interno al crear usuario');
     }
+  }
+
+  async login(loginUserDto: LoginUserDto) {
+    try {
+      const { email, password } = loginUserDto;
+    } catch (error) {}
   }
 
   findAll() {
