@@ -1,18 +1,109 @@
-import { Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  Inject,
+  Injectable,
+  InternalServerErrorException,
+} from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Role } from './entities';
-import { Repository } from 'typeorm';
+import { People, Role, User } from './entities';
+import { DataSource, Repository } from 'typeorm';
+import { Role as RoleEnum } from 'src/common/enums/role.enum';
+import type { HashAdapter } from 'src/common/interfaces/hash.interface';
 
 @Injectable()
 export class UserService {
   constructor(
     @InjectRepository(Role)
     private readonly roleRepository: Repository<Role>,
+    @InjectRepository(User)
+    private readonly userRepository: Repository<User>,
+    @InjectRepository(People)
+    private readonly peopleRepository: Repository<People>,
+    private dataSource: DataSource,
+    @Inject('HashAdapter')
+    private readonly hashAdapter: HashAdapter,
   ) {}
-  create(createUserDto: CreateUserDto) {
-    return 'This action adds a new user';
+  async create(createUserDto: CreateUserDto) {
+    const queryRunner = this.dataSource.createQueryRunner();
+
+    await queryRunner.connect();
+    await queryRunner.startTransaction();
+
+    try {
+      const roleToFind = createUserDto.role || RoleEnum.GUEST;
+
+      const role = await queryRunner.manager.findOne(Role, {
+        where: { name: roleToFind as RoleEnum },
+      });
+
+      if (!role) {
+        throw new BadRequestException(`Rol '${roleToFind}' no encontrado`);
+      }
+
+      const existingUser = await queryRunner.manager.findOne(User, {
+        where: [
+          { email: createUserDto.email },
+          { userName: createUserDto.user_name },
+        ],
+      });
+
+      if (existingUser) {
+        throw new Error('User with this email or username already exists');
+      }
+
+      const existingPeople = await queryRunner.manager.findOne(People, {
+        where: { dni: createUserDto.dni },
+      });
+
+      if (existingPeople) {
+        throw new BadRequestException('Usuario con este DNI ya existe');
+      }
+
+      const people = queryRunner.manager.create(People, {
+        firstName: createUserDto.first_name,
+        lastName: createUserDto.last_name,
+        dni: createUserDto.dni,
+        institute: createUserDto.institute,
+        phoneNumber: createUserDto.phone_number,
+        birthDate: new Date(createUserDto.birth_date),
+      });
+
+      const savedPeople = await queryRunner.manager.save(People, people);
+
+      const hashedPassword = await this.hashAdapter.hash(
+        createUserDto.password,
+      );
+
+      const user = queryRunner.manager.create(User, {
+        userName: createUserDto.user_name,
+        email: createUserDto.email,
+        password: hashedPassword,
+        role: role,
+        people: savedPeople,
+      });
+
+      const savedUser = await queryRunner.manager.save(User, user);
+
+      await queryRunner.commitTransaction();
+
+      await queryRunner.release();
+
+      const { password, ...userWithoutPassword } = savedUser;
+
+      return userWithoutPassword;
+    } catch (error) {
+      console.error('Error en create user:', error); // 👈 Mejor logging
+      await queryRunner.rollbackTransaction();
+
+      // Re-lanzar la excepción para que el controlador la maneje
+      if (error instanceof BadRequestException) {
+        throw error;
+      }
+
+      throw new InternalServerErrorException('Error interno al crear usuario');
+    }
   }
 
   findAll() {
@@ -23,12 +114,22 @@ export class UserService {
     return `This action returns a #${id} user`;
   }
 
-  seedRoles() {
-    const roles = ['admin', 'teacher', 'student'];
-    roles.forEach(async (roleName) => {
-      const role = this.roleRepository.create({ name: roleName });
-      await this.roleRepository.save(role);
-    });
+  async seedRoles() {
+    const roles = [
+      RoleEnum.ADMIN,
+      RoleEnum.TEACHER,
+      RoleEnum.STUDENT,
+      RoleEnum.GUEST,
+    ];
+    for (const roleName of roles) {
+      const existingRole = await this.roleRepository.findOne({
+        where: { name: roleName },
+      });
+      if (!existingRole) {
+        const role = this.roleRepository.create({ name: roleName });
+        await this.roleRepository.save(role);
+      }
+    }
 
     return 'Roles seeded';
   }

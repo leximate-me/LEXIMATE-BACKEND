@@ -9,6 +9,7 @@ import {
   UpdateDateColumn,
 } from 'typeorm';
 import { User } from './user.entity';
+import { Role as RoleEnum } from 'src/common/enums/role.enum';
 
 @Entity()
 export class Role {
@@ -16,10 +17,16 @@ export class Role {
   id: string;
 
   @Column({
-    type: 'varchar',
-    length: 50,
+    type: 'enum',
+    enum: RoleEnum,
   })
-  name: string;
+  name: RoleEnum;
+
+  @Column({ nullable: true })
+  description: string;
+
+  @Column({ default: true })
+  active: boolean;
 
   @OneToOne(() => User, (user) => user.role)
   user: User;
