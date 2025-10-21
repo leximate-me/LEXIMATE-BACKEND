@@ -4,6 +4,7 @@ import {
   Injectable,
   InternalServerErrorException,
   Logger,
+  UnauthorizedException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { DataSource, QueryRunner, Repository } from 'typeorm';
@@ -29,10 +30,10 @@ export class UserService {
   async create(createUserDto: CreateUserDto) {
     const queryRunner = this.dataSource.createQueryRunner();
 
-    await queryRunner.connect();
-    await queryRunner.startTransaction();
-
     try {
+      await queryRunner.connect();
+      await queryRunner.startTransaction();
+
       const roleToFind = createUserDto.role || RoleEnum.GUEST;
 
       const role = await queryRunner.manager.findOne(Role, {
@@ -97,50 +98,42 @@ export class UserService {
 
       return userWithoutPassword;
     } catch (error) {
-      return this.handleError(
-        error,
-        queryRunner,
-        'registro de usuario',
-        'Error interno al registrar usuario',
-      );
+      await queryRunner.rollbackTransaction();
+      await queryRunner.release();
+      if (error instanceof BadRequestException) {
+        throw error;
+      }
+      throw new InternalServerErrorException('Error interno al iniciar sesión');
     }
   }
 
   async login(loginUserDto: LoginUserDto) {
     const { email, userName, password } = loginUserDto;
-    const queryRunner = this.dataSource.createQueryRunner();
-
-    await queryRunner.connect();
-    await queryRunner.startTransaction();
     try {
-      const user = await queryRunner.manager.findOne(User, {
+      const foundUser = await this.userRepository.findOne({
         where: [{ email }, { userName }],
         select: ['id', 'userName', 'email', 'password', 'role', 'people'],
         relations: ['role', 'people'],
       });
 
-      this.logger.debug(user);
-
-      const comparePassword = await this.hashAdapter.compare(
-        password,
-        user?.password || '',
-      );
-
-      if (!user || !comparePassword) {
-        throw new BadRequestException('Credenciales inválidas');
+      if (
+        !foundUser ||
+        !this.hashAdapter.compare(password, foundUser.password)
+      ) {
+        throw new UnauthorizedException('Credenciales inválidas');
       }
 
-      await queryRunner.commitTransaction();
-      await queryRunner.release();
+      const { password: userPassword, ...userWithoutPassword } = foundUser;
 
-      return user;
+      //TODO retornar un token JWT
+
+      return userWithoutPassword;
     } catch (error) {
-      return this.handleError(
-        error,
-        queryRunner,
-        'inicio de sesión de usuario',
-        'Error interno en el inicio de sesión del usuario',
-      );
+      this.logger.error('Error al iniciar sesión', error.stack);
+      if (error instanceof UnauthorizedException) {
+        throw error;
+      }
+      throw new InternalServerErrorException('Error interno al iniciar sesión');
     }
   }
 
@@ -178,43 +171,5 @@ export class UserService {
 
   remove(id: number) {
     return `This action removes a #${id} user`;
-  }
-
-  private async handleError(
-    error: any,
-    queryRunner: QueryRunner,
-    context: string,
-    defaultMessage = 'Error interno del servidor',
-  ): Promise<never> {
-    if (queryRunner.isTransactionActive) {
-      await queryRunner.rollbackTransaction();
-    }
-
-    if (!queryRunner.isReleased) {
-      await queryRunner.release();
-    }
-
-    this.logger.error(`Error en ${context}:`, error.message);
-
-    if (
-      error instanceof BadRequestException ||
-      error instanceof InternalServerErrorException
-    ) {
-      throw error;
-    }
-
-    throw new InternalServerErrorException(defaultMessage);
-  }
-
-  private async cleanupQueryRunner(queryRunner: QueryRunner): Promise<void> {
-    try {
-      if (queryRunner.isTransactionActive) {
-        await queryRunner.commitTransaction();
-      }
-    } finally {
-      if (!queryRunner.isReleased) {
-        await queryRunner.release();
-      }
-    }
   }
 }
