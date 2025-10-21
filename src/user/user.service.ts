@@ -5,14 +5,12 @@ import {
   InternalServerErrorException,
   Logger,
 } from '@nestjs/common';
-import { CreateUserDto } from './dto/create-user.dto';
-import { UpdateUserDto } from './dto/update-user.dto';
 import { InjectRepository } from '@nestjs/typeorm';
+import { DataSource, QueryRunner, Repository } from 'typeorm';
+import { CreateUserDto, UpdateUserDto, LoginUserDto } from './dto';
 import { People, Role, User } from './entities';
-import { DataSource, Repository } from 'typeorm';
 import { Role as RoleEnum } from 'src/common/enums/role.enum';
 import type { HashAdapter } from 'src/common/interfaces/hash.interface';
-import { LoginUserDto } from './dto/login-user.dto';
 
 @Injectable()
 export class UserService {
@@ -34,8 +32,6 @@ export class UserService {
     await queryRunner.connect();
     await queryRunner.startTransaction();
 
-    this.logger.log('Creando usuario...');
-
     try {
       const roleToFind = createUserDto.role || RoleEnum.GUEST;
 
@@ -50,7 +46,7 @@ export class UserService {
       const existingUser = await queryRunner.manager.findOne(User, {
         where: [
           { email: createUserDto.email },
-          { userName: createUserDto.user_name },
+          { userName: createUserDto.userName },
         ],
       });
 
@@ -69,12 +65,12 @@ export class UserService {
       }
 
       const people = queryRunner.manager.create(People, {
-        firstName: createUserDto.first_name,
-        lastName: createUserDto.last_name,
+        firstName: createUserDto.firstName,
+        lastName: createUserDto.lastName,
         dni: createUserDto.dni,
         institute: createUserDto.institute,
-        phoneNumber: createUserDto.phone_number,
-        birthDate: new Date(createUserDto.birth_date),
+        phoneNumber: createUserDto.phoneNumber,
+        birthDate: new Date(createUserDto.birthDate),
       });
 
       const savedPeople = await queryRunner.manager.save(People, people);
@@ -84,7 +80,7 @@ export class UserService {
       );
 
       const user = queryRunner.manager.create(User, {
-        userName: createUserDto.user_name,
+        userName: createUserDto.userName,
         email: createUserDto.email,
         password: hashedPassword,
         role: role,
@@ -101,23 +97,51 @@ export class UserService {
 
       return userWithoutPassword;
     } catch (error) {
-      await queryRunner.rollbackTransaction();
-      await queryRunner.release();
-
-      this.logger.error('Error al crear usuario', error.message);
-
-      if (error instanceof BadRequestException) {
-        throw error;
-      }
-
-      throw new InternalServerErrorException('Error interno al crear usuario');
+      return this.handleError(
+        error,
+        queryRunner,
+        'registro de usuario',
+        'Error interno al registrar usuario',
+      );
     }
   }
 
   async login(loginUserDto: LoginUserDto) {
+    const { email, userName, password } = loginUserDto;
+    const queryRunner = this.dataSource.createQueryRunner();
+
+    await queryRunner.connect();
+    await queryRunner.startTransaction();
     try {
-      const { email, password } = loginUserDto;
-    } catch (error) {}
+      const user = await queryRunner.manager.findOne(User, {
+        where: [{ email }, { userName }],
+        select: ['id', 'userName', 'email', 'password', 'role', 'people'],
+        relations: ['role', 'people'],
+      });
+
+      this.logger.debug(user);
+
+      const comparePassword = await this.hashAdapter.compare(
+        password,
+        user?.password || '',
+      );
+
+      if (!user || !comparePassword) {
+        throw new BadRequestException('Credenciales inválidas');
+      }
+
+      await queryRunner.commitTransaction();
+      await queryRunner.release();
+
+      return user;
+    } catch (error) {
+      return this.handleError(
+        error,
+        queryRunner,
+        'inicio de sesión de usuario',
+        'Error interno en el inicio de sesión del usuario',
+      );
+    }
   }
 
   findAll() {
@@ -154,5 +178,43 @@ export class UserService {
 
   remove(id: number) {
     return `This action removes a #${id} user`;
+  }
+
+  private async handleError(
+    error: any,
+    queryRunner: QueryRunner,
+    context: string,
+    defaultMessage = 'Error interno del servidor',
+  ): Promise<never> {
+    if (queryRunner.isTransactionActive) {
+      await queryRunner.rollbackTransaction();
+    }
+
+    if (!queryRunner.isReleased) {
+      await queryRunner.release();
+    }
+
+    this.logger.error(`Error en ${context}:`, error.message);
+
+    if (
+      error instanceof BadRequestException ||
+      error instanceof InternalServerErrorException
+    ) {
+      throw error;
+    }
+
+    throw new InternalServerErrorException(defaultMessage);
+  }
+
+  private async cleanupQueryRunner(queryRunner: QueryRunner): Promise<void> {
+    try {
+      if (queryRunner.isTransactionActive) {
+        await queryRunner.commitTransaction();
+      }
+    } finally {
+      if (!queryRunner.isReleased) {
+        await queryRunner.release();
+      }
+    }
   }
 }

@@ -18,10 +18,10 @@ export class CreateUserDto {
   role: string;
 
   @IsString()
-  first_name: string;
+  firstName: string;
 
   @IsString()
-  last_name: string;
+  lastName: string;
 
   @IsString()
   @MinLength(8)
@@ -31,17 +31,17 @@ export class CreateUserDto {
   institute: string;
 
   @IsString()
-  user_name: string;
+  userName: string;
 
   @IsEmail()
   email: string;
 
   @IsString()
   @MinLength(10)
-  phone_number: string;
+  phoneNumber: string;
 
   @IsDateString()
-  birth_date: string;
+  birthDate: string;
 
   @IsString()
   @MinLength(8, { message: 'La contraseña debe tener al menos 8 caracteres' })
