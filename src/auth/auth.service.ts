@@ -81,8 +81,9 @@ export class AuthService {
       if (!isPasswordValid) {
         throw new BadRequestException('invalid email or password');
       }
+      console.log(user);
 
-      const payload = { sub: user.id, email: user.email, role: user.role };
+      const payload = { sub: user.id, email: user.email, role: user.role.name };
       const token = await this.jwtService.signAsync(payload);
 
       const { password: _, ...userWithoutPassword } = user;

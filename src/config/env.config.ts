@@ -6,5 +6,5 @@ export const EnvConfiguration = () => ({
   dbPassword: process.env.DB_PASSWORD,
   dbName: process.env.DB_NAME,
   jwtSecret: process.env.JWT_SECRET,
-  jwtExpiresIn: process.env.JWT_EXPIRES_IN || 3600,
+  jwtExpiresIn: parseInt(process.env.JWT_EXPIRES_IN || '3600', 10),
 });
