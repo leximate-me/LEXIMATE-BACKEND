@@ -5,13 +5,14 @@ import { CommonModule } from './common/common.module';
 import { EnvConfiguration } from './config/env.config';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { UserModule } from './user/user.module';
 import { CourseModule } from './course/course.module';
 import { PostModule } from './post/post.module';
 import { CommentModule } from './comment/comment.module';
 import { TaskModule } from './task/task.module';
 import { ToolModule } from './tool/tool.module';
 import { SnakeNamingStrategy } from 'typeorm-naming-strategies';
+import { UserModule } from './user/user.module';
+import { AuthModule } from './auth/auth.module';
 
 @Module({
   imports: [
@@ -38,6 +39,7 @@ import { SnakeNamingStrategy } from 'typeorm-naming-strategies';
     CommentModule,
     TaskModule,
     ToolModule,
+    AuthModule,
   ],
   controllers: [AppController],
   providers: [AppService],

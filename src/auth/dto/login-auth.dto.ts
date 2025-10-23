@@ -1,16 +1,18 @@
 import {
+  IsDateString,
   IsEmail,
+  IsEnum,
   IsOptional,
   IsString,
   Matches,
   MaxLength,
   MinLength,
 } from 'class-validator';
+import { Role as RoleEnum } from 'src/common/enums/role.enum';
 
-export class LoginUserDto {
-  @IsString()
-  @IsOptional()
-  userName: string;
+export class LoginAuthDto {
+  // @IsString()
+  // userName: string;
 
   @IsEmail()
   @IsString()

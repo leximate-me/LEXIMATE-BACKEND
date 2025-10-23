@@ -20,7 +20,7 @@ export class Role {
     type: 'enum',
     enum: RoleEnum,
   })
-  name: RoleEnum;
+  name: string[];
 
   @Column({ nullable: true })
   description: string;
