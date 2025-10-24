@@ -1,113 +1,70 @@
-# Leximate: Aula Virtual Inclusiva para Estudiantes con Dislexia
+# Documentación de Rutas API
 
-## Problema
+Este documento detalla las rutas API disponibles en el sistema, organizadas por
+módulos para facilitar la comprensión y el uso.
 
-La dislexia no es solo un desafío individual para el estudiante que la padece,
-sino una problemática que involucra a todo el entorno educativo. No solo afecta
-el rendimiento académico, sino también la autoestima y las relaciones sociales.
-Profesores, compañeros de clase y padres juegan un rol crucial en cómo se vive y
-afronta la dislexia dentro del aula.
+## Módulo de Autenticación (auth.route.ts)
 
-El reto es crear un espacio donde los estudiantes con dislexia puedan aprender
-en igualdad de condiciones, donde los profesores cuenten con las herramientas
-necesarias para adaptar su enseñanza y los compañeros de clase se eduquen en
-empatía y comprensión. Este entorno debe promover el éxito académico, el
-bienestar emocional y la inclusión social.
+- **POST** `/register`: Registro de un nuevo usuario.
+- **POST** `/login`: Inicio de sesión de un usuario.
+- **GET** `/seed-roles`: Sembrar roles en la base de datos.
+- **GET** `/verify-token`: Verificar el token de autenticación.
+- **POST** `/logout`: Cerrar sesión de un usuario.
+- **GET** `/profile`: Obtener el perfil del usuario autenticado.
+- **DELETE** `/delete`: Eliminar el perfil del usuario autenticado.
+- **POST** `/send-email-verification`: Enviar correo de verificación.
+- **GET** `/verify-email`: Verificar el correo electrónico del usuario.
+- **PUT** `/update-profile`: Actualizar el perfil del usuario autenticado.
 
-## Solución Propuesta: Leximate
+## Módulo de Comentarios (comment.route.ts)
 
-Leximate es una plataforma virtual diseñada para proporcionar un entorno
-inclusivo en el que los estudiantes con dislexia puedan aprender de forma
-equitativa, y donde profesores y compañeros puedan colaborar activamente para
-apoyar su progreso.
+- **POST** `/`: Crear un nuevo comentario.
+- **GET** `/`: Leer todos los comentarios.
+- **GET** `/:commentId`: Leer un comentario específico por ID.
+- **PUT** `/:commentId`: Actualizar un comentario específico por ID.
+- **DELETE** `/:commentId`: Eliminar un comentario específico por ID.
 
-## Componentes Principales
+## Módulo de Clases/Cursos (class.route.ts)
 
-1. **Aula Virtual**:
+- **POST** `/`: Crear una nueva clase/curso.
+- **POST** `/join`: Unirse a una clase/curso.
+- **POST** `/:classId/leave`: Salir de una clase/curso.
+- **GET** `/user`: Obtener las clases/cursos a las que pertenece un usuario.
+- **GET** `/:classId/user`: Obtener los usuarios de una clase/curso.
+- **PUT** `/:classId`: Actualizar una clase/curso específica por ID.
+- **DELETE** `/:classId`: Eliminar una clase/curso específica por ID.
+- **USE** `/:classId/task`: Rutas de tareas anidadas.
+- **USE** `/:classId/post`: Rutas de publicaciones anidadas.
 
-   - Espacio donde los profesores pueden crear clases, asignar tareas y evaluar
-     el progreso de los estudiantes.
-   - Se incluye la opción de adaptar las instrucciones y explicaciones para
-     facilitar la comprensión de estudiantes con dislexia.
+## Módulo de Cursos (course.route.ts)
 
-2. **Juegos Interactivos**:
+- **POST** `/`: Crear un nuevo curso.
+- **POST** `/join`: Unirse a un curso.
+- **POST** `/:classId/leave`: Salir de un curso.
+- **GET** `/user`: Obtener los cursos a los que pertenece un usuario.
+- **GET** `/:classId/user`: Obtener los usuarios de un curso.
+- **PUT** `/:classId`: Actualizar un curso específico por ID.
+- **DELETE** `/:classId`: Eliminar un curso específico por ID.
+- **USE** `/:classId/task`: Rutas de tareas anidadas.
+- **USE** `/:classId/post`: Rutas de publicaciones anidadas.
 
-   - Actividades lúdicas que ayudan a mejorar la comprensión lectora y
-     habilidades cognitivas de los estudiantes con dislexia.
-   - Los compañeros de clase también pueden participar en los juegos,
-     promoviendo la colaboración y el desarrollo de la empatía.
+## Módulo de Publicaciones (post.route.ts)
 
-3. **Herramientas de Apoyo Personalizado**:
+- **POST** `/`: Crear una nueva publicación.
+- **GET** `/`: Leer todas las publicaciones.
+- **GET** `/:postId`: Leer una publicación específica por ID.
+- **PUT** `/:postId`: Actualizar una publicación específica por ID.
+- **DELETE** `/:postId`: Eliminar una publicación específica por ID.
+- **USE** `/:postId/comment`: Rutas de comentarios anidadas.
 
-   - Los estudiantes con dislexia tendrán acceso a herramientas como lectores de
-     texto en voz alta y opciones para ajustar el tamaño y tipo de letra,
-     colores de fondo, y más.
-   - Ejercicios específicos diseñados para mejorar la ortografía, lectura y
-     escritura, ajustados a las necesidades de cada estudiante.
+## Módulo de Tareas (task.route.ts)
 
-4. **Seguimiento y Reportes Personalizados**:
+- **POST** `/`: Crear una nueva tarea.
+- **PUT** `/:taskId`: Actualizar una tarea específica por ID.
+- **DELETE** `/:taskId`: Eliminar una tarea específica por ID.
+- **GET** `/`: Obtener todas las tareas de una clase.
+- **GET** `/:taskId`: Obtener una tarea específica por ID.
 
-   - Los profesores tendrán acceso a reportes detallados del progreso de los
-     estudiantes, permitiendo realizar ajustes a las estrategias de enseñanza.
-   - Además, los padres pueden recibir informes periódicos para colaborar con
-     los avances de sus hijos desde casa.
+## Módulo de Herramientas (tool.route.ts)
 
-5. **Foro de Apoyo**:
-   - Espacio donde los estudiantes pueden compartir sus experiencias de forma
-     anónima, hacer preguntas y comentar sobre los juegos y actividades
-     interactivas.
-   - Este foro fomenta un sentido de comunidad y ayuda a los estudiantes a
-     sentirse comprendidos y apoyados.
-
-## Funcionalidades
-
-- Juegos interactivos orientados a mejorar la comprensión lectora de personas
-  con dislexia.
-- Gestión de clases y tareas para profesores y alumnos.
-
-## Tecnologías
-
-- Node.js
-- Express
-- Sequelize
-- MySQL
-- Doppler SDK
-- Cloudinary
-- Resend
-- Zod
-- JsonWebToken
-- bcryptjs
-
-## Requisitos
-
-- Node.js: Utiliza [fnm](https://github.com/Schniz/fnm) para gestionar versiones
-  de Node.js.
-- MySQL instalado en tu máquina.
-- Doppler SDK: Para gestionar variables de entorno de forma segura.
-
-## Instalacion
-
-- Clona el repositorio:
-
-  ```bash
-  git clone https://github.com/tu_usuario/leximate.git
-  cd leximate
-  ```
-
-- Descarga las dependencias del proyecto:
-
-```bash
-yarn install
-```
-
-- Descarga las variables de entorno del proyecto:
-
-```bash
-yarn pull-keys
-```
-
-- Inicializar servidor del proyecto:
-
-```bash
-yarn run dev
-```
+- **POST** `/extract-text-from-img`: Extraer texto de una imagen.
