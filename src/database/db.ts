@@ -1,35 +1,36 @@
-import { Sequelize } from 'sequelize';
-import { DB_HOST, DB_NAME, DB_PASSWORD, DB_USER } from '../configs/env.config';
-import { logger } from '../configs/logger.config';
+import { DataSource } from 'typeorm';
+import {
+  DB_HOST,
+  DB_NAME,
+  DB_PASSWORD,
+  DB_USER,
+} from '../common/configs/env.config';
+import { logger } from '../common/configs/logger.config';
 
-const sequelize = new Sequelize(DB_NAME, DB_USER, DB_PASSWORD, {
+export const AppDataSource = new DataSource({
+  type: 'postgres',
   host: DB_HOST,
-  dialect: 'postgres',
+  port: 5442,
+  username: DB_USER,
+  password: DB_PASSWORD,
+  database: DB_NAME,
+  entities: [
+    __dirname + '/../modules/**/entities/*.entity.{ts,js}',
+    // Si tienes entidades fuera de modules, también puedes agregar:
+    __dirname + '/../entities/*.entity.{ts,js}',
+  ],
+  synchronize: true, // Solo para desarrollo
   logging: false,
-  pool: {
-    max: 5,
-    min: 0,
-    acquire: 30000,
-    idle: 10000,
-  },
-  dialectOptions: {
-    ssl: {
-      require: true,
-      rejectUnauthorized: false, // Puedes ajustar esto según tus necesidades de seguridad
-    },
-  },
+  poolSize: 5,
 });
 
-const connectDB = async () => {
+export const connectDB = async () => {
   try {
-    // Autenticar la conexión con Sequelize
-    await sequelize.authenticate();
-    logger.info('Conexion establecida correctamente con la base de datos.');
-    return sequelize;
+    await AppDataSource.initialize();
+    logger.info('Conexión establecida correctamente con la base de datos.');
+    return AppDataSource;
   } catch (error) {
     logger.error(`Error al conectar con la base de datos: ${String(error)}`);
-    return;
+    return null;
   }
 };
-
-export { connectDB, sequelize };

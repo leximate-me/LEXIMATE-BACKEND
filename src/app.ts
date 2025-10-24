@@ -1,10 +1,11 @@
 import express, { Application } from 'express';
-import { applyMiddlewares } from './middlewares/app.middleware';
-import { userAuthRouter } from './routes/userAuth.route';
-import { userClassRouter } from './routes/userClass.route';
-import { userToolsRouter } from './routes/userTools.route';
-import { userPostRouter } from './routes/userPost.route';
-import { logger } from './configs/logger.config';
+import { applyMiddlewares } from './common/middlewares/app.middleware';
+import { authRouter } from './modules/auth/routes/auth.route';
+import { classRouter } from './modules/course/course.route';
+import { toolRouter } from './modules/tool/tool.route';
+import { postRouter } from './modules/post/post.route';
+import { logger } from './common/configs/logger.config';
+import 'reflect-metadata';
 import figlet from 'figlet';
 
 // Creamos una clase y la exportamos
@@ -20,10 +21,10 @@ export class App {
 
   // Función para setear las rutas de la aplicación
   private setRoutes() {
-    this.app.use('/api/auth', userAuthRouter);
-    this.app.use('/api/class', userClassRouter);
-    this.app.use('/api/tool', userToolsRouter);
-    this.app.use('/api/post', userPostRouter);
+    this.app.use('/api/auth', authRouter);
+    this.app.use('/api/class', classRouter);
+    this.app.use('/api/tool', toolRouter);
+    this.app.use('/api/post', postRouter);
   }
 
   // Constructor de la clase App
