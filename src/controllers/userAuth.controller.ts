@@ -61,7 +61,7 @@ const loginUserController = async (
     res.status(200).json(user);
   } catch (error) {
     if (error instanceof Error) {
-      logger.error(error.message, 'Error en loginUserController');
+      logger.error(`Error en loginUserController: ${error.message}`);
       res.status(400).json({ error: [error.message] });
     } else {
       logger.error(error, 'Error desconocido en loginUserController');

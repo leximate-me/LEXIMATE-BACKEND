@@ -27,7 +27,8 @@ const connectDB = async () => {
     logger.info('Conexion establecida correctamente con la base de datos.');
     return sequelize;
   } catch (error) {
-    return logger.error('Error al conectar con la base de datos:', error);
+    logger.error(`Error al conectar con la base de datos: ${String(error)}`);
+    return;
   }
 };
 

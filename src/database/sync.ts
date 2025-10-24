@@ -10,7 +10,7 @@ async function syncModels() {
 
     logger.info('Modelos sincronizados correctamente.');
   } catch (error) {
-    logger.error('Error al sincronizar los modelos:', error);
+    logger.error(`Error al sincronizar los modelos: ${String(error)}`);
   }
 }
 

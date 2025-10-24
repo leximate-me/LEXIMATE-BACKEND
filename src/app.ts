@@ -43,15 +43,20 @@ export class App {
   // Función para poner en escucha al servidor
   listen() {
     this.app.listen(this.app.get('port'));
-    figlet('LEXIMATE', { font: 'Ghost' }, async (err, data) => {
-      if (err) {
-        logger.error(err, 'Error generando texto ASCII');
+    figlet.text(
+      'LEXIMATE',
+      { font: 'Ghost' },
+      (err: Error | null, data: string | undefined) => {
+        if (err) {
+          logger.error(err, 'Error generando texto ASCII');
+          return;
+        }
+
+        // Imprimimos por consola el logo de 'LEXIMATE' creado como un texto ASCII
+        logger.info('\n' + data);
+
+        logger.info(`Servidor corriendo en el puerto: ${this.port}`);
       }
-
-      // Imprimimos por consola el logo de 'LEXIMATE' creado como un texto ASCII
-      logger.info('\n' + data);
-
-      logger.info(`Servidor corriendo en el puerto: ${this.port}`);
-    });
+    );
   }
 }
