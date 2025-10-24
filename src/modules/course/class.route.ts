@@ -5,55 +5,55 @@ import { validateSchema } from '../../common/middlewares/validator.middleware';
 import { createCourseSchema, updateCourseSchema } from './course.schema';
 
 import { postRouter } from '../post/post.route';
-import { ClassController } from './course.controller';
+import { CourseController } from './course.controller';
 import { taskRouter } from '../task/task.route';
 
 const classRouter = Router();
-const classController = new ClassController();
+const courseController = new CourseController();
 
 classRouter.post(
   '/',
   authRequired,
   verifyUserRequired,
   validateSchema(createCourseSchema),
-  classController.create.bind(classController)
+  courseController.create.bind(courseController)
 );
 classRouter.post(
   '/join',
   authRequired,
   verifyUserRequired,
-  classController.join.bind(classController)
+  courseController.join.bind(courseController)
 );
 classRouter.post(
   '/:classId/leave',
   authRequired,
   verifyUserRequired,
-  classController.leave.bind(classController)
+  courseController.leave.bind(courseController)
 );
 classRouter.get(
   '/user',
   authRequired,
   verifyUserRequired,
-  classController.getClassesByUser.bind(classController)
+  courseController.getClassesByUser.bind(courseController)
 );
 classRouter.get(
   '/:classId/user',
   authRequired,
   verifyUserRequired,
-  classController.getUsersByClass.bind(classController)
+  courseController.getUsersByClass.bind(courseController)
 );
 classRouter.put(
   '/:classId',
   authRequired,
   verifyUserRequired,
   validateSchema(updateCourseSchema),
-  classController.update.bind(classController)
+  courseController.update.bind(courseController)
 );
 classRouter.delete(
   '/:classId',
   authRequired,
   verifyUserRequired,
-  classController.delete.bind(classController)
+  courseController.delete.bind(courseController)
 );
 
 classRouter.use('/:classId/task', taskRouter);
