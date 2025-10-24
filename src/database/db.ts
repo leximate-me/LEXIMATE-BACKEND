@@ -14,11 +14,7 @@ export const AppDataSource = new DataSource({
   username: DB_USER,
   password: DB_PASSWORD,
   database: DB_NAME,
-  entities: [
-    __dirname + '/../modules/**/entities/*.entity.{ts,js}',
-    // Si tienes entidades fuera de modules, también puedes agregar:
-    __dirname + '/../entities/*.entity.{ts,js}',
-  ],
+  entities: [__dirname + '/../modules/**/entities/*.entity.{ts,js}'],
   synchronize: true, // Solo para desarrollo
   logging: false,
   poolSize: 5,
