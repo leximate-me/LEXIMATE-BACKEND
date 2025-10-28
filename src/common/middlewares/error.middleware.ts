@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 import { HttpError } from '../libs/http-error';
-import { logger } from '../configs/logger.config'; // Ajusta la ruta según tu estructura
+import { logger } from '../configs/logger.config';
 
 export function errorHandler(
   err: any,
@@ -12,17 +12,22 @@ export function errorHandler(
     {
       path: req.path,
       method: req.method,
-      status: err.status || 500,
+      status: err.statusCode || 500,
       message: err.message,
       stack: err.stack,
-      details: err.details,
     },
     'Error en middleware global'
   );
-  console.log(err);
+
   if (err instanceof HttpError) {
-    res.status(err.status).json({ error: [err.message], details: err.details });
+    return res.status(err.statusCode).json({
+      statusCode: err.statusCode,
+      message: err.message,
+    });
   }
 
-  res.status(500).json({ error: ['Error interno del servidor'] });
+  return res.status(500).json({
+    statusCode: 500,
+    message: 'Error interno del servidor',
+  });
 }
