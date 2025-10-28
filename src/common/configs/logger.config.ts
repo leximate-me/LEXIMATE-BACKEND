@@ -1,38 +1,42 @@
 // logger.js
 import pino from 'pino';
+import pinoPretty from 'pino-pretty';
 import pinoHttp from 'pino-http';
 
 // Define si estamos en producción.
 // Esto es clave para decidir si usar pino-pretty.
 const isDevelopment = process.env.NODE_ENV !== 'production';
 
-export const logger = pino({
-  // Nivel de log por defecto.
-  level: process.env.LOG_LEVEL || 'info',
+const stream = isDevelopment
+  ? pinoPretty({
+      colorize: true,
+      levelFirst: true,
+      translateTime: 'HH:MM:ss',
+      ignore: 'pid,name,v',
+      messageKey: 'message',
+      messageFormat:
+        '({responseTime}ms) {req.method} {url} |> {statusCode} {msg}',
+      hideObject: false,
+      customColors: 'info:green,warn:yellow,error:red,debug:magenta',
+      customPrettifiers: {
+        responseTime: (value) => `${value}ms`,
+        hostname: (value) => `🏷️ ${value}`,
+      },
+    })
+  : undefined;
 
-  // Usar 'message' en lugar de 'msg' para mayor claridad
-  messageKey: 'message',
-
-  // Usar pino-pretty SÓLO si no estamos en producción
-  transport: isDevelopment
-    ? {
-        target: 'pino-pretty',
-
-        options: {
-          // Opciones de formato claro y descriptivo
-          colorize: true,
-          levelFirst: true,
-          translateTime: 'HH:MM:ss', // Formato de fecha y hora detallado
-          ignore: 'pid,name,v', // Ignorar campos ruidosos
-          messageKey: 'message',
-
-          messageFormat:
-            '{level} ({responseTime}ms) {req.method} {url} - {statusCode} | {message}',
-          hideObject: false,
-        },
-      }
-    : undefined, // En producción, se omite el transport (JSON puro y rápido)
-});
+export const logger = isDevelopment
+  ? pino(
+      {
+        level: process.env.LOG_LEVEL || 'info',
+        base: null,
+      },
+      stream
+    )
+  : pino({
+      level: process.env.LOG_LEVEL || 'info',
+      base: null,
+    });
 
 export const httpLogger = pinoHttp({
   logger: logger,
