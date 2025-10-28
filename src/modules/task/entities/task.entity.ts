@@ -36,7 +36,10 @@ export class Task {
   @ManyToOne(() => Course, (classEntity) => classEntity.tasks)
   course: Course;
 
-  @OneToMany(() => FileTask, (fileTask) => fileTask.task)
+  @OneToMany(() => FileTask, (fileTask) => fileTask.task, {
+    eager: true,
+    onDelete: 'CASCADE',
+  })
   fileTasks: FileTask[];
 
   @ManyToMany(() => Tool, (tool) => tool.tasks)
