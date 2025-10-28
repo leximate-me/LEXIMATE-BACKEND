@@ -15,6 +15,9 @@ export function errorHandler(
       status: err.statusCode || 500,
       message: err.message,
       stack: err.stack,
+      body: req.body,
+      params: req.params,
+      query: req.query,
     },
     'Error en middleware global'
   );

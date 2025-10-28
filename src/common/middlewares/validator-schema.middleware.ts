@@ -12,7 +12,7 @@ const validateSchema = (schema: Schema) => {
     } catch (error) {
       if (req.file && req.file.cloudinaryPublicId) {
         await deleteFromCloudinary(req.file.cloudinaryPublicId, next);
-        console.log('Archivo eliminado de Cloudinary');
+        logger.info('Archivo eliminado de Cloudinary');
       }
       if (error instanceof ZodError) {
         logger.error(error.errors, 'Error de validación');
