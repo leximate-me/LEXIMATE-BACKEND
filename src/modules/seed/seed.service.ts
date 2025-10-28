@@ -98,7 +98,7 @@ export class SeedService {
       {
         user_name: 'admin',
         email: 'admin@example.com',
-        password: await this.bcryptAdapter.hash('admin123'),
+        password: await this.bcryptAdapter.hash('Admin_123'),
         first_name: 'Admin',
         last_name: 'User',
         dni: '10000001',
@@ -110,7 +110,7 @@ export class SeedService {
       {
         user_name: 'teacher',
         email: 'teacher@example.com',
-        password: await this.bcryptAdapter.hash('teacher123'),
+        password: await this.bcryptAdapter.hash('Teacher_123'),
         first_name: 'Teacher',
         last_name: 'User',
         dni: '10000002',
@@ -122,7 +122,7 @@ export class SeedService {
       {
         user_name: 'student',
         email: 'student@example.com',
-        password: await this.bcryptAdapter.hash('student123'),
+        password: await this.bcryptAdapter.hash('Student_123'),
         first_name: 'Student',
         last_name: 'User',
         dni: '10000003',
@@ -134,7 +134,7 @@ export class SeedService {
       {
         user_name: 'guest',
         email: 'guest@example.com',
-        password: await this.bcryptAdapter.hash('guest123'),
+        password: await this.bcryptAdapter.hash('Guest_123'),
         first_name: 'Guest',
         last_name: 'User',
         dni: '10000004',

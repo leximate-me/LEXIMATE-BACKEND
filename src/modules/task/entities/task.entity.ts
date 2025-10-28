@@ -34,7 +34,7 @@ export class Task {
   qualification: number;
 
   @ManyToOne(() => Course, (classEntity) => classEntity.tasks)
-  class: Course;
+  course: Course;
 
   @OneToMany(() => FileTask, (fileTask) => fileTask.task)
   fileTasks: FileTask[];

@@ -6,6 +6,8 @@ import { Course } from '../course/entities/course.entity';
 import { Task } from './entities/task.entity';
 import { FileTask } from './entities/fileTask.entity';
 import { HttpError } from '../../common/libs/http-error';
+import { CreateTaskDto } from './dtos/create-task.dto';
+import { UpdateTaskDto } from './dtos/update-task.dto';
 
 export class TaskService {
   private readonly userRepository = AppDataSource.getRepository(User);
@@ -16,7 +18,7 @@ export class TaskService {
   async create(
     classId: string,
     userId: string,
-    taskData: Partial<Task>,
+    createTaskDto: CreateTaskDto,
     fileProps: any
   ) {
     const queryRunner = AppDataSource.createQueryRunner();
@@ -41,20 +43,20 @@ export class TaskService {
         );
       }
 
-      const classData = await classRepo.findOne({
+      const courseData = await classRepo.findOne({
         where: { id: classId },
         relations: ['users'],
       });
-      if (!classData) throw HttpError.notFound('Clase no encontrada');
+      if (!courseData) throw HttpError.notFound('Clase no encontrada');
 
-      const isInClass = classData.users.some((u) => u.id === userId);
+      const isInClass = courseData.users.some((u) => u.id === userId);
       if (!isInClass) throw HttpError.forbidden('No perteneces a esta clase');
 
       const newTask = taskRepo.create({
-        title: taskData.title,
-        description: taskData.description,
-        due_date: taskData.due_date,
-        class: classData,
+        title: createTaskDto.title,
+        description: createTaskDto.description,
+        due_date: createTaskDto.due_date,
+        course: courseData,
       });
       await queryRunner.manager.save(newTask);
 
@@ -82,7 +84,7 @@ export class TaskService {
   async update(
     userId: string,
     taskId: string,
-    taskData: Partial<Task>,
+    updateTaskDto: UpdateTaskDto,
     fileProps: any
   ) {
     const queryRunner = AppDataSource.createQueryRunner();
@@ -110,10 +112,13 @@ export class TaskService {
       });
       if (!task) throw HttpError.notFound('Tarea no encontrada');
 
-      if (taskData.title) task.title = taskData.title;
-      if (taskData.description) task.description = taskData.description;
-      if (taskData.status !== undefined) task.status = taskData.status;
-      if (taskData.due_date) task.due_date = taskData.due_date;
+      if (updateTaskDto.title) task.title = updateTaskDto.title;
+      if (updateTaskDto.description)
+        task.description = updateTaskDto.description;
+      if (updateTaskDto.status !== undefined)
+        task.status = updateTaskDto.status;
+      if (updateTaskDto.due_date)
+        task.due_date = new Date(updateTaskDto.due_date);
 
       await queryRunner.manager.save(task);
 
@@ -217,17 +222,17 @@ export class TaskService {
     });
     if (!foundUser) throw HttpError.notFound('Usuario no encontrado');
 
-    const classData = await this.classRepository.findOne({
+    const courseData = await this.classRepository.findOne({
       where: { id: classId },
       relations: ['users'],
     });
-    if (!classData) throw HttpError.notFound('Clase no encontrada');
+    if (!courseData) throw HttpError.notFound('Clase no encontrada');
 
-    const isInClass = classData.users.some((u) => u.id === userId);
+    const isInClass = courseData.users.some((u) => u.id === userId);
     if (!isInClass) throw HttpError.forbidden('No perteneces a esta clase');
 
     const tasks = await this.taskRepository.find({
-      where: { class: { id: classId } },
+      where: { course: { id: classId } },
     });
 
     const files = await this.fileTaskRepository.find({
@@ -252,13 +257,13 @@ export class TaskService {
     });
     if (!foundUser) throw HttpError.notFound('Usuario no encontrado');
 
-    const classData = await this.classRepository.findOne({
+    const courseData = await this.classRepository.findOne({
       where: { id: classId },
       relations: ['users'],
     });
-    if (!classData) throw HttpError.notFound('Clase no encontrada');
+    if (!courseData) throw HttpError.notFound('Clase no encontrada');
 
-    const isInClass = classData.users.some((u) => u.id === userId);
+    const isInClass = courseData.users.some((u) => u.id === userId);
     if (!isInClass) throw HttpError.forbidden('No perteneces a esta clase');
 
     const task = await this.taskRepository.findOne({

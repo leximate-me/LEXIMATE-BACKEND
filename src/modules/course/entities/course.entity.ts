@@ -27,7 +27,7 @@ export class Course {
   @DeleteDateColumn()
   deletedAt?: Date;
 
-  @OneToMany(() => Task, (task) => task.class)
+  @OneToMany(() => Task, (task) => task.course)
   tasks: Task[];
 
   @OneToMany(() => Post, (post) => post.course)

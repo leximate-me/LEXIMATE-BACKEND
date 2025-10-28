@@ -10,7 +10,7 @@ export const AppDataSource = new DataSource({
   password: EnvConfiguration().dbPassword,
   database: EnvConfiguration().dbName,
   entities: [__dirname + '/../modules/**/entities/*.entity.{ts,js}'],
-  synchronize: true, // Solo para desarrollo
+  synchronize: true,
   logging: false,
   poolSize: 5,
 });

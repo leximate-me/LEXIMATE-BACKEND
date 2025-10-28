@@ -132,7 +132,7 @@ export class CourseService {
     });
     if (!courseFound) throw HttpError.notFound('Curso no encontrado');
 
-    await this.taskRepository.delete({ class: { id: courseId } });
+    await this.taskRepository.delete({ course: { id: courseId } });
     await this.postRepository.delete({ course: { id: courseId } });
 
     await this.courseRepository.delete({ id: courseId });
