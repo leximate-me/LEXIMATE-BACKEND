@@ -58,7 +58,7 @@ export class PostService {
 
     const posts = await this.postRepository.find({
       where: { course: { id: courseId } },
-      relations: ['user', 'user.people', 'Course'],
+      relations: ['user', 'user.people', 'course'],
     });
 
     return posts;
