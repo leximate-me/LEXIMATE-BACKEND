@@ -25,7 +25,7 @@ export class App {
 
   private setRoutes() {
     this.app.use('/api/auth', authRouter);
-    this.app.use('/api/class', courseRouter);
+    this.app.use('/api/course', courseRouter);
     this.app.use('/api/tool', toolRouter);
     this.app.use('/api/post', postRouter);
     this.app.use('/api/seed', seedRouter);
