@@ -8,14 +8,16 @@ import { logger } from './common/configs/logger.config';
 import 'reflect-metadata';
 import figlet from 'figlet';
 import { seedRouter } from './modules/seed/routes/seed.route';
+import { errorHandler } from './common/middlewares/error.middleware';
 
 export class App {
   private app: Application = express();
 
   constructor(private port: number) {
+    this.settings();
     this.applyMiddlewares();
     this.setRoutes();
-    this.settings();
+    this.applyErrorHandler();
   }
 
   private applyMiddlewares() {
@@ -28,6 +30,10 @@ export class App {
     this.app.use('/api/tool', toolRouter);
     this.app.use('/api/post', postRouter);
     this.app.use('/api/seed', seedRouter);
+  }
+
+  private applyErrorHandler() {
+    this.app.use(errorHandler);
   }
 
   private settings() {

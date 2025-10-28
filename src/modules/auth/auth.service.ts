@@ -1,4 +1,3 @@
-import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import { createAccessToken } from '../../common/libs/jwt';
 import { EnvConfiguration } from '../../common/configs/env.config';
@@ -10,36 +9,25 @@ import { UserService } from '../user/user.service';
 import { RegisterAuthDto } from './dtos/register-auth.dto';
 import { LoginAuthDto } from './dtos/login-auth.dto';
 import { HttpError } from '../../common/libs/http-error';
-import { TokenPayload } from 'src/common/interfaces/token-payload.interface';
-
-interface RegisterUserData {
-  first_name: string;
-  last_name: string;
-  dni: string;
-  institute: string;
-  phone_number: string;
-  birth_date: Date;
-  user_name: string;
-  email: string;
-  password: string;
-  role: string;
-  verified: boolean;
-}
+import { TokenPayload } from '../../common/interfaces/token-payload.interface';
+import { BcryptAdapter } from '../../common/adapters/hash.adapter';
+import { UpdateUserDto } from '../user/dtos/update-user.dto';
 
 export class AuthService {
   private readonly userService: UserService = new UserService();
   private readonly fileUserRepository = AppDataSource.getRepository(FileUser);
+  private readonly bcryptAdapter = new BcryptAdapter();
 
   async registerUser(dto: RegisterAuthDto) {
     // Validaciones de existencia
-    const existingEmail = await this.userService.findByEmail(dto.email);
-    if (existingEmail) throw new Error('El email ya está en uso');
+    // const existingEmail = await this.userService.findByEmail(dto.email);
+    // if (existingEmail) throw new Error('El email ya está en uso');
 
-    const existingPerson = await this.userService.findPersonByDni(dto.dni);
-    if (existingPerson) throw new Error('La persona ya existe');
+    // const existingPerson = await this.userService.findPersonByDni(dto.dni);
+    // if (existingPerson) throw new Error('La persona ya existe');
 
-    const existingUser = await this.userService.findByUserName(dto.user_name);
-    if (existingUser) throw new Error('El nombre de usuario ya existe');
+    // const existingUser = await this.userService.findByUserName(dto.user_name);
+    // if (existingUser) throw new Error('El nombre de usuario ya existe');
 
     const existingRole = await this.userService.findRoleByName(dto.role);
     if (!existingRole) throw new Error('El rol no existe');
@@ -51,11 +39,11 @@ export class AuthService {
       dni: dto.dni,
       institute: dto.institute,
       phone_number: dto.phone_number,
-      birth_date: dto.birth_date,
+      birth_date: new Date(dto.birth_date),
     });
 
     // Hashear contraseña
-    const hashedPassword = await bcrypt.hash(dto.password, 12);
+    const hashedPassword = await this.bcryptAdapter.hash(dto.password);
 
     // Crear usuario
     const newUser = await this.userService.createUser(
@@ -95,7 +83,10 @@ export class AuthService {
     const user = await this.userService.findByEmail(dto.email);
     if (!user) throw new HttpError(404, 'No existe un usuario con ese email');
 
-    const isValidPassword = await bcrypt.compare(dto.password, user.password);
+    const isValidPassword = await this.bcryptAdapter.compare(
+      dto.password,
+      user.password
+    );
     if (!isValidPassword) throw new HttpError(401, 'Contraseña incorrecta');
 
     const token = await createAccessToken({
@@ -200,13 +191,10 @@ export class AuthService {
   }
 
   async verifyEmail(token: string) {
-    if (!token) throw new Error('Token no proporcionado');
     const decoded = jwt.verify(
       token,
       EnvConfiguration().jwtSecret
     ) as TokenPayload;
-
-    if (!decoded) throw new Error('Token inválido');
 
     const userRepo = AppDataSource.getRepository(User);
     const user = await userRepo.findOne({ where: { id: decoded.id } });
@@ -220,76 +208,31 @@ export class AuthService {
 
   async updateProfileUser(
     userId: string,
-    userData: Partial<RegisterUserData>,
+    userData: Partial<UpdateUserDto>,
     imageProps?: any
   ) {
-    const userRepo = AppDataSource.getRepository(User);
-    const peopleRepo = AppDataSource.getRepository(People);
-    const fileUserRepo = AppDataSource.getRepository(FileUser);
+    const updatedUser = await this.userService.updateUser(userId, userData);
 
-    const foundUser = await userRepo.findOne({
-      where: { id: userId },
-      relations: ['people'],
-    });
-    if (!foundUser) throw new Error('Usuario no encontrado');
-
-    const existingPerson = foundUser.people;
-    if (!existingPerson) throw new Error('Persona no encontrada');
-
-    // Actualiza usuario
-    if (userData.user_name) foundUser.user_name = userData.user_name;
-    if (userData.email) foundUser.email = userData.email;
-    await userRepo.save(foundUser);
-
-    // Actualiza persona
-    if (userData.first_name) existingPerson.first_name = userData.first_name;
-    if (userData.last_name) existingPerson.last_name = userData.last_name;
-    if (userData.dni) existingPerson.dni = userData.dni;
-    if (userData.institute) existingPerson.institute = userData.institute;
-    if (userData.phone_number)
-      existingPerson.phone_number = userData.phone_number;
-    if (userData.birth_date) existingPerson.birth_date = userData.birth_date;
-    await peopleRepo.save(existingPerson);
-
-    // Actualiza avatar
     if (imageProps?.fileUrl && imageProps?.fileId && imageProps?.fileType) {
-      let userAvatar = await fileUserRepo.findOne({
-        where: { user: { id: foundUser.id } },
+      let userAvatar = await this.fileUserRepository.findOne({
+        where: { user: { id: userId } },
       });
       if (userAvatar) {
         userAvatar.file_url = imageProps.fileUrl;
         userAvatar.file_id = imageProps.fileId;
         userAvatar.file_type = imageProps.fileType;
-        await fileUserRepo.save(userAvatar);
+        await this.fileUserRepository.save(userAvatar);
       } else {
-        userAvatar = fileUserRepo.create({
-          user: foundUser,
+        userAvatar = this.fileUserRepository.create({
+          user: updatedUser,
           file_url: imageProps.fileUrl,
           file_id: imageProps.fileId,
           file_type: imageProps.fileType,
         });
-        await fileUserRepo.save(userAvatar);
+        await this.fileUserRepository.save(userAvatar);
       }
     }
 
-    return { updatedUser: foundUser, updatedPerson: existingPerson };
-  }
-
-  async seedRoles() {
-    const roleRepo = AppDataSource.getRepository(Role);
-
-    const roles = ['admin', 'teacher', 'student'];
-    for (const roleName of roles) {
-      const existingRole = await roleRepo.findOne({
-        where: { name: roleName },
-      });
-      if (!existingRole) {
-        const newRole = roleRepo.create({
-          name: roleName,
-          description: `Rol ${roleName}`, // <--- descripción obligatoria
-        });
-        await roleRepo.save(newRole);
-      }
-    }
+    return updatedUser;
   }
 }

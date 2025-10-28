@@ -3,6 +3,7 @@ import { EnvConfiguration } from '../configs/env.config';
 import { logger } from '../configs/logger.config';
 import { Request, Response, NextFunction } from 'express';
 import { TokenPayload } from '../interfaces/token-payload.interface';
+import { HttpError } from '../libs/http-error';
 
 const authRequired = async (
   req: Request,
@@ -14,8 +15,7 @@ const authRequired = async (
     console.log(token);
 
     if (!token) {
-      res.status(401).json({ error: ['No autorizado'] });
-      return;
+      throw new HttpError(401, 'Token no proporcionado');
     }
 
     const decoded = jwt.verify(
@@ -24,15 +24,13 @@ const authRequired = async (
     ) as TokenPayload;
 
     if (!decoded) {
-      res.status(401).json({ error: ['Token inválido'] });
-      return;
+      throw new HttpError(401, 'Token inválido');
     }
     req.user = decoded;
 
     next();
   } catch (error) {
-    logger.child({ error }).error('Error en authRequired');
-    res.status(401).json({ error: ['Token inválido'] });
+    next(error);
   }
 };
 

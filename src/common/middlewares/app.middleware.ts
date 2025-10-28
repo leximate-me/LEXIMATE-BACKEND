@@ -5,7 +5,6 @@ import morgan from 'morgan';
 import cookieParser from 'cookie-parser';
 import { EnvConfiguration } from '../configs/env.config';
 import { Application } from 'express';
-import { errorHandler } from './error.middleware';
 
 const applyMiddlewares = (app: Application) => {
   app.use(cookieParser());
@@ -25,7 +24,6 @@ const applyMiddlewares = (app: Application) => {
     })
   );
   app.use(morgan('dev'));
-  app.use(errorHandler);
 };
 
 export { applyMiddlewares };

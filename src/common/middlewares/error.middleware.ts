@@ -19,10 +19,10 @@ export function errorHandler(
     },
     'Error en middleware global'
   );
-
+  console.log(err);
   if (err instanceof HttpError) {
     res.status(err.status).json({ error: [err.message], details: err.details });
-  } else {
-    res.status(500).json({ error: ['Error interno del servidor'] });
   }
+
+  res.status(500).json({ error: ['Error interno del servidor'] });
 }

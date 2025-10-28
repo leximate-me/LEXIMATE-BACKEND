@@ -1,5 +1,7 @@
+import { HttpError } from '../../common/libs/http-error';
 import { AppDataSource } from '../../database/db';
 import { CreateUserDto } from './dtos/create-user.dto';
+import { UpdateUserDto } from './dtos/update-user.dto';
 import { User, People, Role } from './entities';
 
 export class UserService {
@@ -39,5 +41,40 @@ export class UserService {
   async createPerson(data: Partial<People>) {
     const person = this.peopleRepository.create(data);
     return this.peopleRepository.save(person);
+  }
+
+  async updateUser(id: string, updateUserDto: UpdateUserDto) {
+    const user = await this.userRepository.findOne({
+      where: { id },
+      relations: ['people', 'role'],
+    });
+    if (!user) throw new HttpError(404, 'Usuario no encontrado');
+
+    if (updateUserDto.user_name) user.user_name = updateUserDto.user_name;
+    if (updateUserDto.email) user.email = updateUserDto.email;
+    if (updateUserDto.password) user.password = updateUserDto.password;
+    if (updateUserDto.role) {
+      const role = await this.roleRepository.findOne({
+        where: { name: updateUserDto.role },
+      });
+      if (role) user.role = role;
+    }
+
+    if (user.people) {
+      if (updateUserDto.first_name)
+        user.people.first_name = updateUserDto.first_name;
+      if (updateUserDto.last_name)
+        user.people.last_name = updateUserDto.last_name;
+      if (updateUserDto.phone_number)
+        user.people.phone_number = updateUserDto.phone_number;
+      if (updateUserDto.birth_date)
+        user.people.birth_date = new Date(updateUserDto.birth_date);
+      if (updateUserDto.institute)
+        user.people.institute = updateUserDto.institute;
+      if (updateUserDto.dni) user.people.dni = updateUserDto.dni;
+      await this.peopleRepository.save(user.people);
+    }
+
+    return this.userRepository.save(user);
   }
 }

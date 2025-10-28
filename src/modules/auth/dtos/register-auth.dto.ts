@@ -1,4 +1,10 @@
-import { IsString, IsEmail, MinLength, IsBoolean } from 'class-validator';
+import {
+  IsString,
+  IsEmail,
+  MinLength,
+  IsBoolean,
+  IsDateString,
+} from 'class-validator';
 
 export class RegisterAuthDto {
   @IsString()
@@ -16,8 +22,8 @@ export class RegisterAuthDto {
   @IsString()
   phone_number: string;
 
-  @IsString()
-  birth_date: Date;
+  @IsDateString()
+  birth_date: string;
 
   @IsString()
   user_name: string;

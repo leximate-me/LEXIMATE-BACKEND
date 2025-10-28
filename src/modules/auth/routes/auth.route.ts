@@ -1,8 +1,6 @@
 import { Router } from 'express';
 import { verifyUserRequired } from '../../../common/middlewares/user.middleware';
 import { authRequired } from '../../../common/middlewares/token.middleware';
-import { validateSchema } from '../../../common/middlewares/validator-schema.middleware';
-import { loginUserSchema, registerUserSchema } from '../user.schema';
 import { upload } from '../../../common/configs/upload.config';
 import { uploadToCloudinary } from '../../../common/middlewares/upload.middleware';
 import { AuthController } from '../auth.controller';
@@ -57,6 +55,7 @@ authRouter.post(
 
 authRouter.get(
   '/verify-email',
+  authRequired,
   authController.verifyEmail.bind(authController)
 );
 

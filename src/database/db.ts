@@ -22,6 +22,5 @@ export const connectDB = async () => {
     return AppDataSource;
   } catch (error) {
     logger.error(`Error al conectar con la base de datos: ${String(error)}`);
-    return null;
   }
 };

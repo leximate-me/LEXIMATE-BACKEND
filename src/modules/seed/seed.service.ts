@@ -3,7 +3,14 @@ import { User } from '../user/entities/user.entity';
 import { Role } from '../user/entities/role.entity';
 import { People } from '../user/entities/people.entity';
 import { Permission } from '../user/entities/permission.entity';
-import bcrypt from 'bcryptjs';
+import { Course } from '../course/entities/course.entity';
+import { Post } from '../post/entities/post.entity';
+import { Task } from '../task/entities/task.entity';
+import { FileUser } from '../user/entities';
+import { FileTask } from '../task/entities/fileTask.entity';
+import { Comment } from '../comment/entities/comment.entity';
+import { BcryptAdapter } from '../../common/adapters/hash.adapter';
+import { Not, IsNull } from 'typeorm';
 
 export class SeedService {
   private readonly userRepository = AppDataSource.getRepository(User);
@@ -11,8 +18,25 @@ export class SeedService {
   private readonly peopleRepository = AppDataSource.getRepository(People);
   private readonly permissionRepository =
     AppDataSource.getRepository(Permission);
+  private readonly courseRepository = AppDataSource.getRepository(Course);
+  private readonly postRepository = AppDataSource.getRepository(Post);
+  private readonly commentRepository = AppDataSource.getRepository(Comment);
+  private readonly taskRepository = AppDataSource.getRepository(Task);
+  private readonly fileUserRepository = AppDataSource.getRepository(FileUser);
+  private readonly fileTaskRepository = AppDataSource.getRepository(FileTask);
+  private readonly bcryptAdapter = new BcryptAdapter();
 
   async seedAll() {
+    await this.fileTaskRepository.delete({ id: Not(IsNull()) });
+    await this.fileUserRepository.delete({ id: Not(IsNull()) });
+    await this.commentRepository.delete({ id: Not(IsNull()) });
+    await this.postRepository.delete({ id: Not(IsNull()) });
+    await this.taskRepository.delete({ id: Not(IsNull()) });
+    await this.courseRepository.delete({ id: Not(IsNull()) });
+    await this.userRepository.delete({ id: Not(IsNull()) });
+    await this.peopleRepository.delete({ id: Not(IsNull()) });
+    await this.roleRepository.delete({ id: Not(IsNull()) });
+    await this.permissionRepository.delete({ id: Not(IsNull()) });
     // 1. Permisos
     const permissionsData = [
       { name: 'manage_users', description: 'Gestionar usuarios' },
@@ -74,7 +98,7 @@ export class SeedService {
       {
         user_name: 'admin',
         email: 'admin@example.com',
-        password: await bcrypt.hash('admin123', 10),
+        password: await this.bcryptAdapter.hash('admin123'),
         first_name: 'Admin',
         last_name: 'User',
         dni: '10000001',
@@ -86,7 +110,7 @@ export class SeedService {
       {
         user_name: 'teacher',
         email: 'teacher@example.com',
-        password: await bcrypt.hash('teacher123', 10),
+        password: await this.bcryptAdapter.hash('teacher123'),
         first_name: 'Teacher',
         last_name: 'User',
         dni: '10000002',
@@ -98,7 +122,7 @@ export class SeedService {
       {
         user_name: 'student',
         email: 'student@example.com',
-        password: await bcrypt.hash('student123', 10),
+        password: await this.bcryptAdapter.hash('student123'),
         first_name: 'Student',
         last_name: 'User',
         dni: '10000003',
@@ -110,7 +134,7 @@ export class SeedService {
       {
         user_name: 'guest',
         email: 'guest@example.com',
-        password: await bcrypt.hash('guest123', 10),
+        password: await this.bcryptAdapter.hash('guest123'),
         first_name: 'Guest',
         last_name: 'User',
         dni: '10000004',
@@ -153,6 +177,6 @@ export class SeedService {
       }
     }
 
-    return { ok: true, message: 'Seed completado' };
+    return { message: 'Seed completado' };
   }
 }

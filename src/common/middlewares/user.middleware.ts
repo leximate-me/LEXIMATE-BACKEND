@@ -2,6 +2,7 @@ import { Request, Response, NextFunction } from 'express';
 import { AppDataSource } from '../../database/db';
 import { logger } from '../configs/logger.config';
 import { User } from '../../modules/user/entities/user.entity';
+import { HttpError } from '../libs/http-error';
 
 const verifyUserRequired = async (
   req: Request,
@@ -16,18 +17,12 @@ const verifyUserRequired = async (
 
     if (user?.verified !== true) {
       logger.error('Usuario no verificado');
-      throw new Error('Usuario no verificado');
+      throw new HttpError(403, 'Usuario no verificado');
     }
 
     return next();
   } catch (error) {
-    if (error instanceof Error) {
-      logger.error(error, 'Error en verifyUserRequired');
-      res.status(400).json({ error: [error.message] });
-    } else {
-      logger.error(error, 'Error desconocido en verifyUserRequired');
-      res.status(500).json({ error: ['Error desconocido'] });
-    }
+    next(error);
   }
 };
 
