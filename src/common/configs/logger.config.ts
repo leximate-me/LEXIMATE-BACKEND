@@ -66,12 +66,11 @@ export const httpLogger = pinoHttp({
     user_agent: req.headers['user-agent'],
   }),
 
-  // Personaliza los campos que se registran por pino-http (opcional)
   serializers: {
     req: (req) => ({
       method: req.method,
       url: req.url,
-      body: req.raw.body, // Descomentar solo si usas body-parser y quieres registrar el body
+      body: req.raw.body,
     }),
   },
 });
