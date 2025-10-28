@@ -1,5 +1,4 @@
 import { Request, Response, NextFunction } from 'express';
-import { logger } from '../../common/configs/logger.config';
 import { PostService } from './post.service';
 
 export class PostController {
@@ -14,7 +13,6 @@ export class PostController {
       const post = await this.postService.create(postData, classId, userId);
       res.status(201).json(post);
     } catch (error) {
-      logger.error(error, 'Error en createPostController');
       next(error);
     }
   }
@@ -31,7 +29,6 @@ export class PostController {
       const posts = await this.postService.readAll(classId, userId);
       res.status(200).json(posts);
     } catch (error) {
-      logger.error(error, 'Error en readPostsController');
       next(error);
     }
   }
@@ -49,7 +46,6 @@ export class PostController {
       const post = await this.postService.readOne(userId, classId, postId);
       res.status(200).json(post);
     } catch (error) {
-      logger.error(error, 'Error en readPostController');
       next(error);
     }
   }
@@ -69,7 +65,6 @@ export class PostController {
       );
       res.status(200).json(post);
     } catch (error) {
-      logger.error(error, 'Error en updatePostController');
       next(error);
     }
   }
@@ -83,7 +78,6 @@ export class PostController {
       await this.postService.delete(postId, classId, userId);
       res.status(204).end();
     } catch (error) {
-      logger.error(error, 'Error en deletePostController');
       next(error);
     }
   }

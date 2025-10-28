@@ -5,8 +5,14 @@ import { User } from '../user/entities';
 import { Course } from '../course/entities/course.entity';
 import { Task } from './entities/task.entity';
 import { FileTask } from './entities/fileTask.entity';
+import { HttpError } from '../../common/libs/http-error';
 
 export class TaskService {
+  private readonly userRepository = AppDataSource.getRepository(User);
+  private readonly classRepository = AppDataSource.getRepository(Course);
+  private readonly taskRepository = AppDataSource.getRepository(Task);
+  private readonly fileTaskRepository = AppDataSource.getRepository(FileTask);
+
   async create(
     classId: string,
     userId: string,
@@ -27,20 +33,22 @@ export class TaskService {
         where: { id: userId },
         relations: ['role', 'courses'],
       });
-      if (!foundUser) throw new Error('Usuario no encontrado');
+      if (!foundUser) throw HttpError.notFound('Usuario no encontrado');
 
-      if (foundUser.role.name !== 'teacher') {
-        throw new Error('No eres profesor para crear una tarea en esta clase');
+      if (foundUser.role.name.toLowerCase() !== 'teacher') {
+        throw HttpError.forbidden(
+          'No eres profesor para crear una tarea en esta clase'
+        );
       }
 
       const classData = await classRepo.findOne({
         where: { id: classId },
         relations: ['users'],
       });
-      if (!classData) throw new Error('Clase no encontrada');
+      if (!classData) throw HttpError.notFound('Clase no encontrada');
 
       const isInClass = classData.users.some((u) => u.id === userId);
-      if (!isInClass) throw new Error('No perteneces a esta clase');
+      if (!isInClass) throw HttpError.forbidden('No perteneces a esta clase');
 
       const newTask = taskRepo.create({
         title: taskData.title,
@@ -90,17 +98,17 @@ export class TaskService {
         where: { id: userId },
         relations: ['role'],
       });
-      if (!foundUser) throw new Error('Usuario no encontrado');
+      if (!foundUser) throw HttpError.notFound('Usuario no encontrado');
 
-      if (foundUser.role.name !== 'Teacher') {
-        throw new Error('No eres profesor para actualizar una tarea');
+      if (foundUser.role.name.toLowerCase() !== 'teacher') {
+        throw HttpError.forbidden('No eres profesor para actualizar una tarea');
       }
 
       const task = await taskRepo.findOne({
         where: { id: taskId },
         relations: ['class'],
       });
-      if (!task) throw new Error('Tarea no encontrada');
+      if (!task) throw HttpError.notFound('Tarea no encontrada');
 
       if (taskData.title) task.title = taskData.title;
       if (taskData.description) task.description = taskData.description;
@@ -155,23 +163,23 @@ export class TaskService {
         where: { id: userId },
         relations: ['role', 'courses'],
       });
-      if (!foundUser) throw new Error('Usuario no encontrado');
+      if (!foundUser) throw HttpError.notFound('Usuario no encontrado');
 
-      if (foundUser.role.name !== 'Teacher') {
-        throw new Error('No eres profesor para eliminar una tarea');
+      if (foundUser.role.name.toLowerCase() !== 'teacher') {
+        throw HttpError.forbidden('No eres profesor para eliminar una tarea');
       }
 
       const classData = await classRepo.findOne({
         where: { id: classId },
         relations: ['users'],
       });
-      if (!classData) throw new Error('Clase no encontrada');
+      if (!classData) throw HttpError.notFound('Clase no encontrada');
 
       const isInClass = classData.users.some((u) => u.id === userId);
-      if (!isInClass) throw new Error('No perteneces a esta clase');
+      if (!isInClass) throw HttpError.forbidden('No perteneces a esta clase');
 
       const task = await taskRepo.findOne({ where: { id: taskId } });
-      if (!task) throw new Error('Tarea no encontrada');
+      if (!task) throw HttpError.notFound('Tarea no encontrada');
 
       const file = await fileTaskRepo.findOne({
         where: { task: { id: taskId } },
@@ -187,7 +195,8 @@ export class TaskService {
 
       if (public_id) {
         await deleteFromCloudinary(public_id, (e) => {
-          if (e) throw new Error('Error al eliminar la imagen');
+          if (e)
+            throw HttpError.internalServerError('Error al eliminar la imagen');
         });
       }
 
@@ -202,31 +211,26 @@ export class TaskService {
   }
 
   async getAllByClass(classId: string, userId: string) {
-    const userRepo = AppDataSource.getRepository(User);
-    const classRepo = AppDataSource.getRepository(Course);
-    const taskRepo = AppDataSource.getRepository(Task);
-    const fileTaskRepo = AppDataSource.getRepository(FileTask);
-
-    const foundUser = await userRepo.findOne({
+    const foundUser = await this.userRepository.findOne({
       where: { id: userId },
       relations: ['courses'],
     });
-    if (!foundUser) throw new Error('Usuario no encontrado');
+    if (!foundUser) throw HttpError.notFound('Usuario no encontrado');
 
-    const classData = await classRepo.findOne({
+    const classData = await this.classRepository.findOne({
       where: { id: classId },
       relations: ['users'],
     });
-    if (!classData) throw new Error('Clase no encontrada');
+    if (!classData) throw HttpError.notFound('Clase no encontrada');
 
     const isInClass = classData.users.some((u) => u.id === userId);
-    if (!isInClass) throw new Error('No perteneces a esta clase');
+    if (!isInClass) throw HttpError.forbidden('No perteneces a esta clase');
 
-    const tasks = await taskRepo.find({
+    const tasks = await this.taskRepository.find({
       where: { class: { id: classId } },
     });
 
-    const files = await fileTaskRepo.find({
+    const files = await this.fileTaskRepository.find({
       where: tasks.length
         ? { task: { id: In(tasks.map((task) => task.id)) } }
         : {},
@@ -242,32 +246,27 @@ export class TaskService {
   }
 
   async getOne(taskId: string, classId: string, userId: string) {
-    const userRepo = AppDataSource.getRepository(User);
-    const classRepo = AppDataSource.getRepository(Course);
-    const taskRepo = AppDataSource.getRepository(Task);
-    const fileTaskRepo = AppDataSource.getRepository(FileTask);
-
-    const foundUser = await userRepo.findOne({
+    const foundUser = await this.userRepository.findOne({
       where: { id: userId },
       relations: ['courses'],
     });
-    if (!foundUser) throw new Error('Usuario no encontrado');
+    if (!foundUser) throw HttpError.notFound('Usuario no encontrado');
 
-    const classData = await classRepo.findOne({
+    const classData = await this.classRepository.findOne({
       where: { id: classId },
       relations: ['users'],
     });
-    if (!classData) throw new Error('Clase no encontrada');
+    if (!classData) throw HttpError.notFound('Clase no encontrada');
 
     const isInClass = classData.users.some((u) => u.id === userId);
-    if (!isInClass) throw new Error('No perteneces a esta clase');
+    if (!isInClass) throw HttpError.forbidden('No perteneces a esta clase');
 
-    const task = await taskRepo.findOne({
+    const task = await this.taskRepository.findOne({
       where: { id: taskId },
     });
-    if (!task) throw new Error('Tarea no encontrada');
+    if (!task) throw HttpError.notFound('Tarea no encontrada');
 
-    const files = await fileTaskRepo.find({
+    const files = await this.fileTaskRepository.find({
       where: { task: { id: taskId } },
     });
 

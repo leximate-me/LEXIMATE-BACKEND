@@ -1,11 +1,12 @@
 import Tesseract from 'tesseract.js';
+import { HttpError } from '../../common/libs/http-error';
 
 export class ToolService {
   async extractTextFromImage(imageUrl: string) {
     try {
       const response = await fetch(imageUrl);
       if (!response.ok) {
-        throw new Error('La imagen no se pudo cargar');
+        throw HttpError.badRequest('La imagen no se pudo cargar');
       }
 
       const arrayBuffer = await response.arrayBuffer();
@@ -28,7 +29,7 @@ export class ToolService {
         text = text.toUpperCase();
 
         if (!bbox || typeof bbox !== 'object') {
-          throw new Error('bbox is not an object');
+          throw HttpError.internalServerError('bbox is not an object');
         }
 
         let classification;
