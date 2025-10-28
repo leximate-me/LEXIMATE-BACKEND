@@ -15,7 +15,7 @@ export class FileTask {
   @Column({ length: 100 })
   file_id: string;
 
-  @Column({ length: 100 })
+  @Column()
   file_url: string;
 
   @Column({ length: 50 })

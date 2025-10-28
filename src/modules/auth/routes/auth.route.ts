@@ -2,7 +2,7 @@ import { Router } from 'express';
 import { verifyUserRequired } from '../../../common/middlewares/user.middleware';
 import { authRequired } from '../../../common/middlewares/token.middleware';
 import { upload } from '../../../common/configs/upload.config';
-import { uploadToCloudinary } from '../../../common/middlewares/upload.middleware';
+import { uploadToStorage } from '../../../common/middlewares/upload.middleware';
 import { AuthController } from '../auth.controller';
 import { validateDto } from '../../../common/middlewares/validator.middleware';
 import { RegisterAuthDto } from '../dtos/register-auth.dto';
@@ -63,7 +63,7 @@ authRouter.put(
   '/update-profile',
   authRequired,
   upload,
-  uploadToCloudinary,
+  uploadToStorage,
   verifyUserRequired,
   authController.updateProfile.bind(authController)
 );

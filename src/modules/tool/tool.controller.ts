@@ -16,4 +16,21 @@ export class ToolController {
       next(error);
     }
   }
+
+  async chatBotResponse(req: Request, res: Response, next: NextFunction) {
+    try {
+      const { message } = req.body;
+
+      const token = req.cookies.token as string;
+
+      const response = await this.toolService.getChatBotResponse(
+        message,
+        token
+      );
+
+      res.status(200).json({ response });
+    } catch (error) {
+      next(error);
+    }
+  }
 }

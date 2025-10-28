@@ -2,7 +2,7 @@ import { Router } from 'express';
 import { verifyUserRequired } from '../../../common/middlewares/user.middleware';
 import { authRequired } from '../../../common/middlewares/token.middleware';
 import { upload } from '../../../common/configs/upload.config';
-import { uploadToCloudinary } from '../../../common/middlewares/upload.middleware';
+import { uploadToStorage } from '../../../common/middlewares/upload.middleware';
 import { TaskController } from '../task.controller';
 import { validateDto } from '../../../common/middlewares/validator.middleware';
 import { CreateTaskDto } from '../dtos/create-task.dto';
@@ -19,14 +19,14 @@ taskRouter.use(requireRole(['teacher', 'admin']));
 taskRouter.post(
   '/',
   upload,
-  uploadToCloudinary,
+  uploadToStorage,
   validateDto(CreateTaskDto),
   taskController.create.bind(taskController)
 );
 taskRouter.put(
   '/:taskId',
   upload,
-  uploadToCloudinary,
+  uploadToStorage,
   validateDto(UpdateTaskDto),
   taskController.update.bind(taskController)
 );

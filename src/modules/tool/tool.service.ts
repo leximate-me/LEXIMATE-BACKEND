@@ -1,7 +1,12 @@
 import Tesseract from 'tesseract.js';
 import { HttpError } from '../../common/libs/http-error';
+import { EnvConfiguration } from '../../common/configs/env.config';
+import { logger } from 'src/common/configs/logger.config';
+import th from 'zod/v4/locales/th.js';
 
 export class ToolService {
+  private readonly;
+
   async extractTextFromImage(imageUrl: string) {
     try {
       const response = await fetch(imageUrl);
@@ -60,4 +65,41 @@ export class ToolService {
       throw error;
     }
   }
+
+  async getChatBotResponse(message: string, token: string) {
+    const response = await fetch(EnvConfiguration().n8nChatProdUrl, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({ message }),
+    });
+
+    if (!response) {
+      throw HttpError.internalServerError('No response from chatbot service');
+    }
+
+    return await response.json();
+  }
+
+  // async sendFilesToChatBot(files: Express.Multer.File[], token: string) {
+  //   const formData = new FormData();
+  //   files.forEach((file) => {
+  //     formData.append('files', new Blob([file.buffer]), file.originalname);
+  //   });
+
+  //   const response = await fetch(EnvConfiguration().n8nProdUrl, {
+  //     method: 'POST',
+  //     headers: {
+  //       Authorization: `Bearer ${token}`,
+  //     },
+  //     body: formData,
+  //   });
+  //   if (!response) {
+  //     throw HttpError.internalServerError('No response from chatbot service');
+  //   }
+  //   return await response.json();
+  // }
 }

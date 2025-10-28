@@ -30,13 +30,8 @@ export class TaskService {
         where: { id: userId },
         relations: ['role', 'courses'],
       });
-      if (!foundUser) throw HttpError.notFound('Usuario no encontrado');
 
-      if (foundUser.role.name.toLowerCase() !== 'teacher') {
-        throw HttpError.forbidden(
-          'No eres profesor para crear una tarea en esta clase'
-        );
-      }
+      if (!foundUser) throw HttpError.notFound('Usuario no encontrado');
 
       const courseData = await this.courseRepository.findOne({
         where: { id: courseId },

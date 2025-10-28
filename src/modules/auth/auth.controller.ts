@@ -42,6 +42,8 @@ export class AuthController {
     try {
       const token = req.cookies.token as string;
 
+      logger.info(token);
+
       const decoded = await this.authService.verifyToken(token);
 
       logger.info(decoded, 'Token verificado');

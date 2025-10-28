@@ -13,9 +13,12 @@ toolRouter.use(requireRole(['admin', 'student', 'teacher']));
 
 toolRouter.post(
   '/extract-text-from-img',
-  authRequired,
-  verifyUserRequired,
   toolController.extractTextFromFile.bind(toolController)
+);
+
+toolRouter.post(
+  '/chat-bot-response',
+  toolController.chatBotResponse.bind(toolController)
 );
 
 export { toolRouter };
