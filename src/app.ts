@@ -6,7 +6,6 @@ import { toolRouter } from './modules/tool/routes/tool.route';
 import { postRouter } from './modules/post/routes/post.route';
 import { logger } from './common/configs/logger.config';
 import 'reflect-metadata';
-import figlet from 'figlet';
 import { seedRouter } from './modules/seed/routes/seed.route';
 import { errorHandler } from './common/middlewares/error.middleware';
 
