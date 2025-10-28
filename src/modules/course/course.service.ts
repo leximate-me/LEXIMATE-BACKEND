@@ -5,6 +5,8 @@ import { Course } from './entities/course.entity';
 import { User } from '../user/entities';
 import { Task } from '../task/entities/task.entity';
 import { HttpError } from '../../common/libs/http-error';
+import { CreateCourseDto } from './dtos/create-course.dto';
+import { UpdateCourseDto } from './dtos/update-course.dto';
 
 export class CourseService {
   private readonly userRepository = AppDataSource.getRepository(User);
@@ -12,7 +14,7 @@ export class CourseService {
   private readonly postRepository = AppDataSource.getRepository(Post);
   private readonly taskRepository = AppDataSource.getRepository(Task);
 
-  async create(courseData: Partial<Course>, userId: string) {
+  async create(createCourseDto: CreateCourseDto, userId: string) {
     const foundUser = await this.userRepository.findOne({
       where: { id: userId },
       relations: ['courses'],
@@ -20,9 +22,10 @@ export class CourseService {
     if (!foundUser) throw HttpError.notFound('Usuario no encontrado');
 
     const course_code = crypto.randomBytes(5).toString('hex');
+
     const newCourse = this.courseRepository.create({
-      name: courseData.name,
-      description: courseData.description,
+      name: createCourseDto.name,
+      description: createCourseDto.description,
       class_code: course_code,
     });
     await this.courseRepository.save(newCourse);
@@ -94,7 +97,11 @@ export class CourseService {
     return courseData.users;
   }
 
-  async update(courseId: string, courseData: Partial<Course>, userId: string) {
+  async update(
+    courseId: string,
+    updateCourseDto: UpdateCourseDto,
+    userId: string
+  ) {
     const foundUser = await this.userRepository.findOne({
       where: { id: userId },
     });
@@ -105,9 +112,9 @@ export class CourseService {
     });
     if (!courseFound) throw HttpError.notFound('Curso no encontrado');
 
-    if (courseData.name) courseFound.name = courseData.name;
-    if (courseData.description)
-      courseFound.description = courseData.description;
+    if (updateCourseDto.name) courseFound.name = updateCourseDto.name;
+    if (updateCourseDto.description)
+      courseFound.description = updateCourseDto.description;
 
     await this.courseRepository.save(courseFound);
 

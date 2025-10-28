@@ -3,13 +3,15 @@ import { User } from '../user/entities';
 import { Course } from '../course/entities/course.entity';
 import { Post } from './entities/post.entity';
 import { HttpError } from '../../common/libs/http-error';
+import { CreatePostDto } from './dtos/create-post.dto';
+import { UpdatePostDto } from './dtos/update-post.dto';
 
 export class PostService {
   private readonly classRepo = AppDataSource.getRepository(Course);
   private readonly userRepo = AppDataSource.getRepository(User);
   private readonly postRepo = AppDataSource.getRepository(Post);
 
-  async create(postData: Partial<Post>, classId: string, userId: string) {
+  async create(createPostDto: CreatePostDto, classId: string, userId: string) {
     const existingClass = await this.classRepo.findOne({
       where: { id: classId },
       relations: ['users'],
@@ -27,8 +29,8 @@ export class PostService {
       throw HttpError.forbidden('El usuario no pertenece a la clase');
 
     const post = this.postRepo.create({
-      title: postData.title,
-      content: postData.content,
+      title: createPostDto.title,
+      content: createPostDto.content,
       course: existingClass,
       user: foundUser,
     });
@@ -91,7 +93,7 @@ export class PostService {
 
   async update(
     postId: string,
-    postData: Partial<Post>,
+    updatePostDto: UpdatePostDto,
     classId: string,
     userId: string
   ) {
@@ -116,8 +118,8 @@ export class PostService {
     });
     if (!post) throw HttpError.notFound('Publicación no encontrada');
 
-    if (postData.title) post.title = postData.title;
-    if (postData.content) post.content = postData.content;
+    if (updatePostDto.title) post.title = updatePostDto.title;
+    if (updatePostDto.content) post.content = updatePostDto.content;
 
     await this.postRepo.save(post);
 

@@ -3,13 +3,19 @@ import { Post } from '../post/entities/post.entity';
 import { Comment } from './entities/comment.entity';
 import { User } from '../user/entities';
 import { HttpError } from '../../common/libs/http-error';
+import { UpdateCommentDto } from './dtos/update-comment.dto';
+import { CreateCommentDto } from './dtos/create-comment.dto';
 
 export class CommentService {
   private readonly commentRepository = AppDataSource.getRepository(Comment);
   private readonly postRepository = AppDataSource.getRepository(Post);
   private readonly userRepository = AppDataSource.getRepository(User);
 
-  async create(commentData: Partial<Comment>, postId: string, userId: string) {
+  async create(
+    createCommentDto: CreateCommentDto,
+    postId: string,
+    userId: string
+  ) {
     const existingPost = await this.postRepository.findOne({
       where: { id: postId },
       relations: ['courses'],
@@ -22,7 +28,6 @@ export class CommentService {
     });
     if (!foundUser) throw HttpError.notFound('Usuario no encontrado');
 
-    // Verifica que el usuario pertenece a la clase de la publicación
     const isInClass = foundUser.courses.some(
       (c) => c.id === existingPost.course.id
     );
@@ -30,7 +35,7 @@ export class CommentService {
       throw HttpError.forbidden('El usuario no pertenece a la clase');
 
     const comment = this.commentRepository.create({
-      content: commentData.content,
+      content: createCommentDto.content,
       post: existingPost,
       users: foundUser,
     });
@@ -65,7 +70,7 @@ export class CommentService {
   }
 
   async update(
-    commentData: Partial<Comment>,
+    updateCommentDto: UpdateCommentDto,
     commentId: string,
     userId: string
   ) {
@@ -86,7 +91,8 @@ export class CommentService {
       );
     }
 
-    if (commentData.content) existingComment.content = commentData.content;
+    if (updateCommentDto.content)
+      existingComment.content = updateCommentDto.content;
     await this.commentRepository.save(existingComment);
 
     return existingComment;
