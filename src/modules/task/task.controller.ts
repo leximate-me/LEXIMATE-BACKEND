@@ -122,7 +122,7 @@ export class TaskController {
     }
   }
 
-  async getAllByClass(req: Request, res: Response): Promise<void> {
+  async getAllByCourse(req: Request, res: Response): Promise<void> {
     try {
       const classId = req.params.classId;
       const userId = req.user?.id;
@@ -132,7 +132,7 @@ export class TaskController {
         return;
       }
 
-      const tasks = await this.taskService.getAllByClass(classId, userId);
+      const tasks = await this.taskService.getAllByCourse(classId, userId);
 
       if (!tasks) {
         res.status(404).json({ error: 'No se encontraron tareas' });

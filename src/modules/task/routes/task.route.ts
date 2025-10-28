@@ -34,7 +34,7 @@ taskRouter.delete('/:taskId', taskController.delete.bind(taskController));
 taskRouter.get(
   '/',
 
-  taskController.getAllByClass.bind(taskController)
+  taskController.getAllByCourse.bind(taskController)
 );
 taskRouter.get(
   '/:taskId',
