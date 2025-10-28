@@ -40,21 +40,9 @@ export class App {
     this.app.set('port', this.port || process.env.PORT);
   }
 
-  public listen() {
+  public async listen() {
     this.app.listen(this.app.get('port'));
-    figlet.text(
-      'LEXIMATE',
-      { font: 'Ghost' },
-      (err: Error | null, data: string | undefined) => {
-        if (err) {
-          logger.error(err, 'Error generando texto ASCII');
-          return;
-        }
 
-        logger.info('\n' + data);
-
-        logger.info(`Servidor corriendo en el puerto: ${this.port}`);
-      }
-    );
+    logger.info(`Servidor corriendo en el puerto: ${this.port}`);
   }
 }

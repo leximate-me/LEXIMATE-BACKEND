@@ -5,6 +5,8 @@ import morgan from 'morgan';
 import cookieParser from 'cookie-parser';
 import { EnvConfiguration } from '../configs/env.config';
 import { Application } from 'express';
+import pinoHttp from 'pino-http';
+import { httpLogger, logger } from '../configs/logger.config';
 
 const applyMiddlewares = (app: Application) => {
   app.use(cookieParser());
@@ -23,7 +25,8 @@ const applyMiddlewares = (app: Application) => {
       ],
     })
   );
-  app.use(morgan('dev'));
+  // app.use(morgan('dev'));
+  app.use(httpLogger); // Usa la configuración por defecto de pino-http
 };
 
 export { applyMiddlewares };
