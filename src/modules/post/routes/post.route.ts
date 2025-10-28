@@ -1,11 +1,11 @@
 import { Router } from 'express';
 
-import { authRequired } from '../../common/middlewares/token.middleware';
-import { verifyUserRequired } from '../../common/middlewares/user.middleware';
-import { commentRouter } from '../comment/comment.route';
-import { createPostSchema, updatePostSchema } from '../post/post.schema';
-import { validateSchema } from '../../common/middlewares/validator.middleware';
-import { PostController } from './post.controller';
+import { authRequired } from '../../../common/middlewares/token.middleware';
+import { verifyUserRequired } from '../../../common/middlewares/user.middleware';
+import { commentRouter } from '../../comment/routes/comment.route';
+import { createPostSchema, updatePostSchema } from '../post.schema';
+import { validateSchema } from '../../../common/middlewares/validator-schema.middleware';
+import { PostController } from '../post.controller';
 
 const postRouter = Router({ mergeParams: true });
 const postController = new PostController();

@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
 import { AppDataSource } from '../../database/db';
 import { logger } from '../configs/logger.config';
-import { User } from '../../modules/auth/entities/user.entity';
+import { User } from '../../modules/user/entities/user.entity';
 
 const verifyUserRequired = async (
   req: Request,

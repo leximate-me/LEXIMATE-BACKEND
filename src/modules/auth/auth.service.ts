@@ -1,13 +1,16 @@
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import { createAccessToken } from '../../common/libs/jwt';
-import { JWT_SECRET } from '../../common/configs/env.config';
+import { EnvConfiguration } from '../../common/configs/env.config';
 import { resend } from '../../common/libs/resend';
 import { AppDataSource } from '../../database/db';
-import { User, People, Role } from './entities';
-import { TokenPayload } from 'src/common/types/express';
-import { FileUser } from './entities/fileUser.entity';
+import { User, People, Role, FileUser } from '../user/entities';
 import { uploadImage } from '../../common/libs/cloudinary';
+import { UserService } from '../user/user.service';
+import { RegisterAuthDto } from './dtos/register-auth.dto';
+import { LoginAuthDto } from './dtos/login-auth.dto';
+import { HttpError } from '../../common/libs/http-error';
+import { TokenPayload } from 'src/common/interfaces/token-payload.interface';
 
 interface RegisterUserData {
   first_name: string;
@@ -24,128 +27,92 @@ interface RegisterUserData {
 }
 
 export class AuthService {
-  async registerUser(userData: RegisterUserData) {
-    const userRepo = AppDataSource.getRepository(User);
-    const peopleRepo = AppDataSource.getRepository(People);
-    const roleRepo = AppDataSource.getRepository(Role);
-    const fileUserRepo = AppDataSource.getRepository(FileUser);
+  private readonly userService: UserService = new UserService();
+  private readonly fileUserRepository = AppDataSource.getRepository(FileUser);
 
-    const queryRunner = AppDataSource.createQueryRunner();
-    await queryRunner.connect();
-    await queryRunner.startTransaction();
+  async registerUser(dto: RegisterAuthDto) {
+    // Validaciones de existencia
+    const existingEmail = await this.userService.findByEmail(dto.email);
+    if (existingEmail) throw new Error('El email ya está en uso');
 
-    try {
-      const {
-        first_name,
-        last_name,
-        dni,
-        institute,
-        phone_number,
-        birth_date,
-        user_name,
-        email,
-        password,
-        role,
-      } = userData;
+    const existingPerson = await this.userService.findPersonByDni(dto.dni);
+    if (existingPerson) throw new Error('La persona ya existe');
 
-      const existingEmail = await userRepo.findOne({ where: { email } });
-      const existingPerson = await peopleRepo.findOne({ where: { dni } });
-      const existingUser = await userRepo.findOne({ where: { user_name } });
-      const existingRole = await roleRepo.findOne({ where: { name: role } });
+    const existingUser = await this.userService.findByUserName(dto.user_name);
+    if (existingUser) throw new Error('El nombre de usuario ya existe');
 
-      if (existingEmail) throw new Error('El email ya está en uso');
-      if (existingPerson) throw new Error('La persona ya existe');
-      if (existingUser) throw new Error('El nombre de usuario ya existe');
-      if (!existingRole) throw new Error('El rol no existe');
+    const existingRole = await this.userService.findRoleByName(dto.role);
+    if (!existingRole) throw new Error('El rol no existe');
 
-      const newPerson = peopleRepo.create({
-        first_name,
-        last_name,
-        dni,
-        institute,
-        phone_number,
-        birth_date,
-      });
-      await queryRunner.manager.save(newPerson);
+    // Crear persona
+    const newPerson = await this.userService.createPerson({
+      first_name: dto.first_name,
+      last_name: dto.last_name,
+      dni: dto.dni,
+      institute: dto.institute,
+      phone_number: dto.phone_number,
+      birth_date: dto.birth_date,
+    });
 
-      const hashedPassword = await bcrypt.hash(password, 12);
+    // Hashear contraseña
+    const hashedPassword = await bcrypt.hash(dto.password, 12);
 
-      const newUser = userRepo.create({
-        user_name,
-        email,
-        password: hashedPassword,
-        people: newPerson,
-        role: existingRole,
-        verified: false,
-      });
-      await queryRunner.manager.save(newUser);
+    // Crear usuario
+    const newUser = await this.userService.createUser(
+      { ...dto, password: hashedPassword } as any,
+      newPerson,
+      existingRole
+    );
 
-      const response = await fetch(
-        `https://api.dicebear.com/9.x/notionists/svg?seed=${newUser.id},gestureProbability=50, beardProbability=30`
-      );
-      if (!response.ok) throw new Error('Error al generar el avatar');
-      const avatarSvg = await response.text();
-      const buffer = Buffer.from(avatarSvg, 'utf8');
-      const uploadAvatar = await uploadImage(buffer);
+    // Generar avatar y subirlo
+    const response = await fetch(
+      `https://api.dicebear.com/9.x/notionists/svg?seed=${newUser.id},gestureProbability=50, beardProbability=30`
+    );
+    if (!response.ok) throw new Error('Error al generar el avatar');
+    const avatarSvg = await response.text();
+    const buffer = Buffer.from(avatarSvg, 'utf8');
+    const uploadAvatar = await uploadImage(buffer);
 
-      const uploadedAvatar = fileUserRepo.create({
-        file_type: uploadAvatar.format,
-        file_id: uploadAvatar.public_id,
-        file_url: uploadAvatar.secure_url,
-        user: newUser,
-      });
-      await queryRunner.manager.save(uploadedAvatar);
+    const uploadedAvatar = this.fileUserRepository.create({
+      file_type: uploadAvatar.format,
+      file_id: uploadAvatar.public_id,
+      file_url: uploadAvatar.secure_url,
+      user: newUser,
+    });
+    await this.fileUserRepository.save(uploadedAvatar);
 
-      if (!uploadedAvatar) throw new Error('Error al generar el avatar');
+    // Generar token
+    const token = await createAccessToken({
+      id: newUser.id,
+      rol: existingRole.name,
+      verify: newUser.verified,
+    });
 
-      const token = await createAccessToken({
-        id: newUser.id,
-        rol: existingRole.name,
-        verify: newUser.verified,
-      });
-
-      await queryRunner.commitTransaction();
-
-      return { newUser, token };
-    } catch (error) {
-      await queryRunner.rollbackTransaction();
-      throw error;
-    } finally {
-      await queryRunner.release();
-    }
+    return { newUser, token };
   }
 
-  async loginUser(userData: Partial<User>) {
-    const userRepo = AppDataSource.getRepository(User);
+  async loginUser(dto: LoginAuthDto) {
+    const user = await this.userService.findByEmail(dto.email);
+    if (!user) throw new HttpError(404, 'No existe un usuario con ese email');
 
-    if (!userData) throw new Error('Datos no proporcionados');
-    const { email, password } = userData;
-
-    const existingUser = await userRepo.findOne({
-      where: { email },
-      relations: ['role'],
-    });
-
-    if (!existingUser) throw new Error('No existe un usuario con ese email');
-
-    const isValidPassword = await bcrypt.compare(
-      password!,
-      existingUser.password
-    );
-    if (!isValidPassword) throw new Error('Contraseña incorrecta');
+    const isValidPassword = await bcrypt.compare(dto.password, user.password);
+    if (!isValidPassword) throw new HttpError(401, 'Contraseña incorrecta');
 
     const token = await createAccessToken({
-      id: existingUser.id,
-      rol: existingUser.role.name,
-      verify: existingUser.verified,
+      id: user.id,
+      rol: user.role.name,
+      verify: user.verified,
     });
 
-    return { user: existingUser, token };
+    return { user, token };
   }
 
   async verifyToken(token: string) {
     if (!token) throw new Error('Token no proporcionado');
-    const decoded = jwt.verify(token, JWT_SECRET) as TokenPayload;
+    const decoded = jwt.verify(
+      token,
+      EnvConfiguration().jwtSecret
+    ) as TokenPayload;
 
     const userRepo = AppDataSource.getRepository(User);
     const existingUser = await userRepo.findOne({ where: { id: decoded.id } });
@@ -216,7 +183,9 @@ export class AuthService {
 
     if (!user) throw new Error('Usuario no encontrado');
 
-    const token = jwt.sign({ id: user.id }, JWT_SECRET, { expiresIn: '1h' });
+    const token = jwt.sign({ id: user.id }, EnvConfiguration().jwtSecret, {
+      expiresIn: '1h',
+    });
 
     const { data, error } = await resend.emails.send({
       from: 'Leximate <no-reply@leximate.me>',
@@ -232,7 +201,10 @@ export class AuthService {
 
   async verifyEmail(token: string) {
     if (!token) throw new Error('Token no proporcionado');
-    const decoded = jwt.verify(token, JWT_SECRET) as TokenPayload;
+    const decoded = jwt.verify(
+      token,
+      EnvConfiguration().jwtSecret
+    ) as TokenPayload;
 
     if (!decoded) throw new Error('Token inválido');
 

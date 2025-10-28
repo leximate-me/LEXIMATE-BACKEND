@@ -1,19 +1,14 @@
 import { DataSource } from 'typeorm';
-import {
-  DB_HOST,
-  DB_NAME,
-  DB_PASSWORD,
-  DB_USER,
-} from '../common/configs/env.config';
+import { EnvConfiguration } from '../common/configs/env.config';
 import { logger } from '../common/configs/logger.config';
 
 export const AppDataSource = new DataSource({
   type: 'postgres',
-  host: DB_HOST,
-  port: 5442,
-  username: DB_USER,
-  password: DB_PASSWORD,
-  database: DB_NAME,
+  host: EnvConfiguration().dbHost,
+  port: EnvConfiguration().dbPort,
+  username: EnvConfiguration().dbUser,
+  password: EnvConfiguration().dbPassword,
+  database: EnvConfiguration().dbName,
   entities: [__dirname + '/../modules/**/entities/*.entity.{ts,js}'],
   synchronize: true, // Solo para desarrollo
   logging: false,

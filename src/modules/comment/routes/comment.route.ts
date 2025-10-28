@@ -1,12 +1,9 @@
 import { Router } from 'express';
-import { verifyUserRequired } from '../../common/middlewares/user.middleware';
-import { authRequired } from '../../common/middlewares/token.middleware';
-import {
-  createCommentSchema,
-  updateCommentSchema,
-} from '../comment/comment.schema';
-import { validateSchema } from '../../common/middlewares/validator.middleware';
-import { CommentController } from './comment.controller';
+import { verifyUserRequired } from '../../../common/middlewares/user.middleware';
+import { authRequired } from '../../../common/middlewares/token.middleware';
+import { createCommentSchema, updateCommentSchema } from '../comment.schema';
+import { validateSchema } from '../../../common/middlewares/validator-schema.middleware';
+import { CommentController } from '../comment.controller';
 
 const commentRouter = Router({ mergeParams: true });
 const commentController = new CommentController();

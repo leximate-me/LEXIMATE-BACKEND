@@ -1,42 +1,20 @@
 import dotenv from 'dotenv';
+import * as env from 'env-var';
+
 dotenv.config();
 
-const getEnvVar = (key: string, defaultValue?: string): string => {
-  const value = process.env[key];
-  if (value === undefined) {
-    if (defaultValue !== undefined) {
-      return defaultValue;
-    }
-    throw new Error(`Falta la variable de entorno: ${key}`);
-  }
-  return value;
-};
-
-const PORT = getEnvVar('PORT');
-const DB_HOST = getEnvVar('DB_HOST');
-const DB_USER = getEnvVar('DB_USER');
-const DB_NAME = getEnvVar('DB_NAME');
-const DB_PASSWORD = getEnvVar('DB_PASSWORD');
-
-const JWT_SECRET = getEnvVar('JWT_SECRET');
-const CLOUDINARY_CLOUD_NAME = getEnvVar('CLOUDINARY_CLOUD_NAME');
-const CLOUDINARY_API_KEY = getEnvVar('CLOUDINARY_API_KEY');
-const CLOUDINARY_API_SECRET = getEnvVar('CLOUDINARY_API_SECRET');
-const RESEND_API_KEY = getEnvVar('RESEND_API_KEY');
-const FRONTEND_URL = getEnvVar('FRONTEND_URL');
-const FRONTEND_URL_PROD = getEnvVar('FRONTEND_URL_PROD');
-
-export {
-  PORT,
-  DB_HOST,
-  DB_USER,
-  DB_NAME,
-  DB_PASSWORD,
-  JWT_SECRET,
-  CLOUDINARY_CLOUD_NAME,
-  CLOUDINARY_API_KEY,
-  CLOUDINARY_API_SECRET,
-  RESEND_API_KEY,
-  FRONTEND_URL,
-  FRONTEND_URL_PROD,
-};
+export const EnvConfiguration = () => ({
+  port: env.get('PORT').asPortNumber(),
+  dbPort: env.get('DB_PORT').asPortNumber(),
+  dbHost: env.get('DB_HOST').asString(),
+  dbUser: env.get('DB_USER').asString(),
+  dbName: env.get('DB_NAME').asString(),
+  dbPassword: env.get('DB_PASSWORD').asString(),
+  jwtSecret: env.get('JWT_SECRET').asString(),
+  cloudinaryCloudName: env.get('CLOUDINARY_CLOUD_NAME').asString(),
+  cloudinaryApiKey: env.get('CLOUDINARY_API_KEY').asString(),
+  cloudinaryApiSecret: env.get('CLOUDINARY_API_SECRET').asString(),
+  resendApiKey: env.get('RESEND_API_KEY').asString(),
+  frontendUrl: env.get('FRONTEND_URL').asString(),
+  frontendUrlProd: env.get('FRONTEND_URL_PROD').asString(),
+});

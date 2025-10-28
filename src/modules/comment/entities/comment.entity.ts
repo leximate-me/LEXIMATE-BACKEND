@@ -6,7 +6,7 @@ import {
   DeleteDateColumn,
 } from 'typeorm';
 import { Post } from '../../post/entities/post.entity';
-import { User } from '../../auth/entities';
+import { User } from '../../user/entities';
 
 @Entity('comments')
 export class Comment {

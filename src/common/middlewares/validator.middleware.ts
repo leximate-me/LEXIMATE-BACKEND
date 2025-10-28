@@ -1,27 +1,16 @@
-// import { logger } from '../configs/logger.config';
-import { Request, Response, NextFunction } from 'express';
-import { Schema, ZodError } from 'zod';
-import { deleteFromCloudinary } from './upload.middleware';
-import { logger } from '../configs/logger.config';
+import { plainToInstance } from 'class-transformer';
+import { validate } from 'class-validator';
+import { NextFunction, Request, Response } from 'express';
+import { HttpError } from '../libs/http-error';
 
-const validateSchema = (schema: Schema) => {
+export function validateDto(DtoClass: any) {
   return async (req: Request, res: Response, next: NextFunction) => {
-    try {
-      await schema.parseAsync(req.body);
-      next();
-    } catch (error) {
-      if (req.file && req.file.cloudinaryPublicId) {
-        await deleteFromCloudinary(req.file.cloudinaryPublicId, next);
-        console.log('Archivo eliminado de Cloudinary');
-      }
-      if (error instanceof ZodError) {
-        logger.error(error.errors, 'Error de validación');
-        res.status(400).json({ error: error.errors.map((err) => err.message) });
-      } else {
-        next(error); // Propagar el error al siguiente middleware o controlador
-      }
+    const dto = plainToInstance(DtoClass, req.body);
+    const errors = await validate(dto);
+    if (errors.length > 0) {
+      return next(new HttpError(400, 'Error de validación', errors));
     }
+    req.body = dto;
+    next();
   };
-};
-
-export { validateSchema };
+}

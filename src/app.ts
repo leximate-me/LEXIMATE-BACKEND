@@ -1,17 +1,18 @@
 import express, { Application } from 'express';
 import { applyMiddlewares } from './common/middlewares/app.middleware';
 import { authRouter } from './modules/auth/routes/auth.route';
-import { classRouter } from './modules/course/course.route';
-import { toolRouter } from './modules/tool/tool.route';
-import { postRouter } from './modules/post/post.route';
+import { classRouter } from './modules/course/routes/course.route';
+import { toolRouter } from './modules/tool/routes/tool.route';
+import { postRouter } from './modules/post/routes/post.route';
 import { logger } from './common/configs/logger.config';
 import 'reflect-metadata';
 import figlet from 'figlet';
+import { seedRouter } from './modules/seed/routes/seed.route';
 
 export class App {
   private app: Application = express();
 
-  constructor(private port: string) {
+  constructor(private port: number) {
     this.applyMiddlewares();
     this.setRoutes();
     this.settings();
@@ -26,6 +27,7 @@ export class App {
     this.app.use('/api/class', classRouter);
     this.app.use('/api/tool', toolRouter);
     this.app.use('/api/post', postRouter);
+    this.app.use('/api/seed', seedRouter);
   }
 
   private settings() {

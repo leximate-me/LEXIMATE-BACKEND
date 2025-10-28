@@ -3,7 +3,7 @@ import { AppDataSource } from '../../database/db';
 
 import { Post } from '../post/entities/post.entity';
 import { Course } from './entities/course.entity';
-import { User } from '../auth/entities';
+import { User } from '../user/entities';
 import { Task } from '../task/entities/task.entity';
 
 export class CourseService {

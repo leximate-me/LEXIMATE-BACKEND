@@ -1,10 +1,4 @@
-export interface TokenPayload {
-  id: string;
-  rol: number;
-  verify: boolean;
-  iat: number;
-  exp: number;
-}
+import { TokenPayload } from '../interfaces/token-payload.interface';
 
 declare module 'express-serve-static-core' {
   interface Request {

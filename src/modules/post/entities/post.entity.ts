@@ -7,7 +7,7 @@ import {
   OneToMany,
 } from 'typeorm';
 import { Course } from '../../course/entities/course.entity';
-import { User } from '../../auth/entities';
+import { User } from '../../user/entities';
 import { Comment } from '../../comment/entities/comment.entity';
 
 @Entity('posts')

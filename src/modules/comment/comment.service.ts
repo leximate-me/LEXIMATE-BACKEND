@@ -1,7 +1,7 @@
 import { AppDataSource } from '../../database/db';
 import { Post } from '../post/entities/post.entity';
 import { Comment } from './entities/comment.entity';
-import { User } from '../auth/entities';
+import { User } from '../user/entities';
 
 export class CommentService {
   async create(commentData: Partial<Comment>, postId: string, userId: string) {

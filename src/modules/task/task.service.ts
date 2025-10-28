@@ -1,7 +1,7 @@
 import { AppDataSource } from '../../database/db';
 import { deleteFromCloudinary } from '../../common/middlewares/upload.middleware';
 import { In } from 'typeorm';
-import { User } from '../auth/entities';
+import { User } from '../user/entities';
 import { Course } from '../course/entities/course.entity';
 import { Task } from './entities/task.entity';
 import { FileTask } from './entities/fileTask.entity';

@@ -5,7 +5,7 @@ import {
   ManyToOne,
   DeleteDateColumn,
 } from 'typeorm';
-import { User } from './';
+import { User } from '.';
 
 @Entity()
 export class FileUser {

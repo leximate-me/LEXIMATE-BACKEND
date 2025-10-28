@@ -1,10 +1,10 @@
 import { Router } from 'express';
 import { verifyUserRequired } from '../../common/middlewares/user.middleware';
 import { authRequired } from '../../common/middlewares/token.middleware';
-import { validateSchema } from '../../common/middlewares/validator.middleware';
+import { validateSchema } from '../../common/middlewares/validator-schema.middleware';
 import { createCourseSchema, updateCourseSchema } from './course.schema';
 
-import { postRouter } from '../post/post.route';
+import { postRouter } from '../post/routes/post.route';
 import { CourseController } from './course.controller';
 import { taskRouter } from '../task/task.route';
 

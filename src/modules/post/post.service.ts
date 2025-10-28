@@ -1,5 +1,5 @@
 import { AppDataSource } from '../../database/db';
-import { User } from '../auth/entities';
+import { User } from '../user/entities';
 
 import { Course } from '../course/entities/course.entity';
 import { Post } from './entities/post.entity';

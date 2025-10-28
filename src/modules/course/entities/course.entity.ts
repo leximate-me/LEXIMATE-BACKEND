@@ -8,7 +8,7 @@ import {
 } from 'typeorm';
 import { Task } from '../../task/entities/task.entity';
 import { Post } from '../../post/entities/post.entity';
-import { User } from '../../auth/entities';
+import { User } from '../../user/entities';
 
 @Entity()
 export class Course {

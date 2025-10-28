@@ -1,15 +1,14 @@
-import { Request, Response } from 'express';
+import { NextFunction, Request, Response } from 'express';
 import { AuthService } from './auth.service';
 import { logger } from '../../common/configs/logger.config';
-import { FRONTEND_URL } from '../../common/configs/env.config';
+import { EnvConfiguration } from '../../common/configs/env.config';
 
 export class AuthController {
   private authService: AuthService = new AuthService();
 
-  async register(req: Request, res: Response): Promise<void> {
+  async register(req: Request, res: Response, next: NextFunction) {
     try {
-      const userData = req.body;
-      const { newUser, token } = await this.authService.registerUser(userData);
+      const { newUser, token } = await this.authService.registerUser(req.body);
 
       res.cookie('token', token, {
         httpOnly: true,
@@ -17,26 +16,15 @@ export class AuthController {
         sameSite: 'none',
       });
 
-      if (!newUser) {
-        res.status(400).json({ error: ['Error al registrar el usuario'] });
-      }
-
       res.status(201).json(newUser);
     } catch (error) {
-      if (error instanceof Error) {
-        logger.error(error, 'Error en registerUserController');
-        res.status(400).json({ error: [error.message] });
-      } else {
-        logger.error(error, 'Error desconocido en registerUserController');
-        res.status(500).json({ error: ['Error interno del servidor'] });
-      }
+      next(error);
     }
   }
 
-  async login(req: Request, res: Response): Promise<void> {
+  async login(req: Request, res: Response, next: NextFunction) {
     try {
-      const userData = req.body;
-      const { user, token } = await this.authService.loginUser(userData);
+      const { user, token } = await this.authService.loginUser(req.body);
 
       res.cookie('token', token, {
         httpOnly: true,
@@ -46,17 +34,11 @@ export class AuthController {
 
       res.status(200).json(user);
     } catch (error) {
-      if (error instanceof Error) {
-        logger.error(`Error en loginUserController: ${error.message}`);
-        res.status(400).json({ error: [error.message] });
-      } else {
-        logger.error(error, 'Error desconocido en loginUserController');
-        res.status(500).json({ error: ['Error interno del servidor'] });
-      }
+      next(error);
     }
   }
 
-  async verifyToken(req: Request, res: Response): Promise<void> {
+  async verifyToken(req: Request, res: Response, next: NextFunction) {
     try {
       const token = req.cookies.token as string;
 
@@ -71,17 +53,11 @@ export class AuthController {
 
       res.status(200).json(decoded);
     } catch (error) {
-      if (error instanceof Error) {
-        logger.error(error, 'Error en verifyTokenController');
-        res.status(400).json({ error: [error.message] });
-      } else {
-        logger.error(error, 'Error desconocido en verifyTokenController');
-        res.status(500).json({ error: ['Error interno del servidor'] });
-      }
+      next(error);
     }
   }
 
-  async getProfile(req: Request, res: Response): Promise<void> {
+  async getProfile(req: Request, res: Response, next: NextFunction) {
     try {
       const userId = req.user?.id;
 
@@ -94,17 +70,11 @@ export class AuthController {
 
       res.status(200).json(existingUser);
     } catch (error) {
-      if (error instanceof Error) {
-        logger.error(error, 'Error en getProfileUserController');
-        res.status(400).json({ error: [error.message] });
-      } else {
-        logger.error(error, 'Error desconocido en getProfileUserController');
-        res.status(500).json({ error: ['Error interno del servidor'] });
-      }
+      next(error);
     }
   }
 
-  async delete(req: Request, res: Response): Promise<void> {
+  async delete(req: Request, res: Response, next: NextFunction) {
     try {
       const userId = req.user?.id;
 
@@ -119,17 +89,11 @@ export class AuthController {
 
       res.status(200).json(response);
     } catch (error) {
-      if (error instanceof Error) {
-        logger.error(error, 'Error en deleteUserController');
-        res.status(404).json({ error: [error.message] });
-      } else {
-        logger.error(error, 'Error desconocido en deleteUserController');
-        res.status(500).json({ error: ['Error interno del servidor'] });
-      }
+      next(error);
     }
   }
 
-  async logout(_req: Request, res: Response): Promise<void> {
+  async logout(_req: Request, res: Response, next: NextFunction) {
     try {
       const response = this.authService.logoutUser();
 
@@ -142,17 +106,11 @@ export class AuthController {
 
       res.status(200).json(response);
     } catch (error) {
-      if (error instanceof Error) {
-        logger.error(error, 'Error en logoutUserController');
-        res.status(404).json({ error: [error.message] });
-      } else {
-        logger.error(error, 'Error desconocido en logoutUserController');
-        res.status(500).json({ error: ['Error desconocido'] });
-      }
+      next(error);
     }
   }
 
-  async sendEmailVerification(req: Request, res: Response): Promise<void> {
+  async sendEmailVerification(req: Request, res: Response, next: NextFunction) {
     try {
       const userId = req.user?.id;
 
@@ -167,20 +125,11 @@ export class AuthController {
 
       res.status(200).json(response);
     } catch (error) {
-      if (error instanceof Error) {
-        logger.error(error, 'Error en sendEmailVerificationController');
-        res.status(500).json({ error: [error.message] });
-      } else {
-        logger.error(
-          error,
-          'Error desconocido en sendEmailVerificationController'
-        );
-        res.status(500).json({ error: ['Error desconocido'] });
-      }
+      next(error);
     }
   }
 
-  async verifyEmail(req: Request, res: Response): Promise<void> {
+  async verifyEmail(req: Request, res: Response, next: NextFunction) {
     try {
       const token = req.query.token as string;
 
@@ -193,19 +142,13 @@ export class AuthController {
 
       logger.child({ response }).info('Email verificado');
 
-      res.redirect(`${FRONTEND_URL}`);
+      res.redirect(`${EnvConfiguration().frontendUrl}`);
     } catch (error) {
-      if (error instanceof Error) {
-        logger.error(error, 'Error en verifyEmailController');
-        res.status(400).json({ error: [error.message] });
-      } else {
-        logger.error(error, 'Error desconocido en verifyEmailController');
-        res.status(500).json({ error: ['Error desconocido'] });
-      }
+      next(error);
     }
   }
 
-  async updateProfile(req: Request, res: Response): Promise<void> {
+  async updateProfile(req: Request, res: Response, next: NextFunction) {
     try {
       const userId = req.user?.id;
       const userData = req.body;
@@ -232,28 +175,7 @@ export class AuthController {
 
       res.status(200).json(updatedUser);
     } catch (error) {
-      if (error instanceof Error) {
-        logger.error(error, 'Error en updateProfileUserController');
-        res.status(400).json({ error: [error.message] });
-      } else {
-        logger.error(error, 'Error desconocido en updateProfileUserController');
-        res.status(500).json({ error: ['Error desconocido'] });
-      }
-    }
-  }
-
-  async seedRoles(_req: Request, res: Response): Promise<void> {
-    try {
-      const response = await this.authService.seedRoles();
-      res.status(200).json(response);
-    } catch (error) {
-      if (error instanceof Error) {
-        logger.error(error, 'Error en seedRolesController');
-        res.status(500).json({ error: [error.message] });
-      } else {
-        logger.error(error, 'Error desconocido en seedRolesController');
-        res.status(500).json({ error: ['Error desconocido'] });
-      }
+      next(error);
     }
   }
 }

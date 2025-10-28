@@ -5,7 +5,7 @@ import {
   DeleteDateColumn,
   OneToMany,
 } from 'typeorm';
-import { User } from '../entities';
+import { User } from '.';
 
 @Entity()
 export class People {

@@ -1,8 +1,8 @@
 import jwt from 'jsonwebtoken';
-import { JWT_SECRET } from '../configs/env.config';
+import { EnvConfiguration } from '../configs/env.config';
 import { logger } from '../configs/logger.config';
 import { Request, Response, NextFunction } from 'express';
-import { TokenPayload } from 'src/common/types/express';
+import { TokenPayload } from '../interfaces/token-payload.interface';
 
 const authRequired = async (
   req: Request,
@@ -18,7 +18,10 @@ const authRequired = async (
       return;
     }
 
-    const decoded = jwt.verify(token, JWT_SECRET) as TokenPayload;
+    const decoded = jwt.verify(
+      token,
+      EnvConfiguration().jwtSecret
+    ) as TokenPayload;
 
     if (!decoded) {
       res.status(401).json({ error: ['Token inválido'] });
