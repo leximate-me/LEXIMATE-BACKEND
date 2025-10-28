@@ -17,4 +17,6 @@ export const EnvConfiguration = () => ({
   resendApiKey: env.get('RESEND_API_KEY').asString(),
   frontendUrl: env.get('FRONTEND_URL').asString(),
   frontendUrlProd: env.get('FRONTEND_URL_PROD').asString(),
+  nodeEnv: env.get('NODE_ENV').asString(),
+  logLevel: env.get('LOG_LEVEL').asString(),
 });
