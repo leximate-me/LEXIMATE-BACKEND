@@ -16,11 +16,14 @@ export class Comment {
   @Column({ type: 'text' })
   content: string;
 
-  @ManyToOne(() => Post, (post) => post.comments)
+  @ManyToOne(() => Post, (post) => post.comments, {
+    nullable: false,
+    eager: true,
+  })
   post: Post;
 
   @ManyToOne(() => User, (user) => user.comments)
-  user: User;
+  users: User;
 
   @DeleteDateColumn()
   deletedAt?: Date;

@@ -1,209 +1,135 @@
 import crypto from 'crypto';
 import { AppDataSource } from '../../database/db';
-
 import { Post } from '../post/entities/post.entity';
 import { Course } from './entities/course.entity';
 import { User } from '../user/entities';
 import { Task } from '../task/entities/task.entity';
+import { HttpError } from '../../common/libs/http-error';
 
 export class CourseService {
-  async create(classData: Partial<Course>, userId: string) {
-    const queryRunner = AppDataSource.createQueryRunner();
-    await queryRunner.connect();
-    await queryRunner.startTransaction();
+  private readonly userRepository = AppDataSource.getRepository(User);
+  private readonly courseRepository = AppDataSource.getRepository(Course);
+  private readonly postRepository = AppDataSource.getRepository(Post);
+  private readonly taskRepository = AppDataSource.getRepository(Task);
 
-    try {
-      const userRepo = queryRunner.manager.getRepository(User);
-      const classRepo = queryRunner.manager.getRepository(Course);
+  async create(courseData: Partial<Course>, userId: string) {
+    const foundUser = await this.userRepository.findOne({
+      where: { id: userId },
+      relations: ['courses'],
+    });
+    if (!foundUser) throw HttpError.notFound('Usuario no encontrado');
 
-      const foundUser = await userRepo.findOne({
-        where: { id: userId },
-        relations: ['role'],
-      });
-      if (!foundUser) throw new Error('Usuario no encontrado');
+    const course_code = crypto.randomBytes(5).toString('hex');
+    const newCourse = this.courseRepository.create({
+      name: courseData.name,
+      description: courseData.description,
+      class_code: course_code,
+    });
+    await this.courseRepository.save(newCourse);
 
-      const verifiedRole = foundUser.role;
-      if (!verifiedRole) throw new Error('Rol no encontrado');
+    foundUser.courses = [...(foundUser.courses || []), newCourse];
+    await this.userRepository.save(foundUser);
 
-      const class_code = crypto.randomBytes(5).toString('hex');
-      const newClass = classRepo.create({
-        name: classData.name,
-        description: classData.description,
-        class_code,
-      });
-      await queryRunner.manager.save(newClass);
-
-      foundUser.courses = [...(foundUser.courses || []), newClass];
-      await queryRunner.manager.save(foundUser);
-
-      await queryRunner.commitTransaction();
-      return newClass;
-    } catch (error) {
-      await queryRunner.rollbackTransaction();
-      throw error;
-    } finally {
-      await queryRunner.release();
-    }
+    return newCourse;
   }
 
-  async join(classCode: string, userId: string) {
-    const queryRunner = AppDataSource.createQueryRunner();
-    await queryRunner.connect();
-    await queryRunner.startTransaction();
+  async join(courseCode: string, userId: string) {
+    const foundUser = await this.userRepository.findOne({
+      where: { id: userId },
+      relations: ['courses'],
+    });
+    if (!foundUser) throw HttpError.notFound('Usuario no encontrado');
 
-    try {
-      const userRepo = queryRunner.manager.getRepository(User);
-      const classRepo = queryRunner.manager.getRepository(Course);
+    const courseData = await this.courseRepository.findOne({
+      where: { class_code: courseCode },
+    });
+    if (!courseData) throw HttpError.notFound('Curso no encontrado');
 
-      const foundUser = await userRepo.findOne({
-        where: { id: userId },
-        relations: ['role', 'courses'],
-      });
-      if (!foundUser) throw new Error('Usuario no encontrado');
+    foundUser.courses = [...(foundUser.courses || []), courseData];
+    await this.userRepository.save(foundUser);
 
-      const classData = await classRepo.findOne({
-        where: { class_code: classCode },
-      });
-      if (!classData) throw new Error('Clase no encontrada');
-
-      foundUser.courses = [...(foundUser.courses || []), classData];
-      await queryRunner.manager.save(foundUser);
-
-      await queryRunner.commitTransaction();
-      return classData;
-    } catch (error) {
-      await queryRunner.rollbackTransaction();
-      throw error;
-    } finally {
-      await queryRunner.release();
-    }
+    return courseData;
   }
 
-  async leave(classId: string, userId: string) {
-    const queryRunner = AppDataSource.createQueryRunner();
-    await queryRunner.connect();
-    await queryRunner.startTransaction();
+  async leave(courseId: string, userId: string) {
+    const foundUser = await this.userRepository.findOne({
+      where: { id: userId },
+      relations: ['courses'],
+    });
+    if (!foundUser) throw HttpError.notFound('Usuario no encontrado');
 
-    try {
-      const userRepo = queryRunner.manager.getRepository(User);
-      const classRepo = queryRunner.manager.getRepository(Course);
+    const courseData = await this.courseRepository.findOne({
+      where: { id: courseId },
+    });
+    if (!courseData) throw HttpError.notFound('Curso no encontrado');
 
-      const foundUser = await userRepo.findOne({
-        where: { id: userId },
-        relations: ['role', 'courses'],
-      });
-      if (!foundUser) throw new Error('Usuario no encontrado');
+    foundUser.courses = (foundUser.courses || []).filter(
+      (c) => c.id !== courseId
+    );
+    await this.userRepository.save(foundUser);
 
-      const classData = await classRepo.findOne({ where: { id: classId } });
-      if (!classData) throw new Error('Clase no encontrada');
-
-      foundUser.courses = (foundUser.courses || []).filter(
-        (c) => c.id !== classId
-      );
-      await queryRunner.manager.save(foundUser);
-
-      await queryRunner.commitTransaction();
-      return classData;
-    } catch (error) {
-      await queryRunner.rollbackTransaction();
-      throw error;
-    } finally {
-      await queryRunner.release();
-    }
+    return courseData;
   }
 
   async getCoursesByUser(userId: string) {
-    const userRepo = AppDataSource.getRepository(User);
-
-    const foundUser = await userRepo.findOne({
+    const foundUser = await this.userRepository.findOne({
       where: { id: userId },
-      relations: ['role', 'courses'],
+      relations: ['courses'],
     });
-    if (!foundUser) throw new Error('Usuario no encontrado');
+    if (!foundUser) throw HttpError.notFound('Usuario no encontrado');
 
     return foundUser.courses || [];
   }
 
-  async getUsersByCourses(classId: string) {
-    const classRepo = AppDataSource.getRepository(Course);
-
-    const classData = await classRepo.findOne({
-      where: { id: classId },
+  async getUsersByCourse(courseId: string) {
+    const courseData = await this.courseRepository.findOne({
+      where: { id: courseId },
       relations: ['users'],
     });
-    if (!classData) throw new Error('Clase no encontrada');
+    if (!courseData) throw HttpError.notFound('Curso no encontrado');
 
-    if (!classData.users || classData.users.length === 0)
-      throw new Error('No hay usuarios en esta clase');
+    if (!courseData.users || courseData.users.length === 0)
+      throw HttpError.notFound('No hay usuarios en este curso');
 
-    return classData.users;
+    return courseData.users;
   }
 
-  async update(classId: string, classData: Partial<Course>, userId: string) {
-    const queryRunner = AppDataSource.createQueryRunner();
-    await queryRunner.connect();
-    await queryRunner.startTransaction();
+  async update(courseId: string, courseData: Partial<Course>, userId: string) {
+    const foundUser = await this.userRepository.findOne({
+      where: { id: userId },
+    });
+    if (!foundUser) throw HttpError.notFound('Usuario no encontrado');
 
-    try {
-      const userRepo = queryRunner.manager.getRepository(User);
-      const classRepo = queryRunner.manager.getRepository(Course);
+    const courseFound = await this.courseRepository.findOne({
+      where: { id: courseId },
+    });
+    if (!courseFound) throw HttpError.notFound('Curso no encontrado');
 
-      const foundUser = await userRepo.findOne({
-        where: { id: userId },
-        relations: ['role'],
-      });
-      if (!foundUser) throw new Error('Usuario no encontrado');
+    if (courseData.name) courseFound.name = courseData.name;
+    if (courseData.description)
+      courseFound.description = courseData.description;
 
-      const classFound = await classRepo.findOne({ where: { id: classId } });
-      if (!classFound) throw new Error('Clase no encontrada');
+    await this.courseRepository.save(courseFound);
 
-      if (classData.name) classFound.name = classData.name;
-      if (classData.description) classFound.description = classData.description;
-
-      await queryRunner.manager.save(classFound);
-
-      await queryRunner.commitTransaction();
-      return classFound;
-    } catch (error) {
-      await queryRunner.rollbackTransaction();
-      throw error;
-    } finally {
-      await queryRunner.release();
-    }
+    return courseFound;
   }
 
-  async delete(classId: string, userId: string) {
-    const queryRunner = AppDataSource.createQueryRunner();
-    await queryRunner.connect();
-    await queryRunner.startTransaction();
+  async delete(courseId: string, userId: string) {
+    const foundUser = await this.userRepository.findOne({
+      where: { id: userId },
+    });
+    if (!foundUser) throw HttpError.notFound('Usuario no encontrado');
 
-    try {
-      const userRepo = queryRunner.manager.getRepository(User);
-      const classRepo = queryRunner.manager.getRepository(Course);
-      const taskRepo = queryRunner.manager.getRepository(Task);
-      const postRepo = queryRunner.manager.getRepository(Post);
+    const courseFound = await this.courseRepository.findOne({
+      where: { id: courseId },
+    });
+    if (!courseFound) throw HttpError.notFound('Curso no encontrado');
 
-      const foundUser = await userRepo.findOne({
-        where: { id: userId },
-        relations: ['role'],
-      });
-      if (!foundUser) throw new Error('Usuario no encontrado');
+    await this.taskRepository.delete({ class: { id: courseId } });
+    await this.postRepository.delete({ course: { id: courseId } });
 
-      const classFound = await classRepo.findOne({ where: { id: classId } });
-      if (!classFound) throw new Error('Clase no encontrada');
+    await this.courseRepository.delete({ id: courseId });
 
-      await taskRepo.delete({ class: { id: classId } });
-      await postRepo.delete({ class: { id: classId } });
-
-      await classRepo.delete({ id: classId });
-
-      await queryRunner.commitTransaction();
-      return classFound;
-    } catch (error) {
-      await queryRunner.rollbackTransaction();
-      throw error;
-    } finally {
-      await queryRunner.release();
-    }
+    return courseFound;
   }
 }

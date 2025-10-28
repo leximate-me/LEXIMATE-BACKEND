@@ -23,8 +23,9 @@ export class Post {
 
   @ManyToOne(() => Course, (classEntity) => classEntity.posts, {
     nullable: false,
+    eager: true,
   })
-  class: Course;
+  course: Course;
 
   @ManyToOne(() => User, (user) => user.posts, { nullable: false })
   user: User;

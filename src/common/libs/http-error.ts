@@ -22,7 +22,9 @@ export class HttpError extends Error {
     return new HttpError(403, message);
   }
 
-  static internalServer(message: string | any = 'Error interno del servidor') {
+  static internalServerError(
+    message: string | any = 'Error interno del servidor'
+  ) {
     return new HttpError(500, message);
   }
 }

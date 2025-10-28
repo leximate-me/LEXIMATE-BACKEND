@@ -16,78 +16,73 @@ import { UpdateUserDto } from '../user/dtos/update-user.dto';
 export class AuthService {
   private readonly userService: UserService = new UserService();
   private readonly fileUserRepository = AppDataSource.getRepository(FileUser);
+  private readonly userRepository = AppDataSource.getRepository(User);
   private readonly bcryptAdapter = new BcryptAdapter();
 
   async registerUser(dto: RegisterAuthDto) {
-    // Validaciones de existencia
-    // const existingEmail = await this.userService.findByEmail(dto.email);
-    // if (existingEmail) throw new Error('El email ya está en uso');
+    try {
+      const defaultRole = await this.userService.findRoleByName('guest');
 
-    // const existingPerson = await this.userService.findPersonByDni(dto.dni);
-    // if (existingPerson) throw new Error('La persona ya existe');
+      // Crear persona
+      const newPerson = await this.userService.createPerson({
+        first_name: dto.first_name,
+        last_name: dto.last_name,
+        dni: dto.dni,
+        institute: dto.institute,
+        phone_number: dto.phone_number,
+        birth_date: new Date(dto.birth_date),
+      });
 
-    // const existingUser = await this.userService.findByUserName(dto.user_name);
-    // if (existingUser) throw new Error('El nombre de usuario ya existe');
+      // Hashear contraseña
+      const hashedPassword = await this.bcryptAdapter.hash(dto.password);
 
-    const existingRole = await this.userService.findRoleByName(dto.role);
-    if (!existingRole) throw new Error('El rol no existe');
+      // Crear usuario
+      const newUser = await this.userService.createUser(
+        { ...dto, password: hashedPassword } as any,
+        newPerson,
+        defaultRole
+      );
 
-    // Crear persona
-    const newPerson = await this.userService.createPerson({
-      first_name: dto.first_name,
-      last_name: dto.last_name,
-      dni: dto.dni,
-      institute: dto.institute,
-      phone_number: dto.phone_number,
-      birth_date: new Date(dto.birth_date),
-    });
+      // Generar avatar y subirlo
+      const response = await fetch(
+        `https://api.dicebear.com/9.x/notionists/svg?seed=${newUser.id},gestureProbability=50, beardProbability=30`
+      );
+      if (!response.ok) throw new Error('Error al generar el avatar');
 
-    // Hashear contraseña
-    const hashedPassword = await this.bcryptAdapter.hash(dto.password);
+      const avatarSvg = await response.text();
+      const buffer = Buffer.from(avatarSvg, 'utf8');
+      const uploadAvatar = await uploadImage(buffer);
 
-    // Crear usuario
-    const newUser = await this.userService.createUser(
-      { ...dto, password: hashedPassword } as any,
-      newPerson,
-      existingRole
-    );
+      const uploadedAvatar = this.fileUserRepository.create({
+        file_type: uploadAvatar.format,
+        file_id: uploadAvatar.public_id,
+        file_url: uploadAvatar.secure_url,
+        user: newUser,
+      });
+      await this.fileUserRepository.save(uploadedAvatar);
 
-    // Generar avatar y subirlo
-    const response = await fetch(
-      `https://api.dicebear.com/9.x/notionists/svg?seed=${newUser.id},gestureProbability=50, beardProbability=30`
-    );
-    if (!response.ok) throw new Error('Error al generar el avatar');
-    const avatarSvg = await response.text();
-    const buffer = Buffer.from(avatarSvg, 'utf8');
-    const uploadAvatar = await uploadImage(buffer);
+      const token = await createAccessToken({
+        id: newUser.id,
+        rol: newUser.role.name,
+        verify: newUser.verified,
+      });
 
-    const uploadedAvatar = this.fileUserRepository.create({
-      file_type: uploadAvatar.format,
-      file_id: uploadAvatar.public_id,
-      file_url: uploadAvatar.secure_url,
-      user: newUser,
-    });
-    await this.fileUserRepository.save(uploadedAvatar);
-
-    // Generar token
-    const token = await createAccessToken({
-      id: newUser.id,
-      rol: existingRole.name,
-      verify: newUser.verified,
-    });
-
-    return { newUser, token };
+      return { newUser, token };
+    } catch (error) {
+      this.handleDbException(error);
+    }
   }
 
   async loginUser(dto: LoginAuthDto) {
     const user = await this.userService.findByEmail(dto.email);
-    if (!user) throw new HttpError(404, 'No existe un usuario con ese email');
+    if (!user) throw HttpError.unauthorized('credenciales inválidas');
 
     const isValidPassword = await this.bcryptAdapter.compare(
       dto.password,
       user.password
     );
-    if (!isValidPassword) throw new HttpError(401, 'Contraseña incorrecta');
+    if (!isValidPassword)
+      throw HttpError.unauthorized('credenciales inválidas');
 
     const token = await createAccessToken({
       id: user.id,
@@ -99,32 +94,30 @@ export class AuthService {
   }
 
   async verifyToken(token: string) {
-    if (!token) throw new Error('Token no proporcionado');
+    if (!token) throw HttpError.unauthorized('Token no proporcionado');
+
     const decoded = jwt.verify(
       token,
       EnvConfiguration().jwtSecret
     ) as TokenPayload;
 
-    const userRepo = AppDataSource.getRepository(User);
-    const existingUser = await userRepo.findOne({ where: { id: decoded.id } });
+    const existingUser = await this.userRepository.findOne({
+      where: { id: decoded.id },
+    });
 
-    if (!existingUser) throw new Error('Usuario no encontrado');
+    if (!existingUser) throw HttpError.notFound('Usuario no encontrado');
 
     return decoded;
   }
 
   async getProfileUser(userId: string) {
-    const userRepo = AppDataSource.getRepository(User);
-    const fileUserRepo = AppDataSource.getRepository(FileUser);
-
-    const foundUser = await userRepo.findOne({
+    const foundUser = await this.userRepository.findOne({
       where: { id: userId },
-      relations: ['role', 'people'],
     });
 
-    if (!foundUser) throw new Error('Usuario no encontrado');
+    if (!foundUser) throw HttpError.notFound('Usuario no encontrado');
 
-    const userAvatar = await fileUserRepo.findOne({
+    const userAvatar = await this.fileUserRepository.findOne({
       where: { user: { id: foundUser.id } },
     });
 
@@ -134,15 +127,8 @@ export class AuthService {
         user_name: foundUser.user_name,
         email: foundUser.email,
         verified: foundUser.verified,
-        role: foundUser.role.id,
-        person: {
-          first_name: foundUser.people.first_name,
-          last_name: foundUser.people.last_name,
-          dni: foundUser.people.dni,
-          institute: foundUser.people.institute,
-          phone_number: foundUser.people.phone_number,
-          birth_date: foundUser.people.birth_date,
-        },
+        role: foundUser.role,
+        person: foundUser.people,
         avatar: userAvatar,
       },
     };
@@ -153,26 +139,21 @@ export class AuthService {
   }
 
   async deleteUser(userId: string) {
-    const userRepo = AppDataSource.getRepository(User);
-    const peopleRepo = AppDataSource.getRepository(People);
-
-    const user = await userRepo.findOne({
+    const user = await this.userRepository.findOne({
       where: { id: userId },
-      relations: ['people'],
     });
-    if (!user) throw new Error('Usuario no encontrado');
 
-    await userRepo.remove(user);
-    await peopleRepo.remove(user.people);
+    if (!user) throw HttpError.notFound('Usuario no encontrado');
+
+    await this.userRepository.softRemove(user);
 
     return { message: 'Usuario eliminado exitosamente' };
   }
 
   async sendEmailVerification(userId: string) {
-    const userRepo = AppDataSource.getRepository(User);
-    const user = await userRepo.findOne({ where: { id: userId } });
+    const user = await this.userRepository.findOne({ where: { id: userId } });
 
-    if (!user) throw new Error('Usuario no encontrado');
+    if (!user) throw HttpError.notFound('Usuario no encontrado');
 
     const token = jwt.sign({ id: user.id }, EnvConfiguration().jwtSecret, {
       expiresIn: '1h',
@@ -196,12 +177,13 @@ export class AuthService {
       EnvConfiguration().jwtSecret
     ) as TokenPayload;
 
-    const userRepo = AppDataSource.getRepository(User);
-    const user = await userRepo.findOne({ where: { id: decoded.id } });
-    if (!user) throw new Error('Usuario no encontrado');
+    const user = await this.userRepository.findOne({
+      where: { id: decoded.id },
+    });
+    if (!user) throw HttpError.notFound('Usuario no encontrado');
 
     user.verified = true;
-    await userRepo.save(user);
+    await this.userRepository.save(user);
 
     return { message: 'Correo electrónico verificado exitosamente' };
   }
@@ -234,5 +216,12 @@ export class AuthService {
     }
 
     return updatedUser;
+  }
+
+  private handleDbException(error: any): never {
+    if (error.code === '23505') {
+      throw HttpError.badRequest(error.detail);
+    }
+    throw HttpError.internalServerError('Error en la base de datos');
   }
 }

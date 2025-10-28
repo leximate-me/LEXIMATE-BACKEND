@@ -2,7 +2,7 @@ import { Request, Response, NextFunction } from 'express';
 
 export function requireRole(roles: string[]) {
   return (req: Request, res: Response, next: NextFunction) => {
-    const userRole = req.user?.rol?.name;
+    const userRole = req.user?.rol;
     if (!userRole || !roles.includes(userRole)) {
       return res
         .status(403)

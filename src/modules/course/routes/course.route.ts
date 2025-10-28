@@ -3,61 +3,67 @@ import { verifyUserRequired } from '../../../common/middlewares/user.middleware'
 import { authRequired } from '../../../common/middlewares/token.middleware';
 import { validateSchema } from '../../../common/middlewares/validator-schema.middleware';
 import { createCourseSchema, updateCourseSchema } from '../course.schema';
+import { requireRole } from '../../../common/middlewares/auth.middleware';
 
 import { postRouter } from '../../post/routes/post.route';
 import { CourseController } from '../course.controller';
 import { taskRouter } from '../../task/routes/task.route';
 
-const classRouter = Router();
+const courseRouter = Router();
 
 const courseController = new CourseController();
 
-classRouter.post(
+courseRouter.post(
   '/',
   authRequired,
   verifyUserRequired,
+  requireRole(['admin', 'teacher']),
   validateSchema(createCourseSchema),
   courseController.create.bind(courseController)
 );
-classRouter.post(
+courseRouter.post(
   '/join',
   authRequired,
   verifyUserRequired,
+  requireRole(['student']),
   courseController.join.bind(courseController)
 );
-classRouter.post(
-  '/:classId/leave',
+courseRouter.post(
+  '/:courseId/leave',
   authRequired,
   verifyUserRequired,
+  requireRole(['student']),
   courseController.leave.bind(courseController)
 );
-classRouter.get(
+courseRouter.get(
   '/user',
   authRequired,
   verifyUserRequired,
   courseController.getClassesByUser.bind(courseController)
 );
-classRouter.get(
-  '/:classId/user',
+courseRouter.get(
+  '/:courseId/user',
   authRequired,
   verifyUserRequired,
   courseController.getUsersByClass.bind(courseController)
 );
-classRouter.put(
-  '/:classId',
+courseRouter.put(
+  '/:courseId',
   authRequired,
   verifyUserRequired,
+  requireRole(['admin', 'teacher']),
   validateSchema(updateCourseSchema),
   courseController.update.bind(courseController)
 );
-classRouter.delete(
-  '/:classId',
+courseRouter.delete(
+  '/:courseId',
   authRequired,
   verifyUserRequired,
+  requireRole(['admin', 'teacher']),
   courseController.delete.bind(courseController)
 );
 
-classRouter.use('/:classId/task', taskRouter);
-classRouter.use('/:classId/post', postRouter);
+courseRouter.use('/:courseId/task', taskRouter);
+courseRouter.use('/:courseId/post', postRouter);
 
-export { classRouter };
+export { courseRouter };

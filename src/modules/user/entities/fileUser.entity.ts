@@ -21,9 +21,6 @@ export class FileUser {
   @Column({ length: 50 })
   file_type: string;
 
-  @ManyToOne(() => User, (user) => user.fileUsers)
+  @ManyToOne(() => User, (user) => user.fileUsers, { onDelete: 'CASCADE' })
   user: User;
-
-  @DeleteDateColumn()
-  deletedAt?: Date;
 }

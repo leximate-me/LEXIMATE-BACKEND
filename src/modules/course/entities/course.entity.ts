@@ -30,7 +30,7 @@ export class Course {
   @OneToMany(() => Task, (task) => task.class)
   tasks: Task[];
 
-  @OneToMany(() => Post, (post) => post.class)
+  @OneToMany(() => Post, (post) => post.course)
   posts: Post[];
 
   @ManyToMany(() => User, (user) => user.courses)

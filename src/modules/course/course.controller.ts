@@ -1,206 +1,87 @@
 import { CourseService } from '../course/course.service';
 import { logger } from '../../common/configs/logger.config';
-
-import { Request, Response } from 'express';
+import { Request, Response, NextFunction } from 'express';
 
 export class CourseController {
   private courseService: CourseService = new CourseService();
 
-  async create(req: Request, res: Response): Promise<void> {
+  async create(req: Request, res: Response, next: NextFunction) {
     try {
-      const classData = req.body;
-      if (!classData) {
-        res.status(400).json({ error: ['Falta la información de la clase'] });
-        return;
-      }
+      const courseData = req.body;
       const userId = req.user?.id;
-      if (!userId) {
-        res.status(401).json({ error: ['Usuario no autenticado'] });
-        return;
-      }
-      const newClass = await this.courseService.create(classData, userId);
-      res.status(201).json(newClass);
+      const newCourse = await this.courseService.create(courseData, userId);
+      res.status(201).json(newCourse);
     } catch (error) {
-      if (error instanceof Error) {
-        logger.error(error, 'Error en createClassController');
-        res.status(400).json({ error: [error.message] });
-      } else {
-        logger.error(error, 'Error desconocido en createClassController');
-        res.status(500).json({ error: ['Error desconocido'] });
-      }
+      next(error);
     }
   }
 
-  async join(req: Request, res: Response): Promise<void> {
+  async join(req: Request, res: Response, next: NextFunction) {
     try {
       const { classCode } = req.body;
-      if (!classCode) {
-        res.status(400).json({ error: ['Falta el código de la clase'] });
-        return;
-      }
       const userId = req.user?.id;
-      if (!userId) {
-        res.status(401).json({ error: ['Usuario no autenticado'] });
-        return;
-      }
-      const classData = await this.courseService.join(classCode, userId);
-      if (!classData) {
-        res.status(404).json({ error: ['Clase no encontrada'] });
-        return;
-      }
-      res.status(200).json(classData);
+      const courseData = await this.courseService.join(classCode, userId);
+      res.status(200).json(courseData);
     } catch (error) {
-      if (error instanceof Error) {
-        logger.error(error, 'Error en joinClassController');
-        res.status(400).json({ error: [error.message] });
-      } else {
-        logger.error(error, 'Error desconocido en joinClassController');
-        res.status(500).json({ error: ['Error desconocido'] });
-      }
+      next(error);
     }
   }
 
-  async leave(req: Request, res: Response): Promise<void> {
+  async leave(req: Request, res: Response, next: NextFunction) {
     try {
-      const classId = req.params.classId;
-      if (!classId) {
-        res.status(400).json({ error: ['Falta el id de la clase'] });
-        return;
-      }
+      const courseId = req.params.classId;
       const userId = req.user?.id;
-      if (!userId) {
-        res.status(401).json({ error: ['Usuario no autenticado'] });
-        return;
-      }
-      const classData = await this.courseService.leave(classId, userId);
-      if (!classData) {
-        res.status(404).json({ error: ['Clase no encontrada'] });
-        return;
-      }
-      res.status(200).json(classData);
+      const courseData = await this.courseService.leave(courseId, userId);
+      res.status(200).json(courseData);
     } catch (error) {
-      if (error instanceof Error) {
-        logger.error(error, 'Error en leaveClassController');
-        res.status(400).json({ error: [error.message] });
-      } else {
-        logger.error(error, 'Error desconocido en leaveClassController');
-        res.status(500).json({ error: ['Error desconocido'] });
-      }
+      next(error);
     }
   }
 
-  async getClassesByUser(req: Request, res: Response): Promise<void> {
+  async getClassesByUser(req: Request, res: Response, next: NextFunction) {
     try {
       const userId = req.user?.id;
-      if (!userId) {
-        res.status(401).json({ error: ['Usuario no autenticado'] });
-        return;
-      }
-      const classes = await this.courseService.getCoursesByUser(userId);
-      if (!classes) {
-        res.status(404).json({ error: ['Clases no encontradas'] });
-        return;
-      }
-      res.status(200).json(classes);
+      const courses = await this.courseService.getCoursesByUser(userId);
+      res.status(200).json(courses);
     } catch (error) {
-      if (error instanceof Error) {
-        logger.error(error, 'Error en getClassesByUserController');
-        res.status(400).json({ error: [error.message] });
-      } else {
-        logger.error(error, 'Error desconocido en getClassesByUserController');
-        res.status(500).json({ error: ['Error desconocido'] });
-      }
+      next(error);
     }
   }
 
-  async getUsersByClass(req: Request, res: Response): Promise<void> {
+  async getUsersByClass(req: Request, res: Response, next: NextFunction) {
     try {
-      const classId = req.params.classId;
-      if (!classId) {
-        res.status(400).json({ error: ['Falta el id de la clase'] });
-        return;
-      }
-      const users = await this.courseService.getUsersByCourses(classId);
-      if (!users) {
-        res.status(404).json({ error: ['Usuarios no encontrados'] });
-        return;
-      }
+      const courseId = req.params.classId;
+      const users = await this.courseService.getUsersByCourse(courseId);
       res.status(200).json(users);
     } catch (error) {
-      if (error instanceof Error) {
-        logger.error(error, 'Error en getUsersByClassController');
-        res.status(400).json({ error: [error.message] });
-      } else {
-        logger.error(error, 'Error desconocido en getUsersByClassController');
-        res.status(500).json({ error: ['Error desconocido'] });
-      }
+      next(error);
     }
   }
 
-  async update(req: Request, res: Response): Promise<void> {
+  async update(req: Request, res: Response, next: NextFunction) {
     try {
-      const classData = req.body;
-      if (!classData) {
-        res.status(400).json({ error: ['Falta la información de la clase'] });
-        return;
-      }
-      const classId = req.params.classId;
-      if (!classId) {
-        res.status(400).json({ error: ['Falta el id de la clase'] });
-        return;
-      }
+      const courseData = req.body;
+      const courseId = req.params.classId;
       const userId = req.user?.id;
-      if (!userId) {
-        res.status(401).json({ error: ['Usuario no autenticado'] });
-        return;
-      }
-      const updatedClass = await this.courseService.update(
-        classId,
-        classData,
+      const updatedCourse = await this.courseService.update(
+        courseId,
+        courseData,
         userId
       );
-      if (!updatedClass) {
-        res.status(404).json({ error: ['Clase no encontrada'] });
-        return;
-      }
-      res.status(200).json(updatedClass);
+      res.status(200).json(updatedCourse);
     } catch (error) {
-      if (error instanceof Error) {
-        logger.error(error, 'Error en updateClassController');
-        res.status(400).json({ error: [error.message] });
-      } else {
-        logger.error(error, 'Error desconocido en updateClassController');
-        res.status(500).json({ error: ['Error desconocido'] });
-      }
+      next(error);
     }
   }
 
-  async delete(req: Request, res: Response): Promise<void> {
+  async delete(req: Request, res: Response, next: NextFunction) {
     try {
-      const classId = req.params.classId;
-      if (!classId) {
-        res.status(400).json({ error: ['Falta el id de la clase'] });
-        return;
-      }
+      const courseId = req.params.classId;
       const userId = req.user?.id;
-      if (!userId) {
-        res.status(401).json({ error: ['Usuario no autenticado'] });
-        return;
-      }
-      const deleteClass = await this.courseService.delete(classId, userId);
-      if (!deleteClass) {
-        res.status(404).json({ error: ['Clase no encontrada'] });
-        return;
-      }
+      await this.courseService.delete(courseId, userId);
       res.status(204).end();
     } catch (error) {
-      if (error instanceof Error) {
-        logger.error(error, 'Error en deleteClassController');
-        res.status(400).json({ error: [error.message] });
-      } else {
-        logger.error(error, 'Error desconocido en deleteClassController');
-        res.status(500).json({ error: ['Error desconocido'] });
-      }
+      next(error);
     }
   }
 }

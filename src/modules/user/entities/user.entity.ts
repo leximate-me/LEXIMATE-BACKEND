@@ -33,23 +33,26 @@ export class User {
   @Column({ default: false })
   verified: boolean;
 
-  @ManyToOne(() => People, (people) => people.users, { nullable: false })
+  @ManyToOne(() => People, (people) => people.users, {
+    nullable: false,
+    eager: true,
+  })
   people: People;
 
-  @ManyToOne(() => Role, (role) => role.users, { nullable: false })
+  @ManyToOne(() => Role, (role) => role.users, { nullable: false, eager: true })
   role: Role;
 
   @ManyToMany(() => Course, (course) => course.users)
   @JoinTable()
   courses: Course[];
 
-  @OneToMany(() => FileUser, (fileUser) => fileUser.user)
+  @OneToMany(() => FileUser, (fileUser) => fileUser.user, { eager: true })
   fileUsers: FileUser[];
 
   @OneToMany(() => Post, (post) => post.user)
   posts: Post[];
 
-  @OneToMany(() => Comment, (comment) => comment.user)
+  @OneToMany(() => Comment, (comment) => comment.users)
   comments: Comment[];
 
   @DeleteDateColumn()

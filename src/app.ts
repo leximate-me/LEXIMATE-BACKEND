@@ -1,7 +1,7 @@
 import express, { Application } from 'express';
 import { applyMiddlewares } from './common/middlewares/app.middleware';
 import { authRouter } from './modules/auth/routes/auth.route';
-import { classRouter } from './modules/course/routes/course.route';
+import { courseRouter } from './modules/course/routes/course.route';
 import { toolRouter } from './modules/tool/routes/tool.route';
 import { postRouter } from './modules/post/routes/post.route';
 import { logger } from './common/configs/logger.config';
@@ -26,7 +26,7 @@ export class App {
 
   private setRoutes() {
     this.app.use('/api/auth', authRouter);
-    this.app.use('/api/class', classRouter);
+    this.app.use('/api/class', courseRouter);
     this.app.use('/api/tool', toolRouter);
     this.app.use('/api/post', postRouter);
     this.app.use('/api/seed', seedRouter);

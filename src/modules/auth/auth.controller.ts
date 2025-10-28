@@ -42,11 +42,6 @@ export class AuthController {
     try {
       const token = req.cookies.token as string;
 
-      if (!token) {
-        res.status(400).json({ error: ['Token no proporcionado'] });
-        return;
-      }
-
       const decoded = await this.authService.verifyToken(token);
 
       logger.info(decoded, 'Token verificado');
@@ -61,11 +56,6 @@ export class AuthController {
     try {
       const userId = req.user?.id;
 
-      if (!userId) {
-        res.status(400).json({ error: ['Usuario no encontrado'] });
-        return;
-      }
-
       const existingUser = await this.authService.getProfileUser(userId);
 
       res.status(200).json(existingUser);
@@ -77,11 +67,6 @@ export class AuthController {
   async delete(req: Request, res: Response, next: NextFunction) {
     try {
       const userId = req.user?.id;
-
-      if (!userId) {
-        res.status(400).json({ error: ['Usuario no encontrado'] });
-        return;
-      }
 
       const response = await this.authService.deleteUser(userId);
 
@@ -114,14 +99,7 @@ export class AuthController {
     try {
       const userId = req.user?.id;
 
-      if (!userId) {
-        res.status(400).json({ error: ['Usuario no encontrado'] });
-        return;
-      }
-
       const response = await this.authService.sendEmailVerification(userId);
-
-      logger.child({ response }).info('Email de verificación enviado');
 
       res.status(200).json(response);
     } catch (error) {
@@ -133,14 +111,7 @@ export class AuthController {
     try {
       const token = req.query.token as string;
 
-      if (!token) {
-        res.status(400).json({ error: ['Token no proporcionado'] });
-        return;
-      }
-
       const response = await this.authService.verifyEmail(token);
-
-      logger.child({ response }).info('Email verificado');
 
       res.redirect(`${EnvConfiguration().frontendUrl}`);
     } catch (error) {

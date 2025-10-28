@@ -1,75 +1,61 @@
 import { AppDataSource } from '../../database/db';
 import { User } from '../user/entities';
-
 import { Course } from '../course/entities/course.entity';
 import { Post } from './entities/post.entity';
+import { HttpError } from '../../common/libs/http-error';
 
 export class PostService {
+  private readonly classRepo = AppDataSource.getRepository(Course);
+  private readonly userRepo = AppDataSource.getRepository(User);
+  private readonly postRepo = AppDataSource.getRepository(Post);
+
   async create(postData: Partial<Post>, classId: string, userId: string) {
-    const queryRunner = AppDataSource.createQueryRunner();
-    await queryRunner.connect();
-    await queryRunner.startTransaction();
-
-    try {
-      const classRepo = queryRunner.manager.getRepository(Course);
-      const userRepo = queryRunner.manager.getRepository(User);
-      const postRepo = queryRunner.manager.getRepository(Post);
-
-      const existingClass = await classRepo.findOne({
-        where: { id: classId },
-        relations: ['users'],
-      });
-      if (!existingClass) throw new Error('Clase no encontrada');
-
-      const foundUser = await userRepo.findOne({
-        where: { id: userId },
-        relations: ['courses'],
-      });
-      if (!foundUser) throw new Error('Usuario no encontrado');
-
-      const isInClass = foundUser.courses.some((c) => c.id === classId);
-      if (!isInClass) throw new Error('El usuario no pertenece a la clase');
-
-      const post = postRepo.create({
-        title: postData.title,
-        content: postData.content,
-        class: existingClass,
-        user: foundUser,
-      });
-      await queryRunner.manager.save(post);
-
-      await queryRunner.commitTransaction();
-      return post;
-    } catch (error) {
-      await queryRunner.rollbackTransaction();
-      throw error;
-    } finally {
-      await queryRunner.release();
-    }
-  }
-
-  async readAll(classId: string, userId: string) {
-    const classRepo = AppDataSource.getRepository(Course);
-    const userRepo = AppDataSource.getRepository(User);
-    const postRepo = AppDataSource.getRepository(Post);
-
-    const existingClass = await classRepo.findOne({
+    const existingClass = await this.classRepo.findOne({
       where: { id: classId },
       relations: ['users'],
     });
-    if (!existingClass) throw new Error('Clase no encontrada');
+    if (!existingClass) throw HttpError.notFound('Clase no encontrada');
 
-    const foundUser = await userRepo.findOne({
+    const foundUser = await this.userRepo.findOne({
       where: { id: userId },
       relations: ['courses'],
     });
-    if (!foundUser) throw new Error('Usuario no encontrado');
+    if (!foundUser) throw HttpError.notFound('Usuario no encontrado');
 
     const isInClass = foundUser.courses.some((c) => c.id === classId);
-    if (!isInClass) throw new Error('El usuario no pertenece a la clase');
+    if (!isInClass)
+      throw HttpError.forbidden('El usuario no pertenece a la clase');
 
-    const posts = await postRepo.find({
-      where: { class: { id: classId } },
+    const post = this.postRepo.create({
+      title: postData.title,
+      content: postData.content,
+      course: existingClass,
+      user: foundUser,
+    });
+    await this.postRepo.save(post);
+
+    return post;
+  }
+
+  async readAll(classId: string, userId: string) {
+    const existingClass = await this.classRepo.findOne({
+      where: { id: classId },
+      relations: ['users'],
+    });
+    if (!existingClass) throw HttpError.notFound('Clase no encontrada');
+
+    const foundUser = await this.userRepo.findOne({
+      where: { id: userId },
+      relations: ['courses'],
+    });
+    if (!foundUser) throw HttpError.notFound('Usuario no encontrado');
+
+    const isInClass = foundUser.courses.some((c) => c.id === classId);
+    if (!isInClass)
+      throw HttpError.forbidden('El usuario no pertenece a la clase');
+
+    const posts = await this.postRepo.find({
+      where: { course: { id: classId } },
       relations: ['user', 'user.people', 'class'],
     });
 
@@ -77,31 +63,28 @@ export class PostService {
   }
 
   async readOne(userId: string, classId: string, postId: string) {
-    const classRepo = AppDataSource.getRepository(Course);
-    const userRepo = AppDataSource.getRepository(User);
-    const postRepo = AppDataSource.getRepository(Post);
-
-    const existingClass = await classRepo.findOne({
+    const existingClass = await this.classRepo.findOne({
       where: { id: classId },
       relations: ['users'],
     });
-    if (!existingClass) throw new Error('Clase no encontrada');
+    if (!existingClass) throw HttpError.notFound('Clase no encontrada');
 
-    const foundUser = await userRepo.findOne({
+    const foundUser = await this.userRepo.findOne({
       where: { id: userId },
       relations: ['courses'],
     });
-    if (!foundUser) throw new Error('Usuario no encontrado');
+    if (!foundUser) throw HttpError.notFound('Usuario no encontrado');
 
     const isInClass = foundUser.courses.some((c) => c.id === classId);
-    if (!isInClass) throw new Error('El usuario no pertenece a la clase');
+    if (!isInClass)
+      throw HttpError.forbidden('El usuario no pertenece a la clase');
 
-    const post = await postRepo.findOne({
-      where: { id: postId, class: { id: classId } },
+    const post = await this.postRepo.findOne({
+      where: { id: postId, course: { id: classId } },
       relations: ['user', 'user.people', 'class'],
     });
 
-    if (!post) throw new Error('Publicación no encontrada');
+    if (!post) throw HttpError.notFound('Publicación no encontrada');
 
     return post;
   }
@@ -112,89 +95,59 @@ export class PostService {
     classId: string,
     userId: string
   ) {
-    const queryRunner = AppDataSource.createQueryRunner();
-    await queryRunner.connect();
-    await queryRunner.startTransaction();
+    const existingClass = await this.classRepo.findOne({
+      where: { id: classId },
+      relations: ['users'],
+    });
+    if (!existingClass) throw HttpError.notFound('Clase no encontrada');
 
-    try {
-      const classRepo = queryRunner.manager.getRepository(Course);
-      const userRepo = queryRunner.manager.getRepository(User);
-      const postRepo = queryRunner.manager.getRepository(Post);
+    const foundUser = await this.userRepo.findOne({
+      where: { id: userId },
+      relations: ['courses'],
+    });
+    if (!foundUser) throw HttpError.notFound('Usuario no encontrado');
 
-      const existingClass = await classRepo.findOne({
-        where: { id: classId },
-        relations: ['users'],
-      });
-      if (!existingClass) throw new Error('Clase no encontrada');
+    const isInClass = foundUser.courses.some((c) => c.id === classId);
+    if (!isInClass)
+      throw HttpError.forbidden('El usuario no pertenece a la clase');
 
-      const foundUser = await userRepo.findOne({
-        where: { id: userId },
-        relations: ['courses'],
-      });
-      if (!foundUser) throw new Error('Usuario no encontrado');
+    const post = await this.postRepo.findOne({
+      where: { id: postId, course: { id: classId }, user: { id: userId } },
+    });
+    if (!post) throw HttpError.notFound('Publicación no encontrada');
 
-      const isInClass = foundUser.courses.some((c) => c.id === classId);
-      if (!isInClass) throw new Error('El usuario no pertenece a la clase');
+    if (postData.title) post.title = postData.title;
+    if (postData.content) post.content = postData.content;
 
-      const post = await postRepo.findOne({
-        where: { id: postId, class: { id: classId }, user: { id: userId } },
-      });
-      if (!post) throw new Error('Publicación no encontrada');
+    await this.postRepo.save(post);
 
-      if (postData.title) post.title = postData.title;
-      if (postData.content) post.content = postData.content;
-
-      await queryRunner.manager.save(post);
-
-      await queryRunner.commitTransaction();
-      return post;
-    } catch (error) {
-      await queryRunner.rollbackTransaction();
-      throw error;
-    } finally {
-      await queryRunner.release();
-    }
+    return post;
   }
 
   async delete(postId: string, classId: string, userId: string) {
-    const queryRunner = AppDataSource.createQueryRunner();
-    await queryRunner.connect();
-    await queryRunner.startTransaction();
+    const existingClass = await this.classRepo.findOne({
+      where: { id: classId },
+      relations: ['users'],
+    });
+    if (!existingClass) throw HttpError.notFound('Clase no encontrada');
 
-    try {
-      const classRepo = queryRunner.manager.getRepository(Course);
-      const userRepo = queryRunner.manager.getRepository(User);
-      const postRepo = queryRunner.manager.getRepository(Post);
+    const foundUser = await this.userRepo.findOne({
+      where: { id: userId },
+      relations: ['courses'],
+    });
+    if (!foundUser) throw HttpError.notFound('Usuario no encontrado');
 
-      const existingClass = await classRepo.findOne({
-        where: { id: classId },
-        relations: ['users'],
-      });
-      if (!existingClass) throw new Error('Clase no encontrada');
+    const isInClass = foundUser.courses.some((c) => c.id === classId);
+    if (!isInClass)
+      throw HttpError.forbidden('El usuario no pertenece a la clase');
 
-      const foundUser = await userRepo.findOne({
-        where: { id: userId },
-        relations: ['courses'],
-      });
-      if (!foundUser) throw new Error('Usuario no encontrado');
+    const post = await this.postRepo.findOne({
+      where: { id: postId, course: { id: classId } },
+    });
+    if (!post) throw HttpError.notFound('Publicación no encontrada');
 
-      const isInClass = foundUser.courses.some((c) => c.id === classId);
-      if (!isInClass) throw new Error('El usuario no pertenece a la clase');
+    await this.postRepo.remove(post);
 
-      const post = await postRepo.findOne({
-        where: { id: postId, class: { id: classId } },
-      });
-      if (!post) throw new Error('Publicación no encontrada');
-
-      await queryRunner.manager.remove(post);
-
-      await queryRunner.commitTransaction();
-      return { message: 'Publicación eliminada correctamente' };
-    } catch (error) {
-      await queryRunner.rollbackTransaction();
-      throw error;
-    } finally {
-      await queryRunner.release();
-    }
+    return { message: 'Publicación eliminada correctamente' };
   }
 }
