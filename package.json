@@ -7,8 +7,7 @@
   "scripts": {
     "build": "rimraf ./dist && tsc",
     "dev": "nodemon",
-    "start": "node dist/index.js",
-    "pull-keys": "node downloadEnv.js"
+    "start": "node dist/index.js"
   },
   "keywords": [],
   "author": "",
@@ -52,6 +51,7 @@
     "@types/node": "^24.9.1",
     "nodemon": "^3.1.7",
     "pino": "^10.1.0",
+    "pino-colada": "^2.2.2",
     "pino-http": "^11.0.0",
     "pino-pretty": "^13.1.2",
     "rimraf": "^6.0.1",

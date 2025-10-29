@@ -19,6 +19,7 @@ export const connectDB = async () => {
   try {
     await AppDataSource.initialize();
     logger.info('Conexión establecida correctamente con la base de datos.');
+
     return AppDataSource;
   } catch (error) {
     logger.error(`Error al conectar con la base de datos: ${String(error)}`);
