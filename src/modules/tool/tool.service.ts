@@ -103,7 +103,7 @@ export class ToolService {
       );
     });
 
-    const response = await fetch(EnvConfiguration().n8nRagTestUrl, {
+    const response = await fetch(EnvConfiguration().n8nRagProdUrl, {
       method: 'POST',
       headers: {
         Authorization: `Bearer ${token}`,
