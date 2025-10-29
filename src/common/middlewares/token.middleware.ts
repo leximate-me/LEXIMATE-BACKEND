@@ -11,7 +11,7 @@ const authRequired = async (
   next: NextFunction
 ): Promise<void> => {
   try {
-    const token = req.cookies.token;
+    const token = req.cookies.token || req.headers.authorization?.split(' ')[1];
 
     if (!token) {
       throw new HttpError(401, 'Token no proporcionado');

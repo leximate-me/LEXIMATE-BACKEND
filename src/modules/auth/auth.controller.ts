@@ -16,7 +16,7 @@ export class AuthController {
         sameSite: 'none',
       });
 
-      res.status(201).json(newUser);
+      res.status(201).json({ newUser, token });
     } catch (error) {
       next(error);
     }
@@ -32,7 +32,7 @@ export class AuthController {
         sameSite: 'none',
       });
 
-      res.status(200).json(user);
+      res.status(200).json({ user, token });
     } catch (error) {
       next(error);
     }
@@ -40,7 +40,8 @@ export class AuthController {
 
   async verifyToken(req: Request, res: Response, next: NextFunction) {
     try {
-      const token = req.cookies.token as string;
+      const token =
+        req.cookies.token || req.headers.authorization?.split(' ')[1];
 
       logger.info(token);
 

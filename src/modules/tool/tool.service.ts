@@ -97,16 +97,15 @@ export class ToolService {
 
     files.forEach((file) => {
       formData.append(
-        'files',
+        'file',
         new Blob([new Uint8Array(file.buffer)]),
         file.originalname
       );
     });
 
-    const response = await fetch(EnvConfiguration().n8nRagProdUrl, {
+    const response = await fetch(EnvConfiguration().n8nRagTestUrl, {
       method: 'POST',
       headers: {
-        'content-type': 'application/json',
         Authorization: `Bearer ${token}`,
       },
       body: formData,
@@ -114,6 +113,7 @@ export class ToolService {
     if (!response) {
       throw HttpError.internalServerError('No response from chatbot service');
     }
+    console.log(response);
 
     logger.info('Archivos enviados al chatbot RAG');
 
