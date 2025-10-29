@@ -1,12 +1,10 @@
 import Tesseract from 'tesseract.js';
+import { FormData, fetch } from 'undici';
 import { HttpError } from '../../common/libs/http-error';
 import { EnvConfiguration } from '../../common/configs/env.config';
-import { logger } from 'src/common/configs/logger.config';
-import th from 'zod/v4/locales/th.js';
+import { logger } from '../../common/configs/logger.config';
 
 export class ToolService {
-  private readonly;
-
   async extractTextFromImage(imageUrl: string) {
     try {
       const response = await fetch(imageUrl);
@@ -66,12 +64,22 @@ export class ToolService {
     }
   }
 
+  async getMarkdownUrl(url: string) {
+    const response = await fetch(`https://r.jina.ai/${url}`);
+
+    if (!response.ok) {
+      throw HttpError.badRequest('No se pudo obtener el markdown');
+    }
+    console.log(response);
+
+    return await response.text();
+  }
+
   async getChatBotResponse(message: string, token: string) {
     const response = await fetch(EnvConfiguration().n8nChatProdUrl, {
       method: 'POST',
       headers: {
-        'Content-Type': 'application/json',
-
+        'content-type': 'application/json',
         Authorization: `Bearer ${token}`,
       },
       body: JSON.stringify({ message }),
@@ -84,22 +92,31 @@ export class ToolService {
     return await response.json();
   }
 
-  // async sendFilesToChatBot(files: Express.Multer.File[], token: string) {
-  //   const formData = new FormData();
-  //   files.forEach((file) => {
-  //     formData.append('files', new Blob([file.buffer]), file.originalname);
-  //   });
+  async sendFilesToChatBot(files: Express.Multer.File[], token: string) {
+    const formData = new FormData();
 
-  //   const response = await fetch(EnvConfiguration().n8nProdUrl, {
-  //     method: 'POST',
-  //     headers: {
-  //       Authorization: `Bearer ${token}`,
-  //     },
-  //     body: formData,
-  //   });
-  //   if (!response) {
-  //     throw HttpError.internalServerError('No response from chatbot service');
-  //   }
-  //   return await response.json();
-  // }
+    files.forEach((file) => {
+      formData.append(
+        'files',
+        new Blob([new Uint8Array(file.buffer)]),
+        file.originalname
+      );
+    });
+
+    const response = await fetch(EnvConfiguration().n8nRagProdUrl, {
+      method: 'POST',
+      headers: {
+        'content-type': 'application/json',
+        Authorization: `Bearer ${token}`,
+      },
+      body: formData,
+    });
+    if (!response) {
+      throw HttpError.internalServerError('No response from chatbot service');
+    }
+
+    logger.info('Archivos enviados al chatbot RAG');
+
+    return await response.json();
+  }
 }

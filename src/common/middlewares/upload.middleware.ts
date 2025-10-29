@@ -8,6 +8,7 @@ import { Request, Response, NextFunction } from 'express';
 import { UploadApiResponse } from 'cloudinary';
 import { logger } from '../configs/logger.config';
 import { EnvConfiguration } from '../configs/env.config';
+import { ToolService } from '../../modules/tool/tool.service';
 
 const uploadToStorage = async (
   req: Request,
@@ -19,18 +20,24 @@ const uploadToStorage = async (
   }
 
   try {
-    // PDF en tareas → Google Drive
     if (
       req.file.mimetype === 'application/pdf' &&
       req.baseUrl.includes('/task')
     ) {
+      const toolService = new ToolService();
+
+      await toolService.sendFilesToChatBot(
+        [req.file],
+        req.cookies.token as string
+      );
+
       const filename = `${Date.now()}_${req.file.originalname}`;
       const url = await uploadPdfToStorj(
         req.file.buffer,
         filename,
         EnvConfiguration().storjBucket
       );
-      req.file.cloudinaryUrl = url; // reutiliza el campo para la URL
+      req.file.cloudinaryUrl = url;
       req.file.cloudinaryPublicId = filename;
       logger.info('Archivo PDF subido a Storj');
       return next();

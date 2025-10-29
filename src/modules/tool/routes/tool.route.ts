@@ -21,4 +21,9 @@ toolRouter.post(
   toolController.chatBotResponse.bind(toolController)
 );
 
+toolRouter.get(
+  '/get-markdown',
+  toolController.getMarkdownUrl.bind(toolController)
+);
+
 export { toolRouter };

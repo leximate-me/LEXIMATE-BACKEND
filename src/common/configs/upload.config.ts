@@ -6,7 +6,7 @@ const storage = multer.memoryStorage();
 
 // Configuración de límites de archivo
 const limits = {
-  fileSize: 10 * 1024 * 1024, // 5 MB
+  fileSize: 25 * 1024 * 1024,
 };
 
 // Filtro de archivos para aceptar solo imágenes
@@ -20,7 +20,6 @@ const fileFilter = (
     'image/png',
     'image/gif',
     'application/pdf',
-    'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
   ];
   if (allowedMimes.includes(file.mimetype)) {
     cb(null, true);
