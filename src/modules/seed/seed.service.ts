@@ -27,6 +27,10 @@ export class SeedService {
   private readonly bcryptAdapter = new BcryptAdapter();
 
   async seedAll() {
+    await AppDataSource.query('DELETE FROM "user_courses_course"');
+    await AppDataSource.query('DELETE FROM "role_permissions_permission"');
+    await AppDataSource.query('DELETE FROM "tasks_tools_tools"');
+
     await this.fileTaskRepository.delete({ id: Not(IsNull()) });
     await this.fileUserRepository.delete({ id: Not(IsNull()) });
     await this.commentRepository.delete({ id: Not(IsNull()) });

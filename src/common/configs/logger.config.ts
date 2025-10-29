@@ -12,12 +12,12 @@ const stream = isDevelopment
       ignore: 'pid,name,v',
       messageKey: 'message',
       messageFormat:
-        '({responseTime}ms) {req.method} {url} <|> {statusCode} {msg}',
-      hideObject: false,
+        '[{levelLabel}] {time} ({responseTime}ms) {req.method} {req.url} <|> {statusCode} {msg} - UA: {user_agent}',
+      hideObject: true,
       customColors: 'info:green,warn:yellow,error:red,debug:magenta',
       customPrettifiers: {
         responseTime: (value) => `${value}ms`,
-        hostname: (value) => `🏷️ ${value}`,
+        levelLabel: (level) => level.toString().toUpperCase(),
       },
     })
   : undefined;
@@ -44,13 +44,8 @@ export const httpLogger = pinoHttp({
     return 'info';
   },
 
-  customSuccessMessage: (req, res) => {
-    if (res.statusCode >= 400) {
-      return `CLIENT ERROR (${res.statusCode}): ${req.method} ${req.url}`;
-    }
-
-    return `SUCCESS (${res.statusCode}): ${req.method} ${req.url}`;
-  },
+  customSuccessMessage: (req, res) =>
+    `SUCCESS (${res.statusCode}): ${req.method} ${req.url}`,
 
   customErrorMessage: (req, res) =>
     `SERVER ERROR (${res.statusCode}): ${req.method} ${req.url}`,
@@ -63,7 +58,9 @@ export const httpLogger = pinoHttp({
     req: (req) => ({
       method: req.method,
       url: req.url,
-      body: req.raw.body,
+    }),
+    res: (res) => ({
+      statusCode: res.statusCode,
     }),
   },
 });

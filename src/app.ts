@@ -36,7 +36,7 @@ export class App {
   }
 
   private settings() {
-    this.app.set('port', this.port || process.env.PORT);
+    this.app.set('port', this.port);
   }
 
   public async listen() {

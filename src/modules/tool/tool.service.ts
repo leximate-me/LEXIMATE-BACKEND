@@ -113,7 +113,6 @@ export class ToolService {
     if (!response) {
       throw HttpError.internalServerError('No response from chatbot service');
     }
-    console.log(response);
 
     logger.info('Archivos enviados al chatbot RAG');
 
