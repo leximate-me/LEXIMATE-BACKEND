@@ -576,6 +576,11 @@
   dependencies:
     "@jridgewell/trace-mapping" "0.3.9"
 
+"@fastify/accept-negotiator@^2.0.0":
+  version "2.0.1"
+  resolved "https://registry.yarnpkg.com/@fastify/accept-negotiator/-/accept-negotiator-2.0.1.tgz#77afd6254ba77f6c22c6f35c4fb0c1b6d005199b"
+  integrity sha512-/c/TW2bO/v9JeEgoD/g1G5GxGeCF1Hafdf79WPmUlgYiBXummY0oX3VVq4yFkKKVBKDNlaDUYoab7g38RpPqCQ==
+
 "@fastify/ajv-compiler@^4.0.0":
   version "4.0.5"
   resolved "https://registry.yarnpkg.com/@fastify/ajv-compiler/-/ajv-compiler-4.0.5.tgz#fdb0887a7af51abaae8c1829e8099d34f8ddd302"
@@ -654,6 +659,29 @@
     "@fastify/forwarded" "^3.0.0"
     ipaddr.js "^2.1.0"
 
+"@fastify/send@^4.0.0":
+  version "4.1.0"
+  resolved "https://registry.yarnpkg.com/@fastify/send/-/send-4.1.0.tgz#d9c283b86e12080c0dcc160bbc16106debf1f0d3"
+  integrity sha512-TMYeQLCBSy2TOFmV95hQWkiTYgC/SEx7vMdV+wnZVX4tt8VBLKzmH8vV9OzJehV0+XBfg+WxPMt5wp+JBUKsVw==
+  dependencies:
+    "@lukeed/ms" "^2.0.2"
+    escape-html "~1.0.3"
+    fast-decode-uri-component "^1.0.1"
+    http-errors "^2.0.0"
+    mime "^3"
+
+"@fastify/static@^8.3.0":
+  version "8.3.0"
+  resolved "https://registry.yarnpkg.com/@fastify/static/-/static-8.3.0.tgz#d0d2bc069015e322b4a372a6481057319de2e5aa"
+  integrity sha512-yKxviR5PH1OKNnisIzZKmgZSus0r2OZb8qCSbqmw34aolT4g3UlzYfeBRym+HJ1J471CR8e2ldNub4PubD1coA==
+  dependencies:
+    "@fastify/accept-negotiator" "^2.0.0"
+    "@fastify/send" "^4.0.0"
+    content-disposition "^0.5.4"
+    fastify-plugin "^5.0.0"
+    fastq "^1.17.1"
+    glob "^11.0.0"
+
 "@isaacs/balanced-match@^4.0.1":
   version "4.0.1"
   resolved "https://registry.npmjs.org/@isaacs/balanced-match/-/balanced-match-4.0.1.tgz"
@@ -695,6 +723,11 @@
   dependencies:
     "@jridgewell/resolve-uri" "^3.0.3"
     "@jridgewell/sourcemap-codec" "^1.4.10"
+
+"@lukeed/ms@^2.0.2":
+  version "2.0.2"
+  resolved "https://registry.yarnpkg.com/@lukeed/ms/-/ms-2.0.2.tgz#07f09e59a74c52f4d88c6db5c1054e819538e2a8"
+  integrity sha512-9I2Zn6+NJLfaGoz9jN3lpwDgAYvfGeNYdbAIjJOqzs4Tpc+VU3Jqq4IofSUBKajiDS8k9fZIg18/z13mpk1bsA==
 
 "@napi-rs/canvas-android-arm64@0.1.80":
   version "0.1.80"
@@ -1904,7 +1937,7 @@ concat-stream@^1.5.2:
     readable-stream "^2.2.2"
     typedarray "^0.0.6"
 
-content-disposition@0.5.4:
+content-disposition@0.5.4, content-disposition@^0.5.4:
   version "0.5.4"
   resolved "https://registry.npmjs.org/content-disposition/-/content-disposition-0.5.4.tgz"
   integrity sha512-FveZTNuGw04cxlAiWbzi6zTAL/lhehaWbTtgluJh4/E95DqMwTmha3KZN1aAWA8cFIhHzMZUvLevkw5Rqk+tSQ==
@@ -2549,7 +2582,7 @@ htmlparser2@^8.0.2:
     domutils "^3.0.1"
     entities "^4.4.0"
 
-http-errors@2.0.0:
+http-errors@2.0.0, http-errors@^2.0.0:
   version "2.0.0"
   resolved "https://registry.npmjs.org/http-errors/-/http-errors-2.0.0.tgz"
   integrity sha512-FtwrG/euBzaEjYeRqOgly7G0qviiXoJWnvEH2Z1plBdXgbyjv34pHTSb9zoeHMyDy33+DWy5Wt9Wo+TURtOYSQ==
@@ -2878,6 +2911,11 @@ mime@1.6.0:
   version "1.6.0"
   resolved "https://registry.npmjs.org/mime/-/mime-1.6.0.tgz"
   integrity sha512-x0Vn8spI+wuJ1O6S7gnbaQg8Pxh4NNHb7KSINmEWKiPE4RKOplvijn+NkmYmmRgP68mc70j2EbeTFRsrswaQeg==
+
+mime@^3:
+  version "3.0.0"
+  resolved "https://registry.yarnpkg.com/mime/-/mime-3.0.0.tgz#b374550dca3a0c18443b0c950a6a58f1931cf7a7"
+  integrity sha512-jSCU7/VB1loIWBZe14aEYHU/+1UMEHoaO7qxCOVJOw9GgH72VAWppxNcjU+x9a2k3GSIBXNKxXQFqRvvZ7vr3A==
 
 minimatch@^10.0.3:
   version "10.0.3"

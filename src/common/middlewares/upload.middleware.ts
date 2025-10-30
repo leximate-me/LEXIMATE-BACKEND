@@ -1,5 +1,5 @@
 import { uploadImage, deleteImage } from '../libs/cloudinary';
-import { uploadPdfToStorj } from '../libs/storj';
+import { uploadPdfToLocal } from '../libs/local-storage'; // 👈 Usa el nuevo adapter
 import { UploadApiResponse } from 'cloudinary';
 import { EnvConfiguration } from '../configs/env.config';
 import { ToolService } from '../../modules/tool/tool.service';
@@ -9,7 +9,6 @@ export const uploadToStorage = async (
   request: FastifyRequest,
   reply: FastifyReply
 ) => {
-  // Si la petición es multipart, procesa campos y archivos
   if (request.isMultipart && request.isMultipart()) {
     const parts = request.parts();
     let fileProps = null;
@@ -17,7 +16,6 @@ export const uploadToStorage = async (
 
     for await (const part of parts) {
       if (part.type === 'file') {
-        // Procesa el archivo
         const buffer = await part.toBuffer();
 
         if (
@@ -36,14 +34,10 @@ export const uploadToStorage = async (
             request.cookies?.token as string
           );
         }
-        // Siempre sube el PDF a Storj (sin convertir a imágenes)
+        // Sube el PDF de forma local usando el adapter
         if (part.mimetype === 'application/pdf') {
           const filename = `${Date.now()}_${part.filename}`;
-          const url = await uploadPdfToStorj(
-            buffer,
-            filename,
-            EnvConfiguration().storjBucket
-          );
+          const url = await uploadPdfToLocal(buffer, filename);
           fileProps = {
             fileUrl: url,
             fileId: filename,
@@ -62,10 +56,8 @@ export const uploadToStorage = async (
         fields[part.fieldname] = part.value;
       }
     }
-    // Sobrescribe el body con los campos extraídos
     (request.body as any) = fields;
   } else {
-    // Si no es multipart, sigue como antes
     const file = await request.file();
     if (!file) return;
 
@@ -89,14 +81,10 @@ export const uploadToStorage = async (
           request.cookies?.token as string
         );
       }
-      // Siempre sube el PDF a Storj (sin convertir a imágenes)
+      // Sube el PDF de forma local usando el adapter
       if (file.mimetype === 'application/pdf') {
         const filename = `${Date.now()}_${file.filename}`;
-        const url = await uploadPdfToStorj(
-          buffer,
-          filename,
-          EnvConfiguration().storjBucket
-        );
+        const url = await uploadPdfToLocal(buffer, filename);
         fileProps = {
           fileUrl: url,
           fileId: filename,
@@ -116,8 +104,4 @@ export const uploadToStorage = async (
       reply.code(500).send({ message: 'Error al subir archivo', error });
     }
   }
-};
-
-export const deleteFromCloudinary = async (publicId: string): Promise<void> => {
-  await deleteImage(publicId);
 };

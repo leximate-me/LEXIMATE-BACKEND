@@ -1,6 +1,5 @@
 import { AppDataSource } from '../../database/db';
 import { In } from 'typeorm';
-import { deleteFromCloudinary } from '../../common/middlewares/upload.middleware';
 import { User } from '../user/entities';
 import { Course } from '../course/entities/course.entity';
 import { Task } from './entities/task.entity';
@@ -188,13 +187,13 @@ export class TaskService {
 
       await this.taskRepository.delete({ id: taskId });
 
-      if (public_id) {
-        try {
-          await deleteFromCloudinary(public_id);
-        } catch (e) {
-          throw HttpError.internalServerError('Error al eliminar la imagen');
-        }
-      }
+      // if (public_id) {
+      //   try {
+      //     await deleteFromCloudinary(public_id);
+      //   } catch (e) {
+      //     throw HttpError.internalServerError('Error al eliminar la imagen');
+      //   }
+      // }
 
       await queryRunner.commitTransaction();
       return public_id;
