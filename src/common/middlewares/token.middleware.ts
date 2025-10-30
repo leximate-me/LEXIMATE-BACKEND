@@ -9,17 +9,9 @@ export const authRequired = async (
   request: FastifyRequest,
   reply: FastifyReply
 ) => {
-  reply.log.info(
-    { url: request.url, cookies: request.cookies, headers: request.headers },
-    'authRequired ejecutado'
-  );
   try {
     const token =
       request.cookies?.token || request.headers.authorization?.split(' ')[1];
-    reply.log.debug(`Token recibido: ${token}`);
-
-    console.log('Headers:', request.headers);
-    console.log('Cookies:', request.cookies);
 
     if (!token) {
       reply.code(401).send({ message: 'Token no proporcionado' });

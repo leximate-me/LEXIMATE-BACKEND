@@ -17,7 +17,7 @@ export class App {
   }
 
   private async applyMiddlewares() {
-    applyMiddlewares(this.app);
+    await applyMiddlewares(this.app);
   }
 
   private async setRoutes() {

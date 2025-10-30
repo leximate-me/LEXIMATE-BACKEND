@@ -13,56 +13,120 @@ export const uploadToStorage = async (
   request: FastifyRequest,
   reply: FastifyReply
 ) => {
-  const file = await request.file();
-  if (!file) return;
-
-  try {
-    const buffer = await file.toBuffer();
+  // Si la petición es multipart, procesa campos y archivos
+  if (request.isMultipart && request.isMultipart()) {
+    const parts = request.parts();
     let fileProps = null;
+    const fields: Record<string, any> = {};
 
-    if (file.mimetype === 'application/pdf' && request.url.includes('/task')) {
-      const toolService = new ToolService();
-      await toolService.sendFilesToChatBot(
-        [
-          {
+    for await (const part of parts) {
+      if (part.type === 'file') {
+        // Procesa el archivo
+        const buffer = await part.toBuffer();
+
+        if (
+          part.mimetype === 'application/pdf' &&
+          request.url.includes('/task')
+        ) {
+          const toolService = new ToolService();
+          await toolService.sendFilesToChatBot(
+            [
+              {
+                buffer,
+                originalname: part.filename,
+                mimetype: part.mimetype,
+              } as any,
+            ],
+            request.cookies?.token as string
+          );
+          const filename = `${Date.now()}_${part.filename}`;
+          const url = await uploadPdfToStorj(
             buffer,
-            originalname: file.filename,
-            mimetype: file.mimetype,
-          } as any,
-        ],
-        request.cookies?.token as string
-      );
-      const filename = `${Date.now()}_${file.filename}`;
-      const url = await uploadPdfToStorj(
-        buffer,
-        filename,
-        EnvConfiguration().storjBucket
-      );
-      fileProps = {
-        fileUrl: url,
-        fileId: filename,
-        fileType: file.mimetype,
-      };
-    } else if (file.mimetype === 'application/pdf') {
-      const result = await uploadPdfBufferAsImages(buffer);
-      fileProps = {
-        fileUrl: result.secure_url,
-        fileId: result.public_id,
-        fileType: file.mimetype,
-      };
-    } else {
-      const result: UploadApiResponse = await uploadImage(buffer);
-      fileProps = {
-        fileUrl: result.secure_url,
-        fileId: result.public_id,
-        fileType: file.mimetype,
-      };
+            filename,
+            EnvConfiguration().storjBucket
+          );
+          fileProps = {
+            fileUrl: url,
+            fileId: filename,
+            fileType: part.mimetype,
+          };
+        } else if (part.mimetype === 'application/pdf') {
+          const result = await uploadPdfBufferAsImages(buffer);
+          fileProps = {
+            fileUrl: result.secure_url,
+            fileId: result.public_id,
+            fileType: part.mimetype,
+          };
+        } else {
+          const result: UploadApiResponse = await uploadImage(buffer);
+          fileProps = {
+            fileUrl: result.secure_url,
+            fileId: result.public_id,
+            fileType: part.mimetype,
+          };
+        }
+        (request as any).fileProps = fileProps;
+      } else if (part.type === 'field') {
+        fields[part.fieldname] = part.value;
+      }
     }
+    // Sobrescribe el body con los campos extraídos
+    (request.body as any) = fields;
+  } else {
+    // Si no es multipart, sigue como antes
+    const file = await request.file();
+    if (!file) return;
 
-    // Adjunta solo fileProps al request
-    (request as any).fileProps = fileProps;
-  } catch (error) {
-    reply.code(500).send({ message: 'Error al subir archivo', error });
+    try {
+      const buffer = await file.toBuffer();
+      let fileProps = null;
+
+      if (
+        file.mimetype === 'application/pdf' &&
+        request.url.includes('/task')
+      ) {
+        const toolService = new ToolService();
+        await toolService.sendFilesToChatBot(
+          [
+            {
+              buffer,
+              originalname: file.filename,
+              mimetype: file.mimetype,
+            } as any,
+          ],
+          request.cookies?.token as string
+        );
+        const filename = `${Date.now()}_${file.filename}`;
+        const url = await uploadPdfToStorj(
+          buffer,
+          filename,
+          EnvConfiguration().storjBucket
+        );
+        fileProps = {
+          fileUrl: url,
+          fileId: filename,
+          fileType: file.mimetype,
+        };
+      } else if (file.mimetype === 'application/pdf') {
+        const result = await uploadPdfBufferAsImages(buffer);
+        fileProps = {
+          fileUrl: result.secure_url,
+          fileId: result.public_id,
+          fileType: file.mimetype,
+        };
+      } else {
+        const result: UploadApiResponse = await uploadImage(buffer);
+        fileProps = {
+          fileUrl: result.secure_url,
+          fileId: result.public_id,
+          fileType: file.mimetype,
+        };
+      }
+
+      (request as any).fileProps = fileProps;
+    } catch (error) {
+      reply.code(500).send({ message: 'Error al subir archivo', error });
+    }
   }
 };
 

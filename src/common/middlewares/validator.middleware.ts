@@ -22,6 +22,10 @@ function extractValidationFields(
 
 export function validateDto(DtoClass: any) {
   return async (request: FastifyRequest, reply: FastifyReply) => {
+    if (!request.body) {
+      reply.code(400).send({ message: 'No se recibió body en la petición.' });
+      return;
+    }
     const dto: object = plainToInstance(DtoClass, request.body);
     const errors = await validate(dto);
     if (errors.length > 0) {
@@ -29,7 +33,6 @@ export function validateDto(DtoClass: any) {
       reply.code(400).send({ message: 'Validación fallida', fields });
       return;
     }
-    // Sobrescribe el body con la instancia validada
     (request.body as any) = dto;
   };
 }

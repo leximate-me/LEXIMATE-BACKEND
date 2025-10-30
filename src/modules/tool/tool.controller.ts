@@ -1,59 +1,55 @@
-import { logger } from '../../common/configs/logger.config';
-import { NextFunction, Request, Response } from 'express';
+import { FastifyRequest, FastifyReply } from 'fastify';
 import { ToolService } from './tool.service';
 
 export class ToolController {
   private toolService: ToolService = new ToolService();
 
-  async extractTextFromFile(req: Request, res: Response, next: NextFunction) {
+  async extractTextFromFile(request: FastifyRequest, reply: FastifyReply) {
     try {
-      const imageUrl = req.query.imageUrl as string;
-
+      const imageUrl = (request.query as any).imageUrl as string;
       const text = await this.toolService.extractTextFromImage(imageUrl);
-
-      res.status(200).json(text);
+      reply.code(200).send(text);
     } catch (error) {
-      next(error);
+      reply.code(500).send({ error: 'Error al extraer texto', details: error });
     }
   }
 
-  async chatBotResponse(req: Request, res: Response, next: NextFunction) {
+  async chatBotResponse(request: FastifyRequest, reply: FastifyReply) {
     try {
-      const { message } = req.body;
-
-      const token = req.cookies.token as string;
-
+      const { message } = request.body as any;
+      const token = request.cookies?.token as string;
       const response = await this.toolService.getChatBotResponse(
         message,
         token
       );
-
-      res.status(200).json({ response });
+      reply.code(200).send({ response });
     } catch (error) {
-      next(error);
+      reply.code(500).send({ error: 'Error en chatbot', details: error });
     }
   }
 
-  async getMarkdownUrl(req: Request, res: Response, next: NextFunction) {
+  async getMarkdownUrl(request: FastifyRequest, reply: FastifyReply) {
     try {
-      const url = req.query.url as string;
+      const url = (request.query as any).url as string;
       const markdown = await this.toolService.getMarkdownUrl(url);
-
-      res.status(200).json({ markdown });
+      reply.code(200).send({ markdown });
     } catch (error) {
-      next(error);
+      reply
+        .code(500)
+        .send({ error: 'Error al obtener markdown', details: error });
     }
   }
 
-  // async sendFilesToChatBot(req: Request, res: Response, next: NextFunction) {
+  // Si necesitas manejar archivos, puedes adaptar el método comentado así:
+  // async sendFilesToChatBot(request: FastifyRequest, reply: FastifyReply) {
   //   try {
-  //     const files = req.files as Express.Multer.File[];
-  //     const token = req.cookies.token as string;
-
+  //     // Maneja archivos con request.parts() o request.file()
+  //     const token = request.cookies?.token as string;
+  //     // const files = ... // extrae archivos según tu lógica
   //     const response = await this.toolService.sendFilesToChatBot(files, token);
-  //     res.status(200).json({ response });
+  //     reply.code(200).send({ response });
   //   } catch (error) {
-  //     next(error);
+  //     reply.code(500).send({ error: 'Error enviando archivos', details: error });
   //   }
   // }
 }

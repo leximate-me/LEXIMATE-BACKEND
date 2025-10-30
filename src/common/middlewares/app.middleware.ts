@@ -11,5 +11,9 @@ export async function applyMiddlewares(app: FastifyInstance) {
     credentials: true,
   });
   await app.register(cookie);
-  await app.register(multipart);
+  await app.register(multipart, {
+    limits: {
+      fileSize: 20 * 1024 * 1024, // 20 MB
+    },
+  });
 }
