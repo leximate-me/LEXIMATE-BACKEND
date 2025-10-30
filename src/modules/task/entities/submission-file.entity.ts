@@ -5,12 +5,12 @@ import {
   ManyToOne,
   DeleteDateColumn,
 } from 'typeorm';
-import { Task } from './task.entity';
+import { TaskSubmission } from './task-submission.entity';
 
-@Entity('files_tasks')
-export class FileTask {
+@Entity()
+export class SubmissionFile {
   @PrimaryGeneratedColumn('uuid')
-  id: number;
+  id: string;
 
   @Column({ length: 100 })
   file_id: string;
@@ -21,8 +21,8 @@ export class FileTask {
   @Column({ length: 50 })
   file_type: string;
 
-  @ManyToOne(() => Task, (task) => task.fileTasks)
-  task: Task;
+  @ManyToOne(() => TaskSubmission, (submission) => submission.files)
+  submission: TaskSubmission;
 
   @DeleteDateColumn()
   deletedAt?: Date;

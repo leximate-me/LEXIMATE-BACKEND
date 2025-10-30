@@ -6,8 +6,8 @@ import { Permission } from '../user/entities/permission.entity';
 import { Course } from '../course/entities/course.entity';
 import { Post } from '../post/entities/post.entity';
 import { Task } from '../task/entities/task.entity';
-import { FileUser } from '../user/entities';
-import { FileTask } from '../task/entities/fileTask.entity';
+import { UserFile } from '../user/entities';
+import { TaskFile } from '../task/entities/task-file.entity';
 import { Comment } from '../comment/entities/comment.entity';
 import { BcryptAdapter } from '../../common/adapters/hash.adapter';
 import { Not, IsNull } from 'typeorm';
@@ -22,14 +22,13 @@ export class SeedService {
   private readonly postRepository = AppDataSource.getRepository(Post);
   private readonly commentRepository = AppDataSource.getRepository(Comment);
   private readonly taskRepository = AppDataSource.getRepository(Task);
-  private readonly fileUserRepository = AppDataSource.getRepository(FileUser);
-  private readonly fileTaskRepository = AppDataSource.getRepository(FileTask);
+  private readonly fileUserRepository = AppDataSource.getRepository(UserFile);
+  private readonly fileTaskRepository = AppDataSource.getRepository(TaskFile);
   private readonly bcryptAdapter = new BcryptAdapter();
 
   async seedAll() {
     await AppDataSource.query('DELETE FROM "user_courses_course"');
     await AppDataSource.query('DELETE FROM "role_permissions_permission"');
-    await AppDataSource.query('DELETE FROM "tasks_tools_tools"');
 
     await this.fileTaskRepository.delete({ id: Not(IsNull()) });
     await this.fileUserRepository.delete({ id: Not(IsNull()) });

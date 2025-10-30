@@ -4,17 +4,25 @@ import { deleteFromCloudinary } from '../../common/middlewares/upload.middleware
 import { User } from '../user/entities';
 import { Course } from '../course/entities/course.entity';
 import { Task } from './entities/task.entity';
-import { FileTask } from './entities/fileTask.entity';
+import { TaskFile } from './entities/task-file.entity';
 import { HttpError } from '../../common/libs/http-error';
 import { CreateTaskDto } from './dtos/create-task.dto';
 import { UpdateTaskDto } from './dtos/update-task.dto';
 import { FileProps } from '../../common/interfaces/file-props';
+import { TaskSubmission } from './entities/task-submission.entity';
+import { SubmissionFile } from './entities/submission-file.entity';
+import { CreateTaskSubmissionDto } from './dtos/create-task-submission';
+import { UpdateTaskSubmissionDto } from './dtos/update-task-submission';
 
 export class TaskService {
   private readonly userRepository = AppDataSource.getRepository(User);
   private readonly courseRepository = AppDataSource.getRepository(Course);
   private readonly taskRepository = AppDataSource.getRepository(Task);
-  private readonly fileTaskRepository = AppDataSource.getRepository(FileTask);
+  private readonly fileTaskRepository = AppDataSource.getRepository(TaskFile);
+  private readonly submissionRepository =
+    AppDataSource.getRepository(TaskSubmission);
+  private readonly submissionFileRepository =
+    AppDataSource.getRepository(SubmissionFile);
 
   async create(
     courseId: string,
@@ -262,5 +270,90 @@ export class TaskService {
       ...task,
       files,
     };
+  }
+
+  async createSubmission(
+    taskId: string,
+    userId: string,
+    submissionDto: CreateTaskSubmissionDto,
+    fileProps?: any
+  ) {
+    const task = await this.taskRepository.findOne({ where: { id: taskId } });
+    if (!task) throw HttpError.notFound('Tarea no encontrada');
+
+    const user = await this.userRepository.findOne({ where: { id: userId } });
+    if (!user) throw HttpError.notFound('Usuario no encontrado');
+
+    const submission = this.submissionRepository.create({
+      task,
+      user,
+      comment: submissionDto.comment,
+      status: submissionDto.status,
+      qualification: submissionDto.qualification,
+    });
+
+    await this.submissionRepository.save(submission);
+
+    // Si hay archivos, los guarda
+    if (fileProps) {
+      const { fileUrl, fileId, fileType } = fileProps;
+      const submissionFile = this.submissionFileRepository.create({
+        file_url: fileUrl,
+        file_id: fileId,
+        file_type: fileType,
+        submission,
+      });
+      await this.submissionFileRepository.save(submissionFile);
+    }
+
+    return submission;
+  }
+
+  async getSubmissionsByTask(taskId: string) {
+    return this.submissionRepository.find({
+      where: { task: { id: taskId } },
+      relations: ['user', 'files'],
+    });
+  }
+
+  async updateSubmission(
+    submissionId: string,
+    userId: string,
+    updateDto: UpdateTaskSubmissionDto
+  ) {
+    const submission = await this.submissionRepository.findOne({
+      where: { id: submissionId },
+      relations: ['user'],
+    });
+    if (!submission) throw HttpError.notFound('Entrega no encontrada');
+
+    // Solo el dueño puede actualizar
+    if (submission.user.id !== userId) {
+      throw HttpError.forbidden('No puedes actualizar esta entrega');
+    }
+
+    if (updateDto.comment !== undefined) submission.comment = updateDto.comment;
+    if (updateDto.status !== undefined) submission.status = updateDto.status;
+    if (updateDto.qualification !== undefined)
+      submission.qualification = updateDto.qualification;
+
+    await this.submissionRepository.save(submission);
+    return submission;
+  }
+
+  async deleteSubmission(submissionId: string, userId: string) {
+    const submission = await this.submissionRepository.findOne({
+      where: { id: submissionId },
+      relations: ['user'],
+    });
+    if (!submission) throw HttpError.notFound('Entrega no encontrada');
+
+    // Solo el dueño puede eliminar
+    if (submission.user.id !== userId) {
+      throw HttpError.forbidden('No puedes eliminar esta entrega');
+    }
+
+    await this.submissionRepository.delete({ id: submissionId });
+    return { message: 'Entrega eliminada correctamente' };
   }
 }

@@ -3,7 +3,7 @@ import { createAccessToken } from '../../common/libs/jwt';
 import { EnvConfiguration } from '../../common/configs/env.config';
 import { resend } from '../../common/libs/resend';
 import { AppDataSource } from '../../database/db';
-import { User, People, Role, FileUser } from '../user/entities';
+import { User, People, Role, UserFile } from '../user/entities';
 import { uploadImage } from '../../common/libs/cloudinary';
 import { UserService } from '../user/user.service';
 import { RegisterAuthDto } from './dtos/register-auth.dto';
@@ -15,7 +15,7 @@ import { UpdateUserDto } from '../user/dtos/update-user.dto';
 
 export class AuthService {
   private readonly userService: UserService = new UserService();
-  private readonly fileUserRepository = AppDataSource.getRepository(FileUser);
+  private readonly fileUserRepository = AppDataSource.getRepository(UserFile);
   private readonly userRepository = AppDataSource.getRepository(User);
   private readonly bcryptAdapter = new BcryptAdapter();
 

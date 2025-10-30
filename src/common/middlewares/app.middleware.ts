@@ -15,5 +15,6 @@ export async function applyMiddlewares(app: FastifyInstance) {
     limits: {
       fileSize: 20 * 1024 * 1024, // 20 MB
     },
+    attachFieldsToBody: false,
   });
 }

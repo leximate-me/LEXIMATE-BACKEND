@@ -1,8 +1,4 @@
-import {
-  uploadImage,
-  deleteImage,
-  uploadPdfBufferAsImages,
-} from '../libs/cloudinary';
+import { uploadImage, deleteImage } from '../libs/cloudinary';
 import { uploadPdfToStorj } from '../libs/storj';
 import { UploadApiResponse } from 'cloudinary';
 import { EnvConfiguration } from '../configs/env.config';
@@ -39,6 +35,9 @@ export const uploadToStorage = async (
             ],
             request.cookies?.token as string
           );
+        }
+        // Siempre sube el PDF a Storj (sin convertir a imágenes)
+        if (part.mimetype === 'application/pdf') {
           const filename = `${Date.now()}_${part.filename}`;
           const url = await uploadPdfToStorj(
             buffer,
@@ -48,13 +47,6 @@ export const uploadToStorage = async (
           fileProps = {
             fileUrl: url,
             fileId: filename,
-            fileType: part.mimetype,
-          };
-        } else if (part.mimetype === 'application/pdf') {
-          const result = await uploadPdfBufferAsImages(buffer);
-          fileProps = {
-            fileUrl: result.secure_url,
-            fileId: result.public_id,
             fileType: part.mimetype,
           };
         } else {
@@ -96,6 +88,9 @@ export const uploadToStorage = async (
           ],
           request.cookies?.token as string
         );
+      }
+      // Siempre sube el PDF a Storj (sin convertir a imágenes)
+      if (file.mimetype === 'application/pdf') {
         const filename = `${Date.now()}_${file.filename}`;
         const url = await uploadPdfToStorj(
           buffer,
@@ -105,13 +100,6 @@ export const uploadToStorage = async (
         fileProps = {
           fileUrl: url,
           fileId: filename,
-          fileType: file.mimetype,
-        };
-      } else if (file.mimetype === 'application/pdf') {
-        const result = await uploadPdfBufferAsImages(buffer);
-        fileProps = {
-          fileUrl: result.secure_url,
-          fileId: result.public_id,
           fileType: file.mimetype,
         };
       } else {

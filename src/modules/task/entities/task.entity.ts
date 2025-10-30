@@ -9,11 +9,11 @@ import {
   JoinTable,
 } from 'typeorm';
 
-import { FileTask } from './fileTask.entity';
+import { TaskFile } from './task-file.entity';
 import { Course } from '../../course/entities/course.entity';
-import { Tool } from '../../tool/entities/tool.entity';
+import { TaskSubmission } from './task-submission.entity';
 
-@Entity('tasks')
+@Entity()
 export class Task {
   @PrimaryGeneratedColumn('uuid')
   id: string;
@@ -36,15 +36,14 @@ export class Task {
   @ManyToOne(() => Course, (classEntity) => classEntity.tasks)
   course: Course;
 
-  @OneToMany(() => FileTask, (fileTask) => fileTask.task, {
+  @OneToMany(() => TaskFile, (taskFile) => taskFile.task, {
     eager: true,
     onDelete: 'CASCADE',
   })
-  fileTasks: FileTask[];
+  taskFiles: TaskFile[];
 
-  @ManyToMany(() => Tool, (tool) => tool.tasks)
-  @JoinTable()
-  tools: Tool[];
+  @OneToMany(() => TaskSubmission, (submission) => submission.task)
+  submissions: TaskSubmission[];
 
   @DeleteDateColumn()
   deletedAt?: Date;

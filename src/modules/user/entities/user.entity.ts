@@ -14,7 +14,8 @@ import { Post } from '../../post/entities/post.entity';
 import { Comment } from '../../comment/entities/comment.entity';
 import { People } from './people.entity';
 import { Role } from './role.entity';
-import { FileUser } from './fileUser.entity';
+import { UserFile } from './user-file.entity';
+import { TaskSubmission } from '../../task/entities/task-submission.entity';
 
 @Entity()
 export class User {
@@ -46,8 +47,11 @@ export class User {
   @JoinTable()
   courses: Course[];
 
-  @OneToMany(() => FileUser, (fileUser) => fileUser.user, { eager: true })
-  fileUsers: FileUser[];
+  @OneToMany(() => TaskSubmission, (submission) => submission.user)
+  taskSubmissions: TaskSubmission[];
+
+  @OneToMany(() => UserFile, (userFile) => userFile.user, { eager: true })
+  userFiles: UserFile[];
 
   @OneToMany(() => Post, (post) => post.user)
   posts: Post[];
