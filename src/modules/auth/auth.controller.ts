@@ -100,15 +100,7 @@ export class AuthController {
     try {
       const response = this.authService.logoutUser();
 
-      reply
-        .setCookie('token', '', {
-          expires: new Date(0),
-          httpOnly: true,
-          secure: true,
-          sameSite: 'none',
-        })
-        .code(200)
-        .send(response);
+      reply.clearCookie('token', { path: '/' }).code(200).send(response);
     } catch (error) {
       reply.code(500).send({ message: (error as Error).message });
     }
