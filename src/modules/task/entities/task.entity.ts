@@ -30,10 +30,7 @@ export class Task {
   @Column({ type: 'timestamp', nullable: true })
   due_date: Date;
 
-  @Column({ type: 'int', nullable: true })
-  qualification: number;
-
-  @ManyToOne(() => Course, (classEntity) => classEntity.tasks)
+  @ManyToOne(() => Course, (course) => course.tasks)
   course: Course;
 
   @OneToMany(() => TaskFile, (taskFile) => taskFile.task, {
