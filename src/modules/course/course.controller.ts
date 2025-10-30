@@ -1,87 +1,111 @@
+import { FastifyRequest, FastifyReply } from 'fastify';
 import { CourseService } from '../course/course.service';
-import { logger } from '../../common/configs/logger.config';
-import { Request, Response, NextFunction } from 'express';
+import { CreateCourseDto } from './dtos/create-course.dto';
+import { UpdateCourseDto } from './dtos/update-course.dto';
 
 export class CourseController {
   private courseService: CourseService = new CourseService();
 
-  async create(req: Request, res: Response, next: NextFunction) {
+  async create(
+    request: FastifyRequest<{ Body: CreateCourseDto }>,
+    reply: FastifyReply
+  ) {
     try {
-      const courseData = req.body;
-      const userId = req.user?.id;
+      const courseData = request.body;
+      const userId = request.user?.id;
+
       const newCourse = await this.courseService.create(courseData, userId);
-      res.status(201).json(newCourse);
+
+      reply.code(201).send(newCourse);
     } catch (error) {
-      next(error);
+      reply.code(500).send({ message: (error as Error).message });
     }
   }
 
-  async join(req: Request, res: Response, next: NextFunction) {
+  async join(
+    request: FastifyRequest<{ Body: { classCode: string } }>,
+    reply: FastifyReply
+  ) {
     try {
-      const { classCode } = req.body;
-      const userId = req.user?.id;
+      const { classCode } = request.body;
+      const userId = (request.user as any)?.id;
       const courseData = await this.courseService.join(classCode, userId);
-      res.status(200).json(courseData);
+      reply.code(200).send(courseData);
     } catch (error) {
-      next(error);
+      reply.code(500).send({ message: (error as Error).message });
     }
   }
 
-  async leave(req: Request, res: Response, next: NextFunction) {
+  async leave(
+    request: FastifyRequest<{ Params: { classId: string } }>,
+    reply: FastifyReply
+  ) {
     try {
-      const courseId = req.params.classId;
-      const userId = req.user?.id;
+      const courseId = request.params.classId;
+      const userId = (request.user as any)?.id;
       const courseData = await this.courseService.leave(courseId, userId);
-      res.status(200).json(courseData);
+      reply.code(200).send(courseData);
     } catch (error) {
-      next(error);
+      reply.code(500).send({ message: (error as Error).message });
     }
   }
 
-  async getClassesByUser(req: Request, res: Response, next: NextFunction) {
+  async getClassesByUser(request: FastifyRequest, reply: FastifyReply) {
     try {
-      const userId = req.user?.id;
+      const userId = (request.user as any)?.id;
       const courses = await this.courseService.getCoursesByUser(userId);
-      res.status(200).json(courses);
+      reply.code(200).send(courses);
     } catch (error) {
-      next(error);
+      reply.code(500).send({ message: (error as Error).message });
     }
   }
 
-  async getUsersByClass(req: Request, res: Response, next: NextFunction) {
+  async getUsersByClass(
+    request: FastifyRequest<{ Params: { classId: string } }>,
+    reply: FastifyReply
+  ) {
     try {
-      const courseId = req.params.classId;
+      const courseId = request.params.classId;
       const users = await this.courseService.getUsersByCourse(courseId);
-      res.status(200).json(users);
+      reply.code(200).send(users);
     } catch (error) {
-      next(error);
+      reply.code(500).send({ message: (error as Error).message });
     }
   }
 
-  async update(req: Request, res: Response, next: NextFunction) {
+  async update(
+    request: FastifyRequest<{
+      Body: UpdateCourseDto;
+      Params: { classId: string };
+    }>,
+    reply: FastifyReply
+  ) {
     try {
-      const courseData = req.body;
-      const courseId = req.params.classId;
-      const userId = req.user?.id;
+      const courseData = request.body;
+      const courseId = request.params.classId;
+      const userId = (request.user as any)?.id;
       const updatedCourse = await this.courseService.update(
         courseId,
         courseData,
         userId
       );
-      res.status(200).json(updatedCourse);
+      reply.code(200).send(updatedCourse);
     } catch (error) {
-      next(error);
+      reply.code(500).send({ message: (error as Error).message });
     }
   }
 
-  async delete(req: Request, res: Response, next: NextFunction) {
+  async delete(
+    request: FastifyRequest<{ Params: { classId: string } }>,
+    reply: FastifyReply
+  ) {
     try {
-      const courseId = req.params.classId;
-      const userId = req.user?.id;
+      const courseId = request.params.classId;
+      const userId = (request.user as any)?.id;
       await this.courseService.delete(courseId, userId);
-      res.status(204).end();
+      reply.code(204).send();
     } catch (error) {
-      next(error);
+      reply.code(500).send({ message: (error as Error).message });
     }
   }
 }

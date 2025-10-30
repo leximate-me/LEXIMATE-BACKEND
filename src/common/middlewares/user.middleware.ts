@@ -1,29 +1,26 @@
-import { Request, Response, NextFunction } from 'express';
+import { FastifyRequest, FastifyReply } from 'fastify';
 import { AppDataSource } from '../../database/db';
 import { logger } from '../configs/logger.config';
 import { User } from '../../modules/user/entities/user.entity';
-import { HttpError } from '../libs/http-error';
 
-const verifyUserRequired = async (
-  req: Request,
-  res: Response,
-  next: NextFunction
-): Promise<void> => {
+export const verifyUserRequired = async (
+  request: FastifyRequest,
+  reply: FastifyReply
+) => {
   try {
-    const id = req.user?.id;
+    const id = request.user?.id;
 
     const userRepo = AppDataSource.getRepository(User);
     const user = await userRepo.findOne({ where: { id } });
 
     if (user?.verified !== true) {
-      logger.error('Usuario no verificado');
-      throw new HttpError(403, 'Usuario no verificado');
+      reply.log.error('Usuario no verificado');
+      reply.code(403).send({ message: 'Usuario no verificado' });
+      return;
     }
-
-    return next();
   } catch (error) {
-    next(error);
+    reply.code(500).send({
+      message: error instanceof Error ? error.message : 'Error interno',
+    });
   }
 };
-
-export { verifyUserRequired };

@@ -114,8 +114,6 @@ export class ToolService {
       throw HttpError.internalServerError('No response from chatbot service');
     }
 
-    logger.info('Archivos enviados al chatbot RAG');
-
     return await response.json();
   }
 }

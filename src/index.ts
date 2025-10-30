@@ -7,19 +7,21 @@ import figlet from 'figlet';
 
 async function main() {
   const app = new App(EnvConfiguration().port);
+  const log = app.getLogger();
+
   figlet.text(
     'LEXIMATE',
     { font: 'Ghost' },
     (err: Error | null, data: string | undefined) => {
       if (err) {
-        logger.error(err, 'Error generando texto ASCII');
+        log.error(err, 'Error generando texto ASCII');
         return;
       }
 
-      logger.info('\n' + data);
+      log.info('\n' + data);
     }
   );
-  await connectDB();
+  await connectDB(log);
   await app.listen();
 }
 

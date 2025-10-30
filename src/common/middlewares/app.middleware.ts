@@ -1,32 +1,15 @@
-// middlewares.js
-import express from 'express';
-import cors from 'cors';
-import morgan from 'morgan';
-import cookieParser from 'cookie-parser';
+import { FastifyInstance } from 'fastify';
+import cors from '@fastify/cors';
+import cookie from '@fastify/cookie';
+import multipart from '@fastify/multipart';
 import { EnvConfiguration } from '../configs/env.config';
-import { Application } from 'express';
-import pinoHttp from 'pino-http';
-import { httpLogger, logger } from '../configs/logger.config';
 
-const applyMiddlewares = (app: Application) => {
-  app.use(cookieParser());
-  app.use(express.json());
-  app.use(express.urlencoded({ extended: true }));
-  app.use(
-    cors({
-      origin: EnvConfiguration().frontendUrl,
-      methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-      credentials: true,
-      allowedHeaders: [
-        'Content-Type',
-        'Authorization',
-        'Accept',
-        'X-Requested-With',
-      ],
-    })
-  );
-  // app.use(morgan('dev'));
-  app.use(httpLogger); // Usa la configuración por defecto de pino-http
-};
-
-export { applyMiddlewares };
+export async function applyMiddlewares(app: FastifyInstance) {
+  await app.register(cors, {
+    origin: true,
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    credentials: true,
+  });
+  await app.register(cookie);
+  await app.register(multipart);
+}

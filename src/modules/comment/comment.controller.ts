@@ -1,18 +1,22 @@
-import { Request, Response, NextFunction } from 'express';
+import { FastifyRequest, FastifyReply } from 'fastify';
 import { CommentService } from './comment.service';
-import { logger } from '../../common/configs/logger.config';
-import { HttpError } from '../../common/libs/http-error';
+import { CreateCommentDto } from './dtos/create-comment.dto';
+import { UpdateCommentDto } from './dtos/update-comment.dto';
 
 export class CommentController {
   private commentService: CommentService = new CommentService();
 
-  async create(req: Request, res: Response, next: NextFunction): Promise<void> {
+  async create(
+    request: FastifyRequest<{
+      Body: CreateCommentDto;
+      Params: { postId: string };
+    }>,
+    reply: FastifyReply
+  ) {
     try {
-      const commentData = req.body;
-
-      const postId = req.params.postId;
-
-      const userId = req.user?.id;
+      const commentData = request.body;
+      const postId = request.params.postId;
+      const userId = (request.user as any)?.id;
 
       const newComment = await this.commentService.create(
         commentData,
@@ -20,53 +24,49 @@ export class CommentController {
         userId
       );
 
-      res.status(201).json(newComment);
+      reply.code(201).send(newComment);
     } catch (error) {
-      next(error);
+      reply.code(500).send({ message: (error as Error).message });
     }
   }
 
   async readAll(
-    req: Request,
-    res: Response,
-    next: NextFunction
-  ): Promise<void> {
+    request: FastifyRequest<{ Params: { postId: string } }>,
+    reply: FastifyReply
+  ) {
     try {
-      const postId = req.params.postId;
-
+      const postId = request.params.postId;
       const comments = await this.commentService.readAll(postId);
-
-      res.status(200).json(comments);
+      reply.code(200).send(comments);
     } catch (error) {
-      logger.error(error, 'Error en readsCommentsController');
-      next(error);
+      reply.code(500).send({ message: (error as Error).message });
     }
   }
 
   async readOne(
-    req: Request,
-    res: Response,
-    next: NextFunction
-  ): Promise<void> {
+    request: FastifyRequest<{ Params: { commentId: string } }>,
+    reply: FastifyReply
+  ) {
     try {
-      const commentId = req.params.commentId;
-
+      const commentId = request.params.commentId;
       const comment = await this.commentService.readOne(commentId);
-
-      res.status(200).json(comment);
+      reply.code(200).send(comment);
     } catch (error) {
-      logger.error(error, 'Error en readCommentController');
-      next(error);
+      reply.code(500).send({ message: (error as Error).message });
     }
   }
 
-  async update(req: Request, res: Response, next: NextFunction): Promise<void> {
+  async update(
+    request: FastifyRequest<{
+      Body: UpdateCommentDto;
+      Params: { commentId: string };
+    }>,
+    reply: FastifyReply
+  ) {
     try {
-      const commentData = req.body;
-
-      const commentId = req.params.commentId;
-
-      const userId = req.user?.id;
+      const commentData = request.body;
+      const commentId = request.params.commentId;
+      const userId = (request.user as any)?.id;
 
       const updatedComment = await this.commentService.update(
         commentData,
@@ -74,27 +74,28 @@ export class CommentController {
         userId
       );
 
-      res.status(200).json(updatedComment);
+      reply.code(200).send(updatedComment);
     } catch (error) {
-      logger.error(error, 'Error en updateCommentController');
-      next(error);
+      reply.code(500).send({ message: (error as Error).message });
     }
   }
 
-  async delete(req: Request, res: Response, next: NextFunction): Promise<void> {
+  async delete(
+    request: FastifyRequest<{ Params: { commentId: string } }>,
+    reply: FastifyReply
+  ) {
     try {
-      const commentId = req.params.commentId;
-
-      const userId = req.user?.id;
+      const commentId = request.params.commentId;
+      const userId = (request.user as any)?.id;
 
       const deletedComment = await this.commentService.delete(
         commentId,
         userId
       );
 
-      res.status(200).json(deletedComment);
+      reply.code(200).send(deletedComment);
     } catch (error) {
-      next(error);
+      reply.code(500).send({ message: (error as Error).message });
     }
   }
 }

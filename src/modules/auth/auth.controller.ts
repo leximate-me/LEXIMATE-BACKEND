@@ -1,138 +1,156 @@
-import { NextFunction, Request, Response } from 'express';
+import { FastifyRequest, FastifyReply } from 'fastify';
 import { AuthService } from './auth.service';
 import { logger } from '../../common/configs/logger.config';
 import { EnvConfiguration } from '../../common/configs/env.config';
+import { RegisterAuthDto } from './dtos/register-auth.dto';
+import { LoginAuthDto } from './dtos/login-auth.dto';
 
 export class AuthController {
   private authService: AuthService = new AuthService();
 
-  async register(req: Request, res: Response, next: NextFunction) {
+  async register(
+    request: FastifyRequest<{ Body: RegisterAuthDto }>,
+    reply: FastifyReply
+  ) {
     try {
-      const { newUser, token } = await this.authService.registerUser(req.body);
+      const { newUser, token } = await this.authService.registerUser(
+        request.body
+      );
 
-      res.cookie('token', token, {
-        httpOnly: true,
-        secure: true,
-        sameSite: 'none',
-      });
-
-      res.status(201).json({ newUser, token });
+      reply
+        .setCookie('token', token, {
+          httpOnly: true,
+          secure: false,
+          sameSite: 'lax',
+          path: '/',
+        })
+        .code(201)
+        .send({ newUser, token });
     } catch (error) {
-      next(error);
+      reply.code(500).send({ message: (error as Error).message });
     }
   }
 
-  async login(req: Request, res: Response, next: NextFunction) {
+  async login(
+    request: FastifyRequest<{ Body: LoginAuthDto }>,
+    reply: FastifyReply
+  ) {
     try {
-      const { user, token } = await this.authService.loginUser(req.body);
+      const { user, token } = await this.authService.loginUser(request.body);
 
-      res.cookie('token', token, {
-        httpOnly: true,
-        secure: true,
-        sameSite: 'none',
-      });
-
-      res.status(200).json({ user, token });
+      reply
+        .setCookie('token', token, {
+          httpOnly: true,
+          secure: false,
+          sameSite: 'lax',
+          path: '/',
+        })
+        .code(200)
+        .send({ user, token });
     } catch (error) {
-      next(error);
+      reply.code(500).send({ message: (error as Error).message });
     }
   }
 
-  async verifyToken(req: Request, res: Response, next: NextFunction) {
+  async verifyToken(request: FastifyRequest, reply: FastifyReply) {
     try {
       const token =
-        req.cookies.token || req.headers.authorization?.split(' ')[1];
-
-      logger.info(token);
+        request.cookies?.token || request.headers.authorization?.split(' ')[1];
+      console.log('este es el token del controlador verify token', token);
+      reply.log.info(token);
 
       const decoded = await this.authService.verifyToken(token);
 
-      logger.info(decoded, 'Token verificado');
+      reply.log.info(decoded, 'Token verificado');
 
-      res.status(200).json(decoded);
+      reply.code(200).send(decoded);
     } catch (error) {
-      next(error);
+      reply.code(401).send({ message: (error as Error).message });
     }
   }
 
-  async getProfile(req: Request, res: Response, next: NextFunction) {
+  async getProfile(request: FastifyRequest, reply: FastifyReply) {
     try {
-      const userId = req.user?.id;
+      const userId = (request.user as any)?.id;
 
       const existingUser = await this.authService.getProfileUser(userId);
 
-      res.status(200).json(existingUser);
+      reply.code(200).send(existingUser);
     } catch (error) {
-      next(error);
+      reply.code(500).send({ message: (error as Error).message });
     }
   }
 
-  async delete(req: Request, res: Response, next: NextFunction) {
+  async delete(request: FastifyRequest, reply: FastifyReply) {
     try {
-      const userId = req.user?.id;
+      const userId = (request.user as any)?.id;
 
       const response = await this.authService.deleteUser(userId);
 
-      res.cookie('token', '', { expires: new Date(0) });
-
-      res.status(200).json(response);
+      reply
+        .setCookie('token', '', { expires: new Date(0) })
+        .code(200)
+        .send(response);
     } catch (error) {
-      next(error);
+      reply.code(500).send({ message: (error as Error).message });
     }
   }
 
-  async logout(_req: Request, res: Response, next: NextFunction) {
+  async logout(_request: FastifyRequest, reply: FastifyReply) {
     try {
       const response = this.authService.logoutUser();
 
-      res.cookie('token', '', {
-        expires: new Date(0),
-        httpOnly: true,
-        secure: true,
-        sameSite: 'none',
-      });
-
-      res.status(200).json(response);
+      reply
+        .setCookie('token', '', {
+          expires: new Date(0),
+          httpOnly: true,
+          secure: true,
+          sameSite: 'none',
+        })
+        .code(200)
+        .send(response);
     } catch (error) {
-      next(error);
+      reply.code(500).send({ message: (error as Error).message });
     }
   }
 
-  async sendEmailVerification(req: Request, res: Response, next: NextFunction) {
+  async sendEmailVerification(request: FastifyRequest, reply: FastifyReply) {
     try {
-      const userId = req.user?.id;
+      const userId = (request.user as any)?.id;
 
       const response = await this.authService.sendEmailVerification(userId);
 
-      res.status(200).json(response);
+      reply.code(200).send(response);
     } catch (error) {
-      next(error);
+      reply.code(500).send({ message: (error as Error).message });
     }
   }
 
-  async verifyEmail(req: Request, res: Response, next: NextFunction) {
+  async verifyEmail(request: FastifyRequest, reply: FastifyReply) {
     try {
-      const token = req.query.token as string;
+      const token = (request.query as any).token as string;
 
       const response = await this.authService.verifyEmail(token);
 
-      res.redirect(`${EnvConfiguration().frontendUrl}`);
+      reply.redirect(`${EnvConfiguration().frontendUrl}`);
     } catch (error) {
-      next(error);
+      reply.code(500).send({ message: (error as Error).message });
     }
   }
 
-  async updateProfile(req: Request, res: Response, next: NextFunction) {
+  async updateProfile(request: FastifyRequest, reply: FastifyReply) {
     try {
-      const userId = req.user?.id;
-      const userData = req.body;
+      const userId = (request.user as any)?.id;
+      const userData = request.body;
 
       let fileUrl, fileId, fileType;
 
-      if (req.file && req.file.cloudinaryUrl) {
-        fileUrl = req.file.cloudinaryUrl;
-        fileId = req.file.cloudinaryPublicId;
-        fileType = req.file.mimetype;
+      // Si usas @fastify/multipart, adapta la obtención del archivo aquí
+      const file = (request as any).file || (request as any).files?.[0];
+      if (file && file.cloudinaryUrl) {
+        fileUrl = file.cloudinaryUrl;
+        fileId = file.cloudinaryPublicId;
+        fileType = file.mimetype;
       }
 
       const imageProps = {
@@ -147,9 +165,9 @@ export class AuthController {
         imageProps
       );
 
-      res.status(200).json(updatedUser);
+      reply.code(200).send(updatedUser);
     } catch (error) {
-      next(error);
+      reply.code(500).send({ message: (error as Error).message });
     }
   }
 }

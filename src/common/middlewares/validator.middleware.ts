@@ -1,7 +1,6 @@
 import { plainToInstance } from 'class-transformer';
 import { validate, ValidationError } from 'class-validator';
-import { NextFunction, Request, Response } from 'express';
-import { HttpError } from '../libs/http-error';
+import { FastifyRequest, FastifyReply } from 'fastify';
 
 function extractValidationFields(
   errors: ValidationError[]
@@ -22,14 +21,15 @@ function extractValidationFields(
 }
 
 export function validateDto(DtoClass: any) {
-  return async (req: Request, res: Response, next: NextFunction) => {
-    const dto = plainToInstance(DtoClass, req.body);
+  return async (request: FastifyRequest, reply: FastifyReply) => {
+    const dto: object = plainToInstance(DtoClass, request.body);
     const errors = await validate(dto);
     if (errors.length > 0) {
       const fields = extractValidationFields(errors);
-      return next(HttpError.badRequest(fields));
+      reply.code(400).send({ message: 'Validación fallida', fields });
+      return;
     }
-    req.body = dto;
-    next();
+    // Sobrescribe el body con la instancia validada
+    (request.body as any) = dto;
   };
 }

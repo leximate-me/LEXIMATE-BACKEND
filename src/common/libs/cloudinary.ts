@@ -14,7 +14,6 @@ const uploadImage = (buffer: Buffer): Promise<UploadApiResponse> => {
       { folder: 'api' },
       (error, result) => {
         if (error) {
-          logger.child({ error }).error('Error al subir la imagen');
           reject(error);
         }
         return result ? resolve(result) : reject('Error al devolver la imagen');
@@ -37,7 +36,6 @@ const uploadPdfBufferAsImages = async (
       },
       (error, result) => {
         if (error) {
-          logger.child({ error }).error('Error al subir la imagen');
           reject(error);
         }
         return result ? resolve(result) : reject('Error al devolver la imagen');
@@ -53,7 +51,7 @@ const deleteImage = async (publicId: string) => {
     const result = await cloudinary.uploader.destroy(publicId);
     return result;
   } catch (error) {
-    return logger.child({ error }).error('Error al eliminar la imagen');
+    throw new Error('Error al eliminar la imagen');
   }
 };
 

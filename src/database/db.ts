@@ -1,6 +1,6 @@
 import { DataSource } from 'typeorm';
 import { EnvConfiguration } from '../common/configs/env.config';
-import { logger } from '../common/configs/logger.config';
+import { FastifyBaseLogger } from 'fastify';
 
 export const AppDataSource = new DataSource({
   type: 'postgres',
@@ -15,13 +15,13 @@ export const AppDataSource = new DataSource({
   poolSize: 5,
 });
 
-export const connectDB = async () => {
+export const connectDB = async (log: FastifyBaseLogger) => {
   try {
     await AppDataSource.initialize();
-    logger.info('Conexión establecida correctamente con la base de datos.');
+    log.info('Database connection established successfully.');
 
     return AppDataSource;
   } catch (error) {
-    logger.error(`Error al conectar con la base de datos: ${String(error)}`);
+    log.error(`Error connecting to the database: ${String(error)}`);
   }
 };

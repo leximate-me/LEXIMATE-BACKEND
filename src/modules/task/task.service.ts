@@ -1,6 +1,6 @@
 import { AppDataSource } from '../../database/db';
-import { deleteFromCloudinary } from '../../common/middlewares/upload.middleware';
 import { In } from 'typeorm';
+import { deleteFromCloudinary } from '../../common/middlewares/upload.middleware';
 import { User } from '../user/entities';
 import { Course } from '../course/entities/course.entity';
 import { Task } from './entities/task.entity';
@@ -8,6 +8,7 @@ import { FileTask } from './entities/fileTask.entity';
 import { HttpError } from '../../common/libs/http-error';
 import { CreateTaskDto } from './dtos/create-task.dto';
 import { UpdateTaskDto } from './dtos/update-task.dto';
+import { FileProps } from '../../common/interfaces/file-props';
 
 export class TaskService {
   private readonly userRepository = AppDataSource.getRepository(User);
@@ -19,7 +20,7 @@ export class TaskService {
     courseId: string,
     userId: string,
     createTaskDto: CreateTaskDto,
-    fileProps: any
+    fileProps?: FileProps
   ) {
     const queryRunner = AppDataSource.createQueryRunner();
     await queryRunner.connect();
@@ -75,7 +76,7 @@ export class TaskService {
     userId: string,
     taskId: string,
     updateTaskDto: UpdateTaskDto,
-    fileProps: any
+    fileProps?: FileProps
   ) {
     const queryRunner = AppDataSource.createQueryRunner();
     await queryRunner.connect();
@@ -180,10 +181,11 @@ export class TaskService {
       await this.taskRepository.delete({ id: taskId });
 
       if (public_id) {
-        await deleteFromCloudinary(public_id, (e) => {
-          if (e)
-            throw HttpError.internalServerError('Error al eliminar la imagen');
-        });
+        try {
+          await deleteFromCloudinary(public_id);
+        } catch (e) {
+          throw HttpError.internalServerError('Error al eliminar la imagen');
+        }
       }
 
       await queryRunner.commitTransaction();

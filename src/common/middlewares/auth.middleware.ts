@@ -1,14 +1,14 @@
-import { Request, Response, NextFunction } from 'express';
+import { FastifyRequest, FastifyReply } from 'fastify';
 import { HttpError } from '../libs/http-error';
 
 export function requireRole(roles: string[]) {
-  return (req: Request, res: Response, next: NextFunction) => {
-    const userRole = req.user?.rol;
+  return async (request: FastifyRequest, reply: FastifyReply) => {
+    const userRole = (request.user as any)?.rol;
     if (!userRole || !roles.includes(userRole)) {
-      return next(
-        HttpError.forbidden('No tienes permisos para acceder a esta ruta.')
-      );
+      reply.code(403).send({
+        message: 'No tienes permisos para acceder a esta ruta.',
+      });
+      return;
     }
-    next();
   };
 }

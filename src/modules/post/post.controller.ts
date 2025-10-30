@@ -1,61 +1,73 @@
-import { Request, Response, NextFunction } from 'express';
+import { FastifyRequest, FastifyReply } from 'fastify';
 import { PostService } from './post.service';
+import { CreatePostDto } from './dtos/create-post.dto';
+import { UpdatePostDto } from './dtos/update-post.dto';
 
 export class PostController {
   private postService: PostService = new PostService();
 
-  async create(req: Request, res: Response, next: NextFunction): Promise<void> {
+  async create(
+    request: FastifyRequest<{
+      Body: CreatePostDto;
+      Params: { classId: string };
+    }>,
+    reply: FastifyReply
+  ) {
     try {
-      const postData = req.body;
-      const classId = req.params.classId;
-      const userId = req.user?.id;
+      const postData = request.body;
+      const classId = request.params.classId;
+      const userId = (request.user as any)?.id;
 
       const post = await this.postService.create(postData, classId, userId);
-      res.status(201).json(post);
+      reply.code(201).send(post);
     } catch (error) {
-      next(error);
+      reply.code(500).send({ message: (error as Error).message });
     }
   }
 
   async readAll(
-    req: Request,
-    res: Response,
-    next: NextFunction
-  ): Promise<void> {
+    request: FastifyRequest<{ Params: { classId: string } }>,
+    reply: FastifyReply
+  ) {
     try {
-      const classId = req.params.classId;
-      const userId = req.user?.id;
+      const classId = request.params.classId;
+      const userId = (request.user as any)?.id;
 
       const posts = await this.postService.readAll(classId, userId);
-      res.status(200).json(posts);
+      reply.code(200).send(posts);
     } catch (error) {
-      next(error);
+      reply.code(500).send({ message: (error as Error).message });
     }
   }
 
   async readOne(
-    req: Request,
-    res: Response,
-    next: NextFunction
-  ): Promise<void> {
+    request: FastifyRequest<{ Params: { classId: string; postId: string } }>,
+    reply: FastifyReply
+  ) {
     try {
-      const userId = req.user?.id;
-      const classId = req.params.classId;
-      const postId = req.params.postId;
+      const userId = (request.user as any)?.id;
+      const classId = request.params.classId;
+      const postId = request.params.postId;
 
       const post = await this.postService.readOne(userId, classId, postId);
-      res.status(200).json(post);
+      reply.code(200).send(post);
     } catch (error) {
-      next(error);
+      reply.code(500).send({ message: (error as Error).message });
     }
   }
 
-  async update(req: Request, res: Response, next: NextFunction): Promise<void> {
+  async update(
+    request: FastifyRequest<{
+      Body: UpdatePostDto;
+      Params: { classId: string; postId: string };
+    }>,
+    reply: FastifyReply
+  ) {
     try {
-      const postId = req.params.postId;
-      const postData = req.body;
-      const classId = req.params.classId;
-      const userId = req.user?.id;
+      const postId = request.params.postId;
+      const postData = request.body;
+      const classId = request.params.classId;
+      const userId = (request.user as any)?.id;
 
       const post = await this.postService.update(
         postId,
@@ -63,22 +75,25 @@ export class PostController {
         classId,
         userId
       );
-      res.status(200).json(post);
+      reply.code(200).send(post);
     } catch (error) {
-      next(error);
+      reply.code(500).send({ message: (error as Error).message });
     }
   }
 
-  async delete(req: Request, res: Response, next: NextFunction): Promise<void> {
+  async delete(
+    request: FastifyRequest<{ Params: { classId: string; postId: string } }>,
+    reply: FastifyReply
+  ) {
     try {
-      const postId = req.params.postId;
-      const classId = req.params.classId;
-      const userId = req.user?.id;
+      const postId = request.params.postId;
+      const classId = request.params.classId;
+      const userId = (request.user as any)?.id;
 
       await this.postService.delete(postId, classId, userId);
-      res.status(204).end();
+      reply.code(204).send();
     } catch (error) {
-      next(error);
+      reply.code(500).send({ message: (error as Error).message });
     }
   }
 }

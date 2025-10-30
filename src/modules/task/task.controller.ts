@@ -1,26 +1,23 @@
-import { NextFunction, Request, Response } from 'express';
+import { FastifyRequest, FastifyReply } from 'fastify';
 import { TaskService } from './task.service';
+import { CreateTaskDto } from './dtos/create-task.dto';
+import { UpdateTaskDto } from './dtos/update-task.dto';
+
 export class TaskController {
   private taskService: TaskService = new TaskService();
 
-  async create(req: Request, res: Response, next: NextFunction) {
+  async create(
+    request: FastifyRequest<{
+      Body: CreateTaskDto;
+      Params: { courseId: string };
+    }>,
+    reply: FastifyReply
+  ) {
     try {
-      const courseId = req.params.courseId;
-      const taskData = req.body;
-      const userId = req.user?.id;
-
-      let fileUrl, fileId, fileType;
-      if (req.file) {
-        fileUrl = req.file.cloudinaryUrl;
-        fileId = req.file.cloudinaryPublicId;
-        fileType = req.file.mimetype;
-      }
-
-      const fileProps = {
-        fileUrl: fileUrl || '',
-        fileId: fileId || '',
-        fileType: fileType || '',
-      };
+      const courseId = request.params.courseId;
+      const taskData = request.body;
+      const userId = (request.user as any)?.id;
+      const fileProps = (request as any).fileProps || null;
 
       const newTask = await this.taskService.create(
         courseId,
@@ -29,30 +26,24 @@ export class TaskController {
         fileProps
       );
 
-      res.status(201).json(newTask);
+      reply.code(201).send(newTask);
     } catch (error) {
-      next(error);
+      reply.code(500).send({ message: (error as Error).message });
     }
   }
 
-  async update(req: Request, res: Response, next: NextFunction) {
+  async update(
+    request: FastifyRequest<{
+      Body: UpdateTaskDto;
+      Params: { taskId: string };
+    }>,
+    reply: FastifyReply
+  ) {
     try {
-      const userId = req.user?.id;
-      const taskId = req.params.taskId;
-      const taskData = req.body;
-
-      let fileUrl, fileId, fileType;
-      if (req.file && req.file.cloudinaryUrl) {
-        fileUrl = req.file.cloudinaryUrl;
-        fileId = req.file.cloudinaryPublicId;
-        fileType = req.file.mimetype;
-      }
-
-      const fileProps = {
-        fileUrl: fileUrl || '',
-        fileId: fileId || '',
-        fileType: fileType || '',
-      };
+      const userId = (request.user as any)?.id;
+      const taskId = request.params.taskId;
+      const taskData = request.body;
+      const fileProps = (request as any).fileProps || null;
 
       const updatedTask = await this.taskService.update(
         userId,
@@ -61,50 +52,59 @@ export class TaskController {
         fileProps
       );
 
-      res.status(200).json(updatedTask);
+      reply.code(200).send(updatedTask);
     } catch (error) {
-      next(error);
+      reply.code(500).send({ message: (error as Error).message });
     }
   }
 
-  async delete(req: Request, res: Response, next: NextFunction) {
+  async delete(
+    request: FastifyRequest<{ Params: { taskId: string; courseId: string } }>,
+    reply: FastifyReply
+  ) {
     try {
-      const taskId = req.params.taskId;
-      const courseId = req.params.courseId;
-      const userId = req.user?.id;
+      const taskId = request.params.taskId;
+      const courseId = request.params.courseId;
+      const userId = (request.user as any)?.id;
 
-      const deleted = await this.taskService.delete(taskId, courseId, userId);
+      await this.taskService.delete(taskId, courseId, userId);
 
-      res.status(204).end();
+      reply.code(204).send();
     } catch (error) {
-      next(error);
+      reply.code(500).send({ message: (error as Error).message });
     }
   }
 
-  async getAllByCourse(req: Request, res: Response, next: NextFunction) {
+  async getAllByCourse(
+    request: FastifyRequest<{ Params: { courseId: string } }>,
+    reply: FastifyReply
+  ) {
     try {
-      const courseId = req.params.courseId;
-      const userId = req.user?.id;
+      const courseId = request.params.courseId;
+      const userId = (request.user as any)?.id;
 
       const tasks = await this.taskService.getAllByCourse(courseId, userId);
 
-      res.status(200).json(tasks);
+      reply.code(200).send(tasks);
     } catch (error) {
-      next(error);
+      reply.code(500).send({ message: (error as Error).message });
     }
   }
 
-  async getOne(req: Request, res: Response, next: NextFunction) {
+  async getOne(
+    request: FastifyRequest<{ Params: { taskId: string; courseId: string } }>,
+    reply: FastifyReply
+  ) {
     try {
-      const taskId = req.params.taskId;
-      const courseId = req.params.courseId;
-      const userId = req.user?.id;
+      const taskId = request.params.taskId;
+      const courseId = request.params.courseId;
+      const userId = (request.user as any)?.id;
 
       const task = await this.taskService.getOne(taskId, courseId, userId);
 
-      res.status(200).json(task);
+      reply.code(200).send(task);
     } catch (error) {
-      next(error);
+      reply.code(500).send({ message: (error as Error).message });
     }
   }
 }

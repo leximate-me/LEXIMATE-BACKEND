@@ -1,5 +1,4 @@
-import { Router } from 'express';
-
+import { FastifyInstance } from 'fastify';
 import { authRequired } from '../../../common/middlewares/token.middleware';
 import { verifyUserRequired } from '../../../common/middlewares/user.middleware';
 import { commentRouter } from '../../comment/routes/comment.route';
@@ -9,45 +8,35 @@ import { validateDto } from '../../../common/middlewares/validator.middleware';
 import { CreatePostDto } from '../dtos/create-post.dto';
 import { UpdatePostDto } from '../dtos/update-post.dto';
 
-const postRouter = Router({ mergeParams: true });
-const postController = new PostController();
+export async function postRouter(fastify: FastifyInstance) {
+  const postController = new PostController();
 
-postRouter.use(authRequired);
-postRouter.use(verifyUserRequired);
-postRouter.use(requireRole(['student', 'teacher', 'admin']));
+  // Middlewares globales para todas las rutas de este router
+  fastify.addHook('preHandler', authRequired);
+  fastify.addHook('preHandler', verifyUserRequired);
+  fastify.addHook('preHandler', requireRole(['student', 'teacher', 'admin']));
 
-postRouter.post(
-  '/',
+  // Crear post
+  fastify.post('/', {
+    preHandler: [validateDto(CreatePostDto)],
+    handler: postController.create.bind(postController),
+  });
 
-  validateDto(CreatePostDto),
-  postController.create.bind(postController)
-);
+  // Obtener todos los posts
+  fastify.get('/', postController.readAll.bind(postController));
 
-postRouter.get(
-  '/',
+  // Obtener un post por ID
+  fastify.get('/:postId', postController.readOne.bind(postController));
 
-  postController.readAll.bind(postController)
-);
+  // Actualizar post
+  fastify.put('/:postId', {
+    preHandler: [validateDto(UpdatePostDto)],
+    handler: postController.update.bind(postController),
+  });
 
-postRouter.get(
-  '/:postId',
+  // Eliminar post
+  fastify.delete('/:postId', postController.delete.bind(postController));
 
-  postController.readOne.bind(postController)
-);
-
-postRouter.put(
-  '/:postId',
-
-  validateDto(UpdatePostDto),
-  postController.update.bind(postController)
-);
-
-postRouter.delete(
-  '/:postId',
-
-  postController.delete.bind(postController)
-);
-
-postRouter.use('/:postId/comment', commentRouter);
-
-export { postRouter };
+  // Anidar el router de comentarios
+  await fastify.register(commentRouter, { prefix: '/:postId/comment' });
+}

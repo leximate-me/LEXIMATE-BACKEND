@@ -15,7 +15,7 @@ const createAccessToken = async (payload: PayloadData): Promise<string> => {
         { expiresIn: '5h' },
         (err, token) => {
           if (err) {
-            logger.error(err, 'Error en createAccessToken');
+            console.log('Error al crear el token:', err);
             reject(err);
           }
           resolve(token as string);

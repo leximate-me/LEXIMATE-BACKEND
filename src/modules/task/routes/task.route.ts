@@ -1,7 +1,6 @@
-import { Router } from 'express';
+import { FastifyInstance } from 'fastify';
 import { verifyUserRequired } from '../../../common/middlewares/user.middleware';
 import { authRequired } from '../../../common/middlewares/token.middleware';
-import { upload } from '../../../common/configs/upload.config';
 import { uploadToStorage } from '../../../common/middlewares/upload.middleware';
 import { TaskController } from '../task.controller';
 import { validateDto } from '../../../common/middlewares/validator.middleware';
@@ -9,37 +8,32 @@ import { CreateTaskDto } from '../dtos/create-task.dto';
 import { UpdateTaskDto } from '../dtos/update-task.dto';
 import { requireRole } from '../../../common/middlewares/auth.middleware';
 
-const taskRouter = Router({ mergeParams: true });
-const taskController = new TaskController();
+export async function taskRouter(fastify: FastifyInstance) {
+  const taskController = new TaskController();
 
-taskRouter.use(authRequired);
-taskRouter.use(verifyUserRequired);
-taskRouter.use(requireRole(['teacher', 'admin']));
+  // Middlewares globales para todas las rutas de este router
+  fastify.addHook('preHandler', authRequired);
+  fastify.addHook('preHandler', verifyUserRequired);
+  fastify.addHook('preHandler', requireRole(['teacher', 'admin']));
 
-taskRouter.post(
-  '/',
-  upload,
-  uploadToStorage,
-  validateDto(CreateTaskDto),
-  taskController.create.bind(taskController)
-);
-taskRouter.put(
-  '/:taskId',
-  upload,
-  uploadToStorage,
-  validateDto(UpdateTaskDto),
-  taskController.update.bind(taskController)
-);
-taskRouter.delete('/:taskId', taskController.delete.bind(taskController));
-taskRouter.get(
-  '/',
+  // Crear tarea
+  fastify.post('/', {
+    preHandler: [uploadToStorage, validateDto(CreateTaskDto)],
+    handler: taskController.create.bind(taskController),
+  });
 
-  taskController.getAllByCourse.bind(taskController)
-);
-taskRouter.get(
-  '/:taskId',
+  // Actualizar tarea
+  fastify.put('/:taskId', {
+    preHandler: [uploadToStorage, validateDto(UpdateTaskDto)],
+    handler: taskController.update.bind(taskController),
+  });
 
-  taskController.getOne.bind(taskController)
-);
+  // Eliminar tarea
+  fastify.delete('/:taskId', taskController.delete.bind(taskController));
 
-export { taskRouter };
+  // Obtener todas las tareas del curso
+  fastify.get('/', taskController.getAllByCourse.bind(taskController));
+
+  // Obtener una tarea por ID
+  fastify.get('/:taskId', taskController.getOne.bind(taskController));
+}

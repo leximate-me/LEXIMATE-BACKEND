@@ -1,71 +1,55 @@
-import { Router } from 'express';
-import { verifyUserRequired } from '../../../common/middlewares/user.middleware';
-import { authRequired } from '../../../common/middlewares/token.middleware';
-import { upload } from '../../../common/configs/upload.config';
-import { uploadToStorage } from '../../../common/middlewares/upload.middleware';
+import { FastifyInstance } from 'fastify';
 import { AuthController } from '../auth.controller';
 import { validateDto } from '../../../common/middlewares/validator.middleware';
 import { RegisterAuthDto } from '../dtos/register-auth.dto';
 import { LoginAuthDto } from '../dtos/login-auth.dto';
+// Adapta estos middlewares a Fastify si aún no lo hiciste
+import { authRequired } from '../../../common/middlewares/token.middleware';
+import { verifyUserRequired } from '../../../common/middlewares/user.middleware';
+import { uploadToStorage } from '../../../common/middlewares/upload.middleware';
 
-const authRouter = Router();
-const authController = new AuthController();
+export async function authRouter(fastify: FastifyInstance) {
+  const authController = new AuthController();
 
-authRouter.post(
-  '/register',
-  validateDto(RegisterAuthDto),
-  authController.register.bind(authController)
-);
+  fastify.post('/register', {
+    preHandler: [validateDto(RegisterAuthDto)],
+    handler: authController.register.bind(authController),
+  });
 
-authRouter.post(
-  '/login',
-  validateDto(LoginAuthDto),
-  authController.login.bind(authController)
-);
+  fastify.post('/login', {
+    preHandler: [validateDto(LoginAuthDto)],
+    handler: authController.login.bind(authController),
+  });
 
-authRouter.get(
-  '/verify-token',
-  authController.verifyToken.bind(authController)
-);
+  fastify.get('/verify-token', authController.verifyToken.bind(authController));
 
-authRouter.post(
-  '/logout',
-  authRequired,
-  authController.logout.bind(authController)
-);
+  fastify.post('/logout', {
+    preHandler: [authRequired],
+    handler: authController.logout.bind(authController),
+  });
 
-authRouter.get(
-  '/profile',
-  authRequired,
-  authController.getProfile.bind(authController)
-);
+  fastify.get('/profile', {
+    preHandler: [authRequired],
+    handler: authController.getProfile.bind(authController),
+  });
 
-authRouter.delete(
-  '/delete',
-  authRequired,
-  verifyUserRequired,
-  authController.delete.bind(authController)
-);
+  fastify.delete('/delete', {
+    preHandler: [authRequired, verifyUserRequired],
+    handler: authController.delete.bind(authController),
+  });
 
-authRouter.post(
-  '/send-email-verification',
-  authRequired,
-  authController.sendEmailVerification.bind(authController)
-);
+  fastify.post('/send-email-verification', {
+    preHandler: [authRequired],
+    handler: authController.sendEmailVerification.bind(authController),
+  });
 
-authRouter.get(
-  '/verify-email',
-  authRequired,
-  authController.verifyEmail.bind(authController)
-);
+  fastify.get('/verify-email', {
+    preHandler: [authRequired],
+    handler: authController.verifyEmail.bind(authController),
+  });
 
-authRouter.put(
-  '/update-profile',
-  authRequired,
-  upload,
-  uploadToStorage,
-  verifyUserRequired,
-  authController.updateProfile.bind(authController)
-);
-
-export { authRouter };
+  fastify.put('/update-profile', {
+    preHandler: [authRequired, uploadToStorage, verifyUserRequired],
+    handler: authController.updateProfile.bind(authController),
+  });
+}
