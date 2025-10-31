@@ -1,8 +1,6 @@
 import Tesseract from 'tesseract.js';
 import { FormData, fetch } from 'undici';
 import { HttpError } from '../../common/libs/http-error';
-import { EnvConfiguration } from '../../common/configs/env.config';
-import { logger } from '../../common/configs/logger.config';
 
 export class ToolService {
   async extractTextFromImage(imageUrl: string) {
@@ -76,7 +74,7 @@ export class ToolService {
   }
 
   async getChatBotResponse(message: string, token: string) {
-    const response = await fetch(EnvConfiguration().n8nChatProdUrl, {
+    const response = await fetch(process.env.N8N_CHAT_PROD_URL, {
       method: 'POST',
       headers: {
         'content-type': 'application/json',
@@ -103,7 +101,7 @@ export class ToolService {
       );
     });
 
-    const response = await fetch(EnvConfiguration().n8nRagProdUrl, {
+    const response = await fetch(process.env.N8N_RAG_PROD_URL, {
       method: 'POST',
       headers: {
         Authorization: `Bearer ${token}`,

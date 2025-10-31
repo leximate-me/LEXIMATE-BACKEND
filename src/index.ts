@@ -1,12 +1,10 @@
-import { EnvConfiguration } from './common/configs/env.config';
 import { App } from './app';
 import { connectDB } from './database/db';
-
-import { logger } from './common/configs/logger.config';
+import 'dotenv/config';
 import figlet from 'figlet';
 
 async function main() {
-  const app = new App(EnvConfiguration().port);
+  const app = new App();
   const log = app.getLogger();
 
   figlet.text(
@@ -17,12 +15,19 @@ async function main() {
         log.error(err, 'Error generando texto ASCII');
         return;
       }
-
       log.info('\n' + data);
     }
   );
-  await connectDB(log);
-  await app.listen();
+  try {
+    await app.prepare();
+
+    await connectDB(log);
+
+    await app.listen();
+  } catch (error) {
+    log.error(error);
+    process.exit(1);
+  }
 }
 
 main();

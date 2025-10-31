@@ -1,5 +1,4 @@
 import jwt from 'jsonwebtoken';
-import { EnvConfiguration } from '../configs/env.config';
 import { TokenPayload } from '../interfaces/token-payload.interface';
 import { FastifyRequest, FastifyReply } from 'fastify';
 import { HttpError } from '../libs/http-error';
@@ -18,7 +17,7 @@ export const authRequired = async (
 
     const decoded = jwt.verify(
       token,
-      EnvConfiguration().jwtSecret
+      process.env.JWT_SECRET_KEY
     ) as TokenPayload;
 
     if (!decoded) {

@@ -1,5 +1,3 @@
-import { EnvConfiguration } from '../configs/env.config';
-import { logger } from '../configs/logger.config';
 import jwt from 'jsonwebtoken';
 
 interface PayloadData {
@@ -11,7 +9,7 @@ const createAccessToken = async (payload: PayloadData): Promise<string> => {
     const token = await new Promise<string>((resolve, reject) => {
       jwt.sign(
         payload,
-        EnvConfiguration().jwtSecret,
+        process.env.JWT_SECRET,
         { expiresIn: '5h' },
         (err, token) => {
           if (err) {

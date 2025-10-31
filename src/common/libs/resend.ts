@@ -1,6 +1,8 @@
-import { EnvConfiguration } from '../configs/env.config';
+import 'dotenv/config'; // Asegura que las variables estén cargadas
 import { Resend } from 'resend';
 
-const resend = new Resend(EnvConfiguration().resendApiKey);
+if (!process.env.RESEND_API_KEY) {
+  throw new Error('RESEND_API_KEY is not defined in environment variables');
+}
 
-export { resend };
+export const resend = new Resend(process.env.RESEND_API_KEY);

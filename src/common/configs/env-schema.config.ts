@@ -35,8 +35,8 @@ export const envSchema = {
     'STORJ_PUBLIC_ID',
   ],
   properties: {
-    PORT: { type: 'string', default: '3000' },
-    DB_PORT: { type: 'string' },
+    PORT: { type: 'number', default: 3000 },
+    DB_PORT: { type: 'number' },
     DB_HOST: { type: 'string' },
     DB_USER: { type: 'string' },
     DB_NAME: { type: 'string' },

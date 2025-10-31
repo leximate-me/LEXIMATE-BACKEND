@@ -1,9 +1,7 @@
-import { EnvConfiguration } from './env.config';
-
-const isDevelopment = EnvConfiguration().nodeEnv !== 'production';
+const isDevelopment = process.env.NODE_ENV !== 'production';
 
 const logger = {
-  level: EnvConfiguration().logLevel || 'info',
+  level: process.env.LOG_LEVEL || 'info',
   transport: isDevelopment
     ? {
         target: 'pino-pretty',
@@ -11,10 +9,10 @@ const logger = {
           colorize: true,
           translateTime: 'yyyy-mm-dd HH:MM:ss.l Z',
           ignore: 'pid,hostname',
-          singleLine: false, // Para que los objetos se vean en varias líneas
+          singleLine: false,
         },
       }
-    : undefined, // Producción: JSON plano
+    : undefined,
 };
 
 export { logger };

@@ -4,7 +4,6 @@ import path from 'path';
 import cors from '@fastify/cors';
 import cookie from '@fastify/cookie';
 import multipart from '@fastify/multipart';
-import { EnvConfiguration } from '../configs/env.config';
 
 export async function applyMiddlewares(app: FastifyInstance) {
   await app.register(cors, {
@@ -22,6 +21,6 @@ export async function applyMiddlewares(app: FastifyInstance) {
 
   await app.register(fastifyStatic, {
     root: path.join(process.cwd(), 'public'),
-    prefix: '/public/', // Así la URL será /public/archivo.pdf
+    prefix: '/public/',
   });
 }

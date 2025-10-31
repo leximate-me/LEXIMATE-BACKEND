@@ -1,6 +1,5 @@
 import jwt from 'jsonwebtoken';
 import { createAccessToken } from '../../common/libs/jwt';
-import { EnvConfiguration } from '../../common/configs/env.config';
 import { resend } from '../../common/libs/resend';
 import { AppDataSource } from '../../database/db';
 import { User, People, Role, UserFile } from '../user/entities';
@@ -96,10 +95,7 @@ export class AuthService {
   async verifyToken(token: string) {
     if (!token) throw HttpError.unauthorized('Token not provided');
 
-    const decoded = jwt.verify(
-      token,
-      EnvConfiguration().jwtSecret
-    ) as TokenPayload;
+    const decoded = jwt.verify(token, process.env.JWT_SECRET) as TokenPayload;
 
     const existingUser = await this.userRepository.findOne({
       where: { id: decoded.id },
@@ -155,7 +151,7 @@ export class AuthService {
 
     if (!user) throw HttpError.notFound('User not found');
 
-    const token = jwt.sign({ id: user.id }, EnvConfiguration().jwtSecret, {
+    const token = jwt.sign({ id: user.id }, process.env.JWT_SECRET, {
       expiresIn: '1h',
     });
 
@@ -173,10 +169,7 @@ export class AuthService {
   }
 
   async verifyEmail(token: string) {
-    const decoded = jwt.verify(
-      token,
-      EnvConfiguration().jwtSecret
-    ) as TokenPayload;
+    const decoded = jwt.verify(token, process.env.JWT_SECRET) as TokenPayload;
 
     const user = await this.userRepository.findOne({
       where: { id: decoded.id },

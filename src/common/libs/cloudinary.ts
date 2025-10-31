@@ -1,11 +1,9 @@
 import { v2 as cloudinary, UploadApiResponse } from 'cloudinary';
-import { EnvConfiguration } from '../configs/env.config';
-import { logger } from '../configs/logger.config';
 
 cloudinary.config({
-  cloud_name: EnvConfiguration().cloudinaryCloudName,
-  api_key: EnvConfiguration().cloudinaryApiKey,
-  api_secret: EnvConfiguration().cloudinaryApiSecret,
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET,
 });
 
 const uploadImage = (buffer: Buffer): Promise<UploadApiResponse> => {

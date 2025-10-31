@@ -1,7 +1,5 @@
 import { FastifyRequest, FastifyReply } from 'fastify';
 import { AuthService } from './auth.service';
-import { logger } from '../../common/configs/logger.config';
-import { EnvConfiguration } from '../../common/configs/env.config';
 import { RegisterAuthDto } from './dtos/register-auth.dto';
 import { LoginAuthDto } from './dtos/login-auth.dto';
 
@@ -99,7 +97,7 @@ export class AuthController {
 
     const response = await this.authService.verifyEmail(token);
 
-    reply.redirect(`${EnvConfiguration().frontendUrl}`);
+    reply.redirect(`${process.env.FRONTEND_URL}`);
   }
 
   async updateProfile(request: FastifyRequest, reply: FastifyReply) {

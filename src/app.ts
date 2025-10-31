@@ -16,7 +16,7 @@ import { envSchema } from './common/configs/env-schema.config';
 export class App {
   private app: FastifyInstance;
 
-  constructor(private port: number) {
+  constructor() {
     this.app = Fastify({
       logger: logger,
       ajv: {
@@ -41,18 +41,7 @@ export class App {
     await this.app.register(seedRouter, { prefix: '/api/seed' });
   }
 
-  public getLogger() {
-    return this.app.log;
-  }
-
-  public async listen() {
-    await this.app.register(fastifyEnv, {
-      schema: envSchema,
-      dotenv: true,
-    });
-    await this.applyMiddlewares();
-    await this.setRoutes();
-
+  private serErrorHandler() {
     this.app.setSchemaErrorFormatter((errors, dataVar) => {
       const err = new Error('Error de validación');
       (err as any).statusCode = 400;
@@ -90,7 +79,30 @@ export class App {
         message: error.message || 'Error interno del servidor',
       });
     });
+  }
 
-    await this.app.listen({ port: this.port, host: '0.0.0.0' });
+  public getFastify() {
+    return this.app;
+  }
+
+  public getLogger() {
+    return this.app.log;
+  }
+
+  public async prepare() {
+    await this.app.register(fastifyEnv, {
+      schema: envSchema,
+      dotenv: true,
+    });
+    await this.applyMiddlewares();
+    await this.setRoutes();
+    this.serErrorHandler();
+  }
+
+  public async listen() {
+    await this.app.listen({
+      port: Number(this.app.config.PORT),
+      host: '0.0.0.0',
+    });
   }
 }
