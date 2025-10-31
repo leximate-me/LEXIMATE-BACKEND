@@ -9,16 +9,16 @@ export class PostController {
   async create(
     request: FastifyRequest<{
       Body: CreatePostDto;
-      Params: { classId: string };
+      Params: { courseId: string };
     }>,
     reply: FastifyReply
   ) {
     try {
       const postData = request.body;
-      const classId = request.params.classId;
+      const courseId = request.params.courseId;
       const userId = (request.user as any)?.id;
 
-      const post = await this.postService.create(postData, classId, userId);
+      const post = await this.postService.create(postData, courseId, userId);
       reply.code(201).send(post);
     } catch (error) {
       reply.code(500).send({ message: (error as Error).message });
@@ -26,14 +26,14 @@ export class PostController {
   }
 
   async readAll(
-    request: FastifyRequest<{ Params: { classId: string } }>,
+    request: FastifyRequest<{ Params: { courseId: string } }>,
     reply: FastifyReply
   ) {
     try {
-      const classId = request.params.classId;
+      const courseId = request.params.courseId;
       const userId = (request.user as any)?.id;
 
-      const posts = await this.postService.readAll(classId, userId);
+      const posts = await this.postService.readAll(courseId, userId);
       reply.code(200).send(posts);
     } catch (error) {
       reply.code(500).send({ message: (error as Error).message });
@@ -41,15 +41,15 @@ export class PostController {
   }
 
   async readOne(
-    request: FastifyRequest<{ Params: { classId: string; postId: string } }>,
+    request: FastifyRequest<{ Params: { courseId: string; postId: string } }>,
     reply: FastifyReply
   ) {
     try {
       const userId = (request.user as any)?.id;
-      const classId = request.params.classId;
+      const courseId = request.params.courseId;
       const postId = request.params.postId;
 
-      const post = await this.postService.readOne(userId, classId, postId);
+      const post = await this.postService.readOne(userId, courseId, postId);
       reply.code(200).send(post);
     } catch (error) {
       reply.code(500).send({ message: (error as Error).message });
@@ -59,20 +59,20 @@ export class PostController {
   async update(
     request: FastifyRequest<{
       Body: UpdatePostDto;
-      Params: { classId: string; postId: string };
+      Params: { courseId: string; postId: string };
     }>,
     reply: FastifyReply
   ) {
     try {
       const postId = request.params.postId;
       const postData = request.body;
-      const classId = request.params.classId;
+      const courseId = request.params.courseId;
       const userId = (request.user as any)?.id;
 
       const post = await this.postService.update(
         postId,
         postData,
-        classId,
+        courseId,
         userId
       );
       reply.code(200).send(post);
@@ -82,15 +82,15 @@ export class PostController {
   }
 
   async delete(
-    request: FastifyRequest<{ Params: { classId: string; postId: string } }>,
+    request: FastifyRequest<{ Params: { courseId: string; postId: string } }>,
     reply: FastifyReply
   ) {
     try {
       const postId = request.params.postId;
-      const classId = request.params.classId;
+      const courseId = request.params.courseId;
       const userId = (request.user as any)?.id;
 
-      await this.postService.delete(postId, classId, userId);
+      await this.postService.delete(postId, courseId, userId);
       reply.code(204).send();
     } catch (error) {
       reply.code(500).send({ message: (error as Error).message });

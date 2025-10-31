@@ -23,13 +23,16 @@ export class CourseService {
 
     const course_code = crypto.randomBytes(5).toString('hex');
 
+    // Crea el curso y asocia el usuario
     const newCourse = this.courseRepository.create({
       name: createCourseDto.name,
       description: createCourseDto.description,
       class_code: course_code,
+      users: [foundUser], // <-- Asocia el usuario al curso
     });
     await this.courseRepository.save(newCourse);
 
+    // También puedes agregar el curso al usuario (opcional, pero recomendable)
     foundUser.courses = [...(foundUser.courses || []), newCourse];
     await this.userRepository.save(foundUser);
 

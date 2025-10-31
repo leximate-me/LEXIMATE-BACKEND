@@ -37,11 +37,11 @@ export class CourseController {
   }
 
   async leave(
-    request: FastifyRequest<{ Params: { classId: string } }>,
+    request: FastifyRequest<{ Params: { courseId: string } }>,
     reply: FastifyReply
   ) {
     try {
-      const courseId = request.params.classId;
+      const courseId = request.params.courseId;
       const userId = (request.user as any)?.id;
       const courseData = await this.courseService.leave(courseId, userId);
       reply.code(200).send(courseData);
@@ -61,11 +61,11 @@ export class CourseController {
   }
 
   async getUsersByClass(
-    request: FastifyRequest<{ Params: { classId: string } }>,
+    request: FastifyRequest<{ Params: { courseId: string } }>,
     reply: FastifyReply
   ) {
     try {
-      const courseId = request.params.classId;
+      const courseId = request.params.courseId;
       const users = await this.courseService.getUsersByCourse(courseId);
       reply.code(200).send(users);
     } catch (error) {
@@ -76,13 +76,13 @@ export class CourseController {
   async update(
     request: FastifyRequest<{
       Body: UpdateCourseDto;
-      Params: { classId: string };
+      Params: { courseId: string };
     }>,
     reply: FastifyReply
   ) {
     try {
       const courseData = request.body;
-      const courseId = request.params.classId;
+      const courseId = request.params.courseId;
       const userId = (request.user as any)?.id;
       const updatedCourse = await this.courseService.update(
         courseId,
@@ -96,11 +96,11 @@ export class CourseController {
   }
 
   async delete(
-    request: FastifyRequest<{ Params: { classId: string } }>,
+    request: FastifyRequest<{ Params: { courseId: string } }>,
     reply: FastifyReply
   ) {
     try {
-      const courseId = request.params.classId;
+      const courseId = request.params.courseId;
       const userId = (request.user as any)?.id;
       await this.courseService.delete(courseId, userId);
       reply.code(204).send();

@@ -17,14 +17,26 @@ export class PostService {
       relations: ['users'],
     });
     if (!existingCourse) throw HttpError.notFound('Clase no encontrada');
+    // console.log(existingCourse);
+    console.log(courseId, userId);
 
     const foundUser = await this.userRepository.findOne({
       where: { id: userId },
       relations: ['courses'],
     });
+    // console.log(foundUser);
     if (!foundUser) throw HttpError.notFound('Usuario no encontrado');
+    console.log(
+      'Cursos del usuario:',
+      foundUser.courses.map((c) => c.id)
+    );
+    console.log(
+      'Usuarios del curso:',
+      existingCourse.users.map((u) => u.id)
+    );
 
     const isInCourse = foundUser.courses.some((c) => c.id === courseId);
+
     if (!isInCourse)
       throw HttpError.forbidden('El usuario no pertenece a la clase');
 
