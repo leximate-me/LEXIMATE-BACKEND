@@ -52,7 +52,7 @@ export class CommentService {
 
     const comments = await this.commentRepository.find({
       where: { post: { id: existingPost.id } },
-      relations: ['user', 'user.people', 'user.fileUsers', 'post'],
+      relations: ['users', 'user.people', 'user.fileUsers', 'post'],
     });
 
     return comments;

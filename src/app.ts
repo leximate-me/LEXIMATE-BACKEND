@@ -10,6 +10,8 @@ import { seedRouter } from './modules/seed/routes/seed.route';
 import { logger } from './common/configs/logger.config';
 import { HttpError } from './common/libs/http-error';
 import avjErrors from 'ajv-errors';
+import fastifyEnv from '@fastify/env';
+import { envSchema } from './common/configs/env-schema.config';
 
 export class App {
   private app: FastifyInstance;
@@ -20,6 +22,7 @@ export class App {
       ajv: {
         customOptions: {
           allErrors: true,
+          coerceTypes: true,
         },
         plugins: [avjErrors],
       },
@@ -43,6 +46,10 @@ export class App {
   }
 
   public async listen() {
+    await this.app.register(fastifyEnv, {
+      schema: envSchema,
+      dotenv: true,
+    });
     await this.applyMiddlewares();
     await this.setRoutes();
 
