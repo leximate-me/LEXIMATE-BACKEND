@@ -25,37 +25,35 @@ Antes de ejecutar este proyecto, asegúrate de tener instalado lo siguiente:
 
 Sigue estos pasos para configurar y ejecutar el proyecto localmente:
 
-1.  **Clonar el repositorio**:
+1.**Clonar el repositorio**:
 
-    ```bash
-    git clone <URL_DEL_REPOSITORIO>
-    cd LEXIMATE-BACKEND
-    ```
+        ```bash
+        git clone <URL_DEL_REPOSITORIO>
+        cd LEXIMATE-BACKEND
+        ```
 
-2.  **Instalar dependencias**: Utiliza npm o Yarn para instalar las dependencias
-    del proyecto:
+2.**Instalar dependencias**: Utiliza npm o Yarn para instalar las dependencias
+del proyecto:
 
-    ```bash
-    npm install
-    # o
-    yarn install
-    ```
+        ```bash
+        npm install
+        # o
+        yarn install
+        ```
 
-3.  **Configuración de Variables de Entorno**: Crea un archivo `.env` en la raíz
-    del proyecto. Puedes usar el archivo `.env.example` (si existe) como
-    plantilla. Las variables de entorno esenciales incluyen:
-    - `PORT`: Puerto en el que se ejecutará el servidor (ej. `3000`).
-    - `DATABASE_URL`: URL de conexión a la base de datos PostgreSQL (ej.
-      `postgresql://user:password@localhost:5432/database_name`).
-    - `JWT_SECRET`: Clave secreta para la firma de tokens JWT.
-    - `CLOUDINARY_CLOUD_NAME`, `CLOUDINARY_API_KEY`, `CLOUDINARY_API_SECRET`:
-      Credenciales para Cloudinary (si se usa para almacenamiento de archivos).
-    - `AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`, `AWS_REGION`,
-      `AWS_BUCKET_NAME`: Credenciales para AWS S3 (si se usa para almacenamiento
-      de archivos).
-    - `RESEND_API_KEY`: Clave API para Resend (si se usa para envío de correos
-      electrónicos).
-    - Otras variables específicas de tu entorno.
+3.**Configuración de Variables de Entorno**: Crea un archivo `.env` en la raíz
+del proyecto. Puedes usar el archivo `.env.example` (si existe) como plantilla.
+Las variables de entorno esenciales incluyen: - `PORT`: Puerto en el que se
+ejecutará el servidor (ej. `3000`). - `DATABASE_URL`: URL de conexión a la base
+de datos PostgreSQL (ej.
+`postgresql://user:password@localhost:5432/database_name`). - `JWT_SECRET`:
+Clave secreta para la firma de tokens JWT. - `CLOUDINARY_CLOUD_NAME`,
+`CLOUDINARY_API_KEY`, `CLOUDINARY_API_SECRET`: Credenciales para Cloudinary (si
+se usa para almacenamiento de archivos). - `AWS_ACCESS_KEY_ID`,
+`AWS_SECRET_ACCESS_KEY`, `AWS_REGION`, `AWS_BUCKET_NAME`: Credenciales para AWS
+S3 (si se usa para almacenamiento de archivos). - `RESEND_API_KEY`: Clave API
+para Resend (si se usa para envío de correos electrónicos). - Otras variables
+específicas de tu entorno.
 
     Ejemplo de `.env`:
 
@@ -73,25 +71,21 @@ Sigue estos pasos para configurar y ejecutar el proyecto localmente:
     RESEND_API_KEY="re_your_resend_api_key"
     ```
 
-4.  **Levantar la Base de Datos (con Docker Compose)**: Si estás utilizando
-    Docker Compose para PostgreSQL, ejecuta:
+4.**Levantar la Base de Datos (con Docker Compose)**: Si estás utilizando Docker
+Compose para PostgreSQL, ejecuta:
 
-    ```bash
-    docker-compose up -d
-    ```
+        ```bash
+        docker-compose up -d
+        ```
 
     Esto iniciará un contenedor de PostgreSQL en segundo plano. Asegúrate de que
     tu `DATABASE_URL` en el archivo `.env` apunte a este contenedor (ej.
     `postgresql://user:password@localhost:5432/leximate_db`).
 
-5.  **Ejecutar Migraciones de Base de Datos**: Una vez que la base de datos esté
-    en funcionamiento, ejecuta las migraciones para crear el esquema de la base
-    de datos:
-    ```bash
-    npm run typeorm migration:run
-    # o
-    yarn typeorm migration:run
-    ```
+5.**Ejecutar Migraciones de Base de Datos**: Una vez que la base de datos esté
+en funcionamiento, ejecuta las migraciones para crear el esquema de la base de
+datos:
+`bash     npm run typeorm migration:run     # o     yarn typeorm migration:run     `
 
 ## Ejecución del Proyecto
 
@@ -100,9 +94,11 @@ Sigue estos pasos para configurar y ejecutar el proyecto localmente:
 Para iniciar el servidor en modo desarrollo (con recarga automática):
 
 ```bash
+
 npm run dev
 # o
 yarn dev
+
 ```
 
 El servidor estará disponible en `http://localhost:PORT` (donde `PORT` es el
@@ -114,24 +110,27 @@ Para compilar y ejecutar el proyecto en modo producción:
 
 1.  **Compilar el código TypeScript**:
 
-    ```bash
-    npm run build
-    # o
-    yarn build
-    ```
+        ```bash
+
+        npm run build
+        # o
+        yarn build
+        ```
 
 2.  **Iniciar el servidor**:
-    ```bash
-    npm run start
-    # o
-    yarn start
-    ```
+
+        ```bash
+            npm run start
+            # o
+            yarn start
+        ```
 
 ## Estructura del Proyecto
 
 El proyecto sigue una estructura modular, organizada de la siguiente manera:
 
 ```
+
 .
 ├── src/
 │   ├── app.ts                  # Configuración principal de la aplicación Fastify
