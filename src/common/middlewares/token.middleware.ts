@@ -1,6 +1,5 @@
 import jwt from 'jsonwebtoken';
 import { EnvConfiguration } from '../configs/env.config';
-import { logger } from '../configs/logger.config';
 import { TokenPayload } from '../interfaces/token-payload.interface';
 import { FastifyRequest, FastifyReply } from 'fastify';
 import { HttpError } from '../libs/http-error';
@@ -14,8 +13,7 @@ export const authRequired = async (
       request.cookies?.token || request.headers.authorization?.split(' ')[1];
 
     if (!token) {
-      reply.code(401).send({ message: 'Token no proporcionado' });
-      return;
+      throw HttpError.unauthorized('Token not provided');
     }
 
     const decoded = jwt.verify(
@@ -24,15 +22,13 @@ export const authRequired = async (
     ) as TokenPayload;
 
     if (!decoded) {
-      reply.code(401).send({ message: 'Token inválido' });
-      return;
+      throw HttpError.unauthorized('Invalid token');
     }
 
     request.user = decoded;
   } catch (error) {
-    reply.log.error(error);
-    reply.code(401).send({
-      message: error instanceof Error ? error.message : 'No autorizado',
-    });
+    throw error instanceof HttpError
+      ? error
+      : HttpError.unauthorized('No autorizado');
   }
 };

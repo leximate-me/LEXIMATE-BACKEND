@@ -5,9 +5,8 @@ import { requireRole } from '../../../common/middlewares/auth.middleware';
 import { postRouter } from '../../post/routes/post.route';
 import { CourseController } from '../course.controller';
 import { taskRouter } from '../../task/routes/task.route';
-import { validateDto } from '../../../common/middlewares/validator.middleware';
-import { CreateCourseDto } from '../dtos/create-course.dto';
-import { UpdateCourseDto } from '../dtos/update-course.dto';
+import { createCourseSchema } from '../schemas/create-course.schema';
+import { updateCourseSchema } from '../schemas/update-course.schema';
 
 export async function courseRouter(fastify: FastifyInstance) {
   const courseController = new CourseController();
@@ -20,10 +19,7 @@ export async function courseRouter(fastify: FastifyInstance) {
   fastify.register(postRouter, { prefix: '/:courseId/post' });
 
   fastify.post('/', {
-    preHandler: [
-      requireRole(['admin', 'teacher']),
-      validateDto(CreateCourseDto),
-    ],
+    schema: createCourseSchema,
     handler: courseController.create.bind(courseController),
   });
 
@@ -48,10 +44,8 @@ export async function courseRouter(fastify: FastifyInstance) {
   );
 
   fastify.put('/:courseId', {
-    preHandler: [
-      requireRole(['admin', 'teacher']),
-      validateDto(UpdateCourseDto),
-    ],
+    schema: updateCourseSchema,
+    preHandler: [requireRole(['admin', 'teacher'])],
     handler: courseController.update.bind(courseController),
   });
 

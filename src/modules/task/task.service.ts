@@ -10,8 +10,8 @@ import { UpdateTaskDto } from './dtos/update-task.dto';
 import { FileProps } from '../../common/interfaces/file-props';
 import { TaskSubmission } from './entities/task-submission.entity';
 import { SubmissionFile } from './entities/submission-file.entity';
-import { CreateTaskSubmissionDto } from './dtos/create-task-submission';
-import { UpdateTaskSubmissionDto } from './dtos/update-task-submission';
+import { CreateTaskSubmissionDto } from './dtos/create-task-submission.dto';
+import { UpdateTaskSubmissionDto } from './dtos/update-task-submission.dto';
 
 export class TaskService {
   private readonly userRepository = AppDataSource.getRepository(User);
@@ -109,8 +109,6 @@ export class TaskService {
       if (updateTaskDto.title) task.title = updateTaskDto.title;
       if (updateTaskDto.description)
         task.description = updateTaskDto.description;
-      if (updateTaskDto.status !== undefined)
-        task.status = updateTaskDto.status;
       if (updateTaskDto.due_date)
         task.due_date = new Date(updateTaskDto.due_date);
 

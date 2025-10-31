@@ -9,12 +9,21 @@ import { postRouter } from './modules/post/routes/post.route';
 import { seedRouter } from './modules/seed/routes/seed.route';
 import { logger } from './common/configs/logger.config';
 import { HttpError } from './common/libs/http-error';
+import avjErrors from 'ajv-errors';
 
 export class App {
   private app: FastifyInstance;
 
   constructor(private port: number) {
-    this.app = Fastify({ logger });
+    this.app = Fastify({
+      logger: logger,
+      ajv: {
+        customOptions: {
+          allErrors: true,
+        },
+        plugins: [avjErrors],
+      },
+    });
   }
 
   private async applyMiddlewares() {
@@ -37,59 +46,44 @@ export class App {
     await this.applyMiddlewares();
     await this.setRoutes();
 
+    this.app.setSchemaErrorFormatter((errors, dataVar) => {
+      const err = new Error('Error de validación');
+      (err as any).statusCode = 400;
+      (err as any).error = 'Bad Request';
+      (err as any).validation = errors.map((e) => ({
+        field: e.instancePath
+          ? e.instancePath.replace(/^\//, '')
+          : e.params.missingProperty,
+        message: e.message,
+      }));
+      return err;
+    });
+
     this.app.setErrorHandler((error, request, reply) => {
-      function getErrorText(statusCode: number) {
-        switch (statusCode) {
-          case 400:
-            return 'Bad Request';
-          case 401:
-            return 'Unauthorized';
-          case 402:
-            return 'Payment Required';
-          case 403:
-            return 'Forbidden';
-          case 404:
-            return 'Not Found';
-          case 405:
-            return 'Method Not Allowed';
-          case 409:
-            return 'Conflict';
-          case 415:
-            return 'Unsupported Media Type';
-          case 422:
-            return 'Unprocessable Entity';
-          case 429:
-            return 'Too Many Requests';
-          case 500:
-            return 'Internal Server Error';
-          case 501:
-            return 'Not Implemented';
-          case 503:
-            return 'Service Unavailable';
-          default:
-            return 'Error';
-        }
+      if ((error as any).validation) {
+        reply.send(error);
+        return;
       }
 
+      // Errores de negocio personalizados
       if (error instanceof HttpError) {
-        reply.code(error.statusCode).type('application/json').send({
+        reply.code(error.statusCode).send({
           statusCode: error.statusCode,
           error: error.getErrorText(),
-          message: error.publicMessage, // SIEMPRE usa publicMessage, sea string u objeto
+          message: error.publicMessage,
         });
-      } else {
-        const status = error.statusCode || 500;
-        reply
-          .code(status)
-          .type('application/json')
-          .send({
-            statusCode: status,
-            error: getErrorText(status),
-            message: error.message || 'Internal Server Error',
-          });
+        return;
       }
-      // console.log(error);
+
+      // Otros errores
+      const status = error.statusCode || 500;
+      reply.code(status).send({
+        statusCode: status,
+        error: 'Internal Server Error',
+        message: error.message || 'Error interno del servidor',
+      });
     });
+
     await this.app.listen({ port: this.port, host: '0.0.0.0' });
   }
 }

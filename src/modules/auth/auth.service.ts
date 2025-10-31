@@ -94,7 +94,7 @@ export class AuthService {
   }
 
   async verifyToken(token: string) {
-    if (!token) throw HttpError.unauthorized('Token no proporcionado');
+    if (!token) throw HttpError.unauthorized('Token not provided');
 
     const decoded = jwt.verify(
       token,
@@ -105,7 +105,7 @@ export class AuthService {
       where: { id: decoded.id },
     });
 
-    if (!existingUser) throw HttpError.notFound('Usuario no encontrado');
+    if (!existingUser) throw HttpError.notFound('User not found');
 
     return decoded;
   }
@@ -115,7 +115,7 @@ export class AuthService {
       where: { id: userId },
     });
 
-    if (!foundUser) throw HttpError.notFound('Usuario no encontrado');
+    if (!foundUser) throw HttpError.notFound('User not found');
 
     const userAvatar = await this.fileUserRepository.findOne({
       where: { user: { id: foundUser.id } },
@@ -135,7 +135,7 @@ export class AuthService {
   }
 
   logoutUser() {
-    return { message: 'Cerró sesión exitosamente' };
+    return { message: 'Successfully logged out' };
   }
 
   async deleteUser(userId: string) {
@@ -143,17 +143,17 @@ export class AuthService {
       where: { id: userId },
     });
 
-    if (!user) throw HttpError.notFound('Usuario no encontrado');
+    if (!user) throw HttpError.notFound('User not found');
 
     await this.userRepository.softRemove(user);
 
-    return { message: 'Usuario eliminado exitosamente' };
+    return { message: 'User successfully deleted' };
   }
 
   async sendEmailVerification(userId: string) {
     const user = await this.userRepository.findOne({ where: { id: userId } });
 
-    if (!user) throw HttpError.notFound('Usuario no encontrado');
+    if (!user) throw HttpError.notFound('User not found');
 
     const token = jwt.sign({ id: user.id }, EnvConfiguration().jwtSecret, {
       expiresIn: '1h',
@@ -166,7 +166,8 @@ export class AuthService {
       html: `<strong>Por favor, verifica tu correo electrónico haciendo clic en el siguiente enlace:</strong> <a href="http://localhost:8080/api/auth/verify-email?token=${token}">Verificar correo electrónico</a>`,
     });
 
-    if (error) throw new Error(`Error al enviar el correo: ${error.message}`);
+    if (error)
+      throw HttpError.internalServerError('Error sending verification email');
 
     return data;
   }
@@ -180,12 +181,12 @@ export class AuthService {
     const user = await this.userRepository.findOne({
       where: { id: decoded.id },
     });
-    if (!user) throw HttpError.notFound('Usuario no encontrado');
+    if (!user) throw HttpError.notFound('User not found');
 
     user.verified = true;
     await this.userRepository.save(user);
 
-    return { message: 'Correo electrónico verificado exitosamente' };
+    return { message: 'Email successfully verified' };
   }
 
   async updateProfileUser(

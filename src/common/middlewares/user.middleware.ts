@@ -1,6 +1,7 @@
 import { FastifyRequest, FastifyReply } from 'fastify';
 import { AppDataSource } from '../../database/db';
 import { User } from '../../modules/user/entities/user.entity';
+import { HttpError } from '../libs/http-error';
 
 export const verifyUserRequired = async (
   request: FastifyRequest,
@@ -13,9 +14,7 @@ export const verifyUserRequired = async (
     const user = await userRepo.findOne({ where: { id } });
 
     if (user?.verified !== true) {
-      reply.log.error('Usuario no verificado');
-      reply.code(403).send({ message: 'Usuario no verificado' });
-      return;
+      throw HttpError.forbidden('User not verified');
     }
   } catch (error) {
     reply.code(500).send({

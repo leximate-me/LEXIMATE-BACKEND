@@ -2,10 +2,9 @@ import { FastifyInstance } from 'fastify';
 import { verifyUserRequired } from '../../../common/middlewares/user.middleware';
 import { authRequired } from '../../../common/middlewares/token.middleware';
 import { CommentController } from '../comment.controller';
-import { validateDto } from '../../../common/middlewares/validator.middleware';
-import { CreateCommentDto } from '../dtos/create-comment.dto';
-import { UpdateCommentDto } from '../dtos/update-comment.dto';
 import { requireRole } from '../../../common/middlewares/auth.middleware';
+import { createCommentSchema } from '../schemas/create-comment.schema';
+import { updateCommentSchema } from '../schemas/update-comment.schema';
 
 export async function commentRouter(fastify: FastifyInstance) {
   const commentController = new CommentController();
@@ -17,7 +16,7 @@ export async function commentRouter(fastify: FastifyInstance) {
 
   // Crear comentario
   fastify.post('/', {
-    preHandler: [validateDto(CreateCommentDto)],
+    schema: createCommentSchema,
     handler: commentController.create.bind(commentController),
   });
 
@@ -29,7 +28,7 @@ export async function commentRouter(fastify: FastifyInstance) {
 
   // Actualizar comentario
   fastify.put('/:commentId', {
-    preHandler: [validateDto(UpdateCommentDto)],
+    schema: updateCommentSchema,
     handler: commentController.update.bind(commentController),
   });
 

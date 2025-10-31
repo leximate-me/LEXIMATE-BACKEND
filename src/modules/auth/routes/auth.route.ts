@@ -1,23 +1,21 @@
 import { FastifyInstance } from 'fastify';
 import { AuthController } from '../auth.controller';
-import { validateDto } from '../../../common/middlewares/validator.middleware';
-import { RegisterAuthDto } from '../dtos/register-auth.dto';
-import { LoginAuthDto } from '../dtos/login-auth.dto';
-// Adapta estos middlewares a Fastify si aún no lo hiciste
 import { authRequired } from '../../../common/middlewares/token.middleware';
 import { verifyUserRequired } from '../../../common/middlewares/user.middleware';
 import { uploadToStorage } from '../../../common/middlewares/upload.middleware';
+import { registerAuthSchema } from '../schemas/register-auth.schema';
+import { loginAuthSchema } from '../schemas/login-auth.schema';
 
 export async function authRouter(fastify: FastifyInstance) {
   const authController = new AuthController();
 
   fastify.post('/register', {
-    preHandler: [validateDto(RegisterAuthDto)],
+    schema: registerAuthSchema,
     handler: authController.register.bind(authController),
   });
 
   fastify.post('/login', {
-    preHandler: [validateDto(LoginAuthDto)],
+    schema: loginAuthSchema,
     handler: authController.login.bind(authController),
   });
 

@@ -4,6 +4,7 @@ import { UploadApiResponse } from 'cloudinary';
 import { EnvConfiguration } from '../configs/env.config';
 import { ToolService } from '../../modules/tool/tool.service';
 import { FastifyRequest, FastifyReply } from 'fastify';
+import { HttpError } from '../libs/http-error';
 
 export const uploadToStorage = async (
   request: FastifyRequest,
@@ -101,7 +102,7 @@ export const uploadToStorage = async (
 
       (request as any).fileProps = fileProps;
     } catch (error) {
-      reply.code(500).send({ message: 'Error al subir archivo', error });
+      throw HttpError.internalServerError('Error to upload file');
     }
   }
 };

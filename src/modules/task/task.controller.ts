@@ -2,8 +2,8 @@ import { FastifyRequest, FastifyReply } from 'fastify';
 import { TaskService } from './task.service';
 import { CreateTaskDto } from './dtos/create-task.dto';
 import { UpdateTaskDto } from './dtos/update-task.dto';
-import { CreateTaskSubmissionDto } from './dtos/create-task-submission';
-import { UpdateTaskSubmissionDto } from './dtos/update-task-submission';
+import { CreateTaskSubmissionDto } from './dtos/create-task-submission.dto';
+import { UpdateTaskSubmissionDto } from './dtos/update-task-submission.dto';
 
 export class TaskController {
   private taskService: TaskService = new TaskService();
