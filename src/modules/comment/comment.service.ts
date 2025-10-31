@@ -18,7 +18,7 @@ export class CommentService {
   ) {
     const existingPost = await this.postRepository.findOne({
       where: { id: postId },
-      relations: ['courses'],
+      relations: ['course'],
     });
     if (!existingPost) throw HttpError.notFound('Publicación no encontrada');
 
