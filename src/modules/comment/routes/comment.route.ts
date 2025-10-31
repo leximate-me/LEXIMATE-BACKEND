@@ -12,7 +12,7 @@ export async function commentRouter(fastify: FastifyInstance) {
   // Middlewares globales para todas las rutas de este router
   fastify.addHook('preHandler', authRequired);
   fastify.addHook('preHandler', verifyUserRequired);
-  fastify.addHook('preHandler', requireRole(['student', 'teacher']));
+  fastify.addHook('preHandler', requireRole(['admin', 'student', 'teacher']));
 
   // Crear comentario
   fastify.post('/', {

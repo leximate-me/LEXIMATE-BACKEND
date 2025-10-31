@@ -37,7 +37,7 @@ export class CommentService {
     const comment = this.commentRepository.create({
       content: createCommentDto.content,
       post: existingPost,
-      users: foundUser,
+      user: foundUser,
     });
     await this.commentRepository.save(comment);
 
@@ -52,7 +52,7 @@ export class CommentService {
 
     const comments = await this.commentRepository.find({
       where: { post: { id: existingPost.id } },
-      relations: ['users', 'user.people', 'user.fileUsers', 'post'],
+      relations: ['user', 'user.people', 'user.userFiles', 'post'],
     });
 
     return comments;
@@ -61,7 +61,7 @@ export class CommentService {
   async readOne(commentId: string) {
     const existingComment = await this.commentRepository.findOne({
       where: { id: commentId },
-      relations: ['user', 'user.people', 'user.fileUsers', 'post'],
+      relations: ['user', 'user.people', 'user.userFiles', 'post'],
     });
 
     if (!existingComment) throw HttpError.notFound('Comentario no encontrado');
@@ -85,7 +85,7 @@ export class CommentService {
     });
     if (!foundUser) throw HttpError.notFound('Usuario no encontrado');
 
-    if (existingComment.users.id !== foundUser.id) {
+    if (existingComment.user.id !== foundUser.id) {
       throw HttpError.forbidden(
         'No tiene permisos para editar este comentario'
       );
@@ -112,7 +112,7 @@ export class CommentService {
     if (!foundUser) throw HttpError.notFound('Usuario no encontrado');
 
     if (
-      existingComment.users.id !== foundUser.id ||
+      existingComment.user.id !== foundUser.id ||
       foundUser.role.name !== 'admin'
     ) {
       throw HttpError.forbidden(

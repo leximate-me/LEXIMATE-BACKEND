@@ -23,7 +23,7 @@ export class Comment {
   post: Post;
 
   @ManyToOne(() => User, (user) => user.comments)
-  users: User;
+  user: User;
 
   @DeleteDateColumn()
   deletedAt?: Date;
