@@ -36,6 +36,6 @@ export class App {
     await this.applyMiddlewares();
     await this.setRoutes();
 
-    await this.app.listen({ port: this.port, host: '127.0.0.1' });
+    await this.app.listen({ port: this.port, host: '0.0.0.0' });
   }
 }
