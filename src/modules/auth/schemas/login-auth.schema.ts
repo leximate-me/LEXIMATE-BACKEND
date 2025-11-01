@@ -7,7 +7,6 @@ export const loginAuthSchema = {
       password: {
         type: 'string',
         minLength: 8,
-        description: 'Password must be at least 8 characters long.',
       },
     },
   },
