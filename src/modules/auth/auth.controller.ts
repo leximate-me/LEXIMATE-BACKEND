@@ -10,23 +10,19 @@ export class AuthController {
     request: FastifyRequest<{ Body: RegisterAuthDto }>,
     reply: FastifyReply
   ) {
-    try {
-      const { newUser, token } = await this.authService.registerUser(
-        request.body
-      );
+    const { newUser, token } = await this.authService.registerUser(
+      request.body
+    );
 
-      reply
-        .setCookie('token', token, {
-          httpOnly: true,
-          secure: false,
-          sameSite: 'lax',
-          path: '/',
-        })
-        .code(201)
-        .send({ newUser, token });
-    } catch (error) {
-      reply.code(500).send({ message: (error as Error).message });
-    }
+    reply
+      .setCookie('token', token, {
+        httpOnly: true,
+        secure: false,
+        sameSite: 'lax',
+        path: '/',
+      })
+      .code(201)
+      .send({ newUser, token });
   }
 
   async login(

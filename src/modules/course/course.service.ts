@@ -19,20 +19,18 @@ export class CourseService {
       where: { id: userId },
       relations: ['courses'],
     });
-    if (!foundUser) throw HttpError.notFound('Usuario no encontrado');
+    if (!foundUser) throw HttpError.notFound('User not found');
 
     const course_code = crypto.randomBytes(5).toString('hex');
 
-    // Crea el curso y asocia el usuario
     const newCourse = this.courseRepository.create({
       name: createCourseDto.name,
       description: createCourseDto.description,
       class_code: course_code,
-      users: [foundUser], // <-- Asocia el usuario al curso
+      users: [foundUser],
     });
     await this.courseRepository.save(newCourse);
 
-    // También puedes agregar el curso al usuario (opcional, pero recomendable)
     foundUser.courses = [...(foundUser.courses || []), newCourse];
     await this.userRepository.save(foundUser);
 
@@ -44,12 +42,12 @@ export class CourseService {
       where: { id: userId },
       relations: ['courses'],
     });
-    if (!foundUser) throw HttpError.notFound('Usuario no encontrado');
+    if (!foundUser) throw HttpError.notFound('User not found');
 
     const courseData = await this.courseRepository.findOne({
       where: { class_code: courseCode },
     });
-    if (!courseData) throw HttpError.notFound('Curso no encontrado');
+    if (!courseData) throw HttpError.notFound('Course not found');
 
     foundUser.courses = [...(foundUser.courses || []), courseData];
     await this.userRepository.save(foundUser);
@@ -62,12 +60,12 @@ export class CourseService {
       where: { id: userId },
       relations: ['courses'],
     });
-    if (!foundUser) throw HttpError.notFound('Usuario no encontrado');
+    if (!foundUser) throw HttpError.notFound('User not found');
 
     const courseData = await this.courseRepository.findOne({
       where: { id: courseId },
     });
-    if (!courseData) throw HttpError.notFound('Curso no encontrado');
+    if (!courseData) throw HttpError.notFound('Course not found');
 
     foundUser.courses = (foundUser.courses || []).filter(
       (c) => c.id !== courseId
@@ -82,7 +80,7 @@ export class CourseService {
       where: { id: userId },
       relations: ['courses'],
     });
-    if (!foundUser) throw HttpError.notFound('Usuario no encontrado');
+    if (!foundUser) throw HttpError.notFound('User not found');
 
     return foundUser.courses || [];
   }
@@ -92,7 +90,7 @@ export class CourseService {
       where: { id: courseId },
       relations: ['users'],
     });
-    if (!courseData) throw HttpError.notFound('Curso no encontrado');
+    if (!courseData) throw HttpError.notFound('Course not found');
 
     if (!courseData.users || courseData.users.length === 0)
       throw HttpError.notFound('No hay usuarios en este curso');
@@ -108,12 +106,12 @@ export class CourseService {
     const foundUser = await this.userRepository.findOne({
       where: { id: userId },
     });
-    if (!foundUser) throw HttpError.notFound('Usuario no encontrado');
+    if (!foundUser) throw HttpError.notFound('User not found');
 
     const courseFound = await this.courseRepository.findOne({
       where: { id: courseId },
     });
-    if (!courseFound) throw HttpError.notFound('Curso no encontrado');
+    if (!courseFound) throw HttpError.notFound('Course not found');
 
     if (updateCourseDto.name) courseFound.name = updateCourseDto.name;
     if (updateCourseDto.description)
@@ -128,12 +126,12 @@ export class CourseService {
     const foundUser = await this.userRepository.findOne({
       where: { id: userId },
     });
-    if (!foundUser) throw HttpError.notFound('Usuario no encontrado');
+    if (!foundUser) throw HttpError.notFound('User not found');
 
     const courseFound = await this.courseRepository.findOne({
       where: { id: courseId },
     });
-    if (!courseFound) throw HttpError.notFound('Curso no encontrado');
+    if (!courseFound) throw HttpError.notFound('Course not found');
 
     await this.taskRepository.delete({ course: { id: courseId } });
     await this.postRepository.delete({ course: { id: courseId } });

@@ -20,19 +20,19 @@ export class CommentService {
       where: { id: postId },
       relations: ['course'],
     });
-    if (!existingPost) throw HttpError.notFound('Publicación no encontrada');
+    if (!existingPost) throw HttpError.notFound('Post not found');
 
     const foundUser = await this.userRepository.findOne({
       where: { id: userId },
       relations: ['courses'],
     });
-    if (!foundUser) throw HttpError.notFound('Usuario no encontrado');
+    if (!foundUser) throw HttpError.notFound('User not found');
 
     const isInClass = foundUser.courses.some(
       (c) => c.id === existingPost.course.id
     );
     if (!isInClass)
-      throw HttpError.forbidden('El usuario no pertenece a la clase');
+      throw HttpError.forbidden('The user does not belong to the class');
 
     const comment = this.commentRepository.create({
       content: createCommentDto.content,
@@ -48,7 +48,7 @@ export class CommentService {
     const existingPost = await this.postRepository.findOne({
       where: { id: postId },
     });
-    if (!existingPost) throw HttpError.notFound('Publicación no encontrada');
+    if (!existingPost) throw HttpError.notFound('Post not found');
 
     const comments = await this.commentRepository.find({
       where: { post: { id: existingPost.id } },
@@ -64,7 +64,7 @@ export class CommentService {
       relations: ['user', 'user.people', 'user.userFiles', 'post'],
     });
 
-    if (!existingComment) throw HttpError.notFound('Comentario no encontrado');
+    if (!existingComment) throw HttpError.notFound('Comment not found');
 
     return existingComment;
   }
@@ -78,16 +78,16 @@ export class CommentService {
       where: { id: commentId },
       relations: ['user'],
     });
-    if (!existingComment) throw HttpError.notFound('Comentario no encontrado');
+    if (!existingComment) throw HttpError.notFound('Comment not founds');
 
     const foundUser = await this.userRepository.findOne({
       where: { id: userId },
     });
-    if (!foundUser) throw HttpError.notFound('Usuario no encontrado');
+    if (!foundUser) throw HttpError.notFound('User not found');
 
     if (existingComment.user.id !== foundUser.id) {
       throw HttpError.forbidden(
-        'No tiene permisos para editar este comentario'
+        'You do not have permission to edit this comment.'
       );
     }
 
@@ -103,25 +103,25 @@ export class CommentService {
       where: { id: commentId },
       relations: ['user'],
     });
-    if (!existingComment) throw HttpError.notFound('Comentario no encontrado');
+    if (!existingComment) throw HttpError.notFound('Comment not found');
 
     const foundUser = await this.userRepository.findOne({
       where: { id: userId },
       relations: ['role'],
     });
-    if (!foundUser) throw HttpError.notFound('Usuario no encontrado');
+    if (!foundUser) throw HttpError.notFound('User not found');
 
     if (
       existingComment.user.id !== foundUser.id ||
       foundUser.role.name !== 'admin'
     ) {
       throw HttpError.forbidden(
-        'No tiene permisos para eliminar este comentario'
+        'You do not have permission to delete this comment.'
       );
     }
 
     await this.commentRepository.remove(existingComment);
 
-    return { message: 'Comentario eliminado exitosamente' };
+    return { message: 'Comment successfully deleted' };
   }
 }

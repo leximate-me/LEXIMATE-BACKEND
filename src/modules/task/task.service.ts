@@ -39,16 +39,17 @@ export class TaskService {
         relations: ['role', 'courses'],
       });
 
-      if (!foundUser) throw HttpError.notFound('Usuario no encontrado');
+      if (!foundUser) throw HttpError.notFound('User not found');
 
       const courseData = await this.courseRepository.findOne({
         where: { id: courseId },
         relations: ['users'],
       });
-      if (!courseData) throw HttpError.notFound('Clase no encontrada');
+      if (!courseData) throw HttpError.notFound('Course not found');
 
       const isInCourse = courseData.users.some((u) => u.id === userId);
-      if (!isInCourse) throw HttpError.forbidden('No perteneces a esta clase');
+      if (!isInCourse)
+        throw HttpError.forbidden('The user does not belong to the class');
 
       const newTask = this.taskRepository.create({
         title: createTaskDto.title,
@@ -94,17 +95,13 @@ export class TaskService {
         where: { id: userId },
         relations: ['role'],
       });
-      if (!foundUser) throw HttpError.notFound('Usuario no encontrado');
-
-      if (foundUser.role.name.toLowerCase() !== 'teacher') {
-        throw HttpError.forbidden('No eres profesor para actualizar una tarea');
-      }
+      if (!foundUser) throw HttpError.notFound('User not found');
 
       const task = await this.taskRepository.findOne({
         where: { id: taskId },
         relations: ['course'],
       });
-      if (!task) throw HttpError.notFound('Tarea no encontrada');
+      if (!task) throw HttpError.notFound('Task not found');
 
       if (updateTaskDto.title) task.title = updateTaskDto.title;
       if (updateTaskDto.description)
@@ -136,7 +133,7 @@ export class TaskService {
       }
 
       await queryRunner.commitTransaction();
-      return { msg: 'Tarea actualizada correctamente' };
+      return { message: 'Task updated successfully' };
     } catch (error) {
       await queryRunner.rollbackTransaction();
       throw error;
@@ -155,23 +152,20 @@ export class TaskService {
         where: { id: userId },
         relations: ['role', 'courses'],
       });
-      if (!foundUser) throw HttpError.notFound('Usuario no encontrado');
-
-      if (foundUser.role.name.toLowerCase() !== 'teacher') {
-        throw HttpError.forbidden('No eres profesor para eliminar una tarea');
-      }
+      if (!foundUser) throw HttpError.notFound('User not found');
 
       const courseData = await this.courseRepository.findOne({
         where: { id: courseId },
         relations: ['users'],
       });
-      if (!courseData) throw HttpError.notFound('Clase no encontrada');
+      if (!courseData) throw HttpError.notFound('Course not found');
 
       const isInCourse = courseData.users.some((u) => u.id === userId);
-      if (!isInCourse) throw HttpError.forbidden('No perteneces a esta clase');
+      if (!isInCourse)
+        throw HttpError.forbidden('The user does not belong to the class');
 
       const task = await this.taskRepository.findOne({ where: { id: taskId } });
-      if (!task) throw HttpError.notFound('Tarea no encontrada');
+      if (!task) throw HttpError.notFound('Task not found');
 
       const file = await this.fileTaskRepository.findOne({
         where: { task: { id: taskId } },
@@ -208,16 +202,17 @@ export class TaskService {
       where: { id: userId },
       relations: ['courses'],
     });
-    if (!foundUser) throw HttpError.notFound('Usuario no encontrado');
+    if (!foundUser) throw HttpError.notFound('User not found');
 
     const courseData = await this.courseRepository.findOne({
       where: { id: courseId },
       relations: ['users'],
     });
-    if (!courseData) throw HttpError.notFound('Clase no encontrada');
+    if (!courseData) throw HttpError.notFound('Course not found');
 
     const isInCourse = courseData.users.some((u) => u.id === userId);
-    if (!isInCourse) throw HttpError.forbidden('No perteneces a esta clase');
+    if (!isInCourse)
+      throw HttpError.forbidden('The user does not belong to the class');
 
     const tasks = await this.taskRepository.find({
       where: { course: { id: courseId } },
@@ -243,21 +238,22 @@ export class TaskService {
       where: { id: userId },
       relations: ['courses'],
     });
-    if (!foundUser) throw HttpError.notFound('Usuario no encontrado');
+    if (!foundUser) throw HttpError.notFound('User not found');
 
     const courseData = await this.courseRepository.findOne({
       where: { id: courseId },
       relations: ['users'],
     });
-    if (!courseData) throw HttpError.notFound('Clase no encontrada');
+    if (!courseData) throw HttpError.notFound('Course not found');
 
     const isInCourse = courseData.users.some((u) => u.id === userId);
-    if (!isInCourse) throw HttpError.forbidden('No perteneces a esta clase');
+    if (!isInCourse)
+      throw HttpError.forbidden('The user does not belong to the class');
 
     const task = await this.taskRepository.findOne({
       where: { id: taskId },
     });
-    if (!task) throw HttpError.notFound('Tarea no encontrada');
+    if (!task) throw HttpError.notFound('Task not found');
 
     const files = await this.fileTaskRepository.find({
       where: { task: { id: taskId } },
@@ -276,10 +272,10 @@ export class TaskService {
     fileProps?: any
   ) {
     const task = await this.taskRepository.findOne({ where: { id: taskId } });
-    if (!task) throw HttpError.notFound('Tarea no encontrada');
+    if (!task) throw HttpError.notFound('Task not found');
 
     const user = await this.userRepository.findOne({ where: { id: userId } });
-    if (!user) throw HttpError.notFound('Usuario no encontrado');
+    if (!user) throw HttpError.notFound('User not found');
 
     const submission = this.submissionRepository.create({
       task,
@@ -322,11 +318,13 @@ export class TaskService {
       where: { id: submissionId },
       relations: ['user'],
     });
-    if (!submission) throw HttpError.notFound('Entrega no encontrada');
+    if (!submission) throw HttpError.notFound('Submission not found');
 
     // Solo el dueño puede actualizar
     if (submission.user.id !== userId) {
-      throw HttpError.forbidden('No puedes actualizar esta entrega');
+      throw HttpError.forbidden(
+        'You do not have permission to update this submission'
+      );
     }
 
     if (updateDto.comment !== undefined) submission.comment = updateDto.comment;
@@ -343,14 +341,16 @@ export class TaskService {
       where: { id: submissionId },
       relations: ['user'],
     });
-    if (!submission) throw HttpError.notFound('Entrega no encontrada');
+    if (!submission) throw HttpError.notFound('Submission not found');
 
     // Solo el dueño puede eliminar
     if (submission.user.id !== userId) {
-      throw HttpError.forbidden('No puedes eliminar esta entrega');
+      throw HttpError.forbidden(
+        'You do not have permission to delete this submission'
+      );
     }
 
     await this.submissionRepository.delete({ id: submissionId });
-    return { message: 'Entrega eliminada correctamente' };
+    return { message: 'Delivery successfully deleted' };
   }
 }

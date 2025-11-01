@@ -74,14 +74,13 @@ export class AuthService {
 
   async loginUser(dto: LoginAuthDto) {
     const user = await this.userService.findByEmail(dto.email);
-    if (!user) throw HttpError.unauthorized('crredenciales inválidas');
+    if (!user) throw HttpError.unauthorized('Invalid credentials');
 
     const isValidPassword = await this.bcryptAdapter.compare(
       dto.password,
       user.password
     );
-    if (!isValidPassword)
-      throw HttpError.unauthorized('credenciales inválidass');
+    if (!isValidPassword) throw HttpError.unauthorized('Invalid credentials');
 
     const token = await createAccessToken({
       id: user.id,
@@ -217,6 +216,6 @@ export class AuthService {
       throw HttpError.badRequest(error.detail);
     }
 
-    throw HttpError.internalServerError('Error en la base de datos');
+    throw HttpError.internalServerError('Database error');
   }
 }

@@ -16,7 +16,7 @@ export class PostService {
       where: { id: courseId },
       relations: ['users'],
     });
-    if (!existingCourse) throw HttpError.notFound('Clase no encontrada');
+    if (!existingCourse) throw HttpError.notFound('Course not found');
     // console.log(existingCourse);
     console.log(courseId, userId);
 
@@ -25,7 +25,7 @@ export class PostService {
       relations: ['courses'],
     });
     // console.log(foundUser);
-    if (!foundUser) throw HttpError.notFound('Usuario no encontrado');
+    if (!foundUser) throw HttpError.notFound('User not found');
     console.log(
       'Cursos del usuario:',
       foundUser.courses.map((c) => c.id)
@@ -38,7 +38,7 @@ export class PostService {
     const isInCourse = foundUser.courses.some((c) => c.id === courseId);
 
     if (!isInCourse)
-      throw HttpError.forbidden('El usuario no pertenece a la clase');
+      throw HttpError.forbidden('The user does not belong to the class');
 
     const post = this.postRepository.create({
       title: createPostDto.title,
@@ -56,17 +56,17 @@ export class PostService {
       where: { id: courseId },
       relations: ['users'],
     });
-    if (!existingCourse) throw HttpError.notFound('Clase no encontrada');
+    if (!existingCourse) throw HttpError.notFound('Course not found');
 
     const foundUser = await this.userRepository.findOne({
       where: { id: userId },
       relations: ['courses'],
     });
-    if (!foundUser) throw HttpError.notFound('Usuario no encontrado');
+    if (!foundUser) throw HttpError.notFound('User not found');
 
     const isInCourse = foundUser.courses.some((c) => c.id === courseId);
     if (!isInCourse)
-      throw HttpError.forbidden('El usuario no pertenece a la clase');
+      throw HttpError.forbidden('The user does not belong to the class');
 
     const posts = await this.postRepository.find({
       where: { course: { id: courseId } },
@@ -81,24 +81,24 @@ export class PostService {
       where: { id: courseId },
       relations: ['users'],
     });
-    if (!existingCourse) throw HttpError.notFound('Clase no encontrada');
+    if (!existingCourse) throw HttpError.notFound('Course not found');
 
     const foundUser = await this.userRepository.findOne({
       where: { id: userId },
       relations: ['courses'],
     });
-    if (!foundUser) throw HttpError.notFound('Usuario no encontrado');
+    if (!foundUser) throw HttpError.notFound('User not found');
 
     const isInCourse = foundUser.courses.some((c) => c.id === courseId);
     if (!isInCourse)
-      throw HttpError.forbidden('El usuario no pertenece a la clase');
+      throw HttpError.forbidden('The user does not belong to the class');
 
     const post = await this.postRepository.findOne({
       where: { id: postId, course: { id: courseId } },
       relations: ['user', 'user.people', 'course'],
     });
 
-    if (!post) throw HttpError.notFound('Publicación no encontrada');
+    if (!post) throw HttpError.notFound('Post not found');
 
     return post;
   }
@@ -113,22 +113,22 @@ export class PostService {
       where: { id: courseId },
       relations: ['users'],
     });
-    if (!existingCourse) throw HttpError.notFound('Clase no encontrada');
+    if (!existingCourse) throw HttpError.notFound('Course not found');
 
     const foundUser = await this.userRepository.findOne({
       where: { id: userId },
       relations: ['courses'],
     });
-    if (!foundUser) throw HttpError.notFound('Usuario no encontrado');
+    if (!foundUser) throw HttpError.notFound('User not found');
 
     const isInCourse = foundUser.courses.some((c) => c.id === courseId);
     if (!isInCourse)
-      throw HttpError.forbidden('El usuario no pertenece a la clase');
+      throw HttpError.forbidden('The user does not belong to the class');
 
     const post = await this.postRepository.findOne({
       where: { id: postId, course: { id: courseId }, user: { id: userId } },
     });
-    if (!post) throw HttpError.notFound('Publicación no encontrada');
+    if (!post) throw HttpError.notFound('Post not found');
 
     if (updatePostDto.title) post.title = updatePostDto.title;
     if (updatePostDto.content) post.content = updatePostDto.content;
@@ -143,25 +143,25 @@ export class PostService {
       where: { id: courseId },
       relations: ['users'],
     });
-    if (!existingCourse) throw HttpError.notFound('Clase no encontrada');
+    if (!existingCourse) throw HttpError.notFound('Course not found');
 
     const foundUser = await this.userRepository.findOne({
       where: { id: userId },
       relations: ['courses'],
     });
-    if (!foundUser) throw HttpError.notFound('Usuario no encontrado');
+    if (!foundUser) throw HttpError.notFound('User not found');
 
     const isInCourse = foundUser.courses.some((c) => c.id === courseId);
     if (!isInCourse)
-      throw HttpError.forbidden('El usuario no pertenece a la clase');
+      throw HttpError.forbidden('The user does not belong to the class');
 
     const post = await this.postRepository.findOne({
       where: { id: postId, course: { id: courseId } },
     });
-    if (!post) throw HttpError.notFound('Publicación no encontrada');
+    if (!post) throw HttpError.notFound('Post not found');
 
     await this.postRepository.remove(post);
 
-    return { message: 'Publicación eliminada correctamente' };
+    return { message: 'Post successfully removed' };
   }
 }
