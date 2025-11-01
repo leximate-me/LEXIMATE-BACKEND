@@ -102,7 +102,6 @@ export class AuthController {
 
     let fileUrl, fileId, fileType;
 
-    // Si usas @fastify/multipart, adapta la obtención del archivo aquí
     const file = (request as any).file || (request as any).files?.[0];
     if (file && file.cloudinaryUrl) {
       fileUrl = file.cloudinaryUrl;
