@@ -9,7 +9,7 @@ const createAccessToken = async (payload: PayloadData): Promise<string> => {
     const token = await new Promise<string>((resolve, reject) => {
       jwt.sign(
         payload,
-        process.env.JWT_SECRET,
+        process.env.JWT_SECRET_KEY,
         { expiresIn: '5h' },
         (err, token) => {
           if (err) {
