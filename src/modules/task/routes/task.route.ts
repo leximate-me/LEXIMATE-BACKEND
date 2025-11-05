@@ -22,7 +22,7 @@ export async function taskRouter(fastify: FastifyInstance) {
   // Crear tarea
   fastify.post('/', {
     schema: createTaskSchema,
-    preHandler: [uploadToStorage],
+    preValidation: [uploadToStorage],
     handler: taskController.create.bind(taskController),
   });
 

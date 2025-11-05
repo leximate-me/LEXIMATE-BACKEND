@@ -94,7 +94,10 @@ export class AuthService {
   async verifyToken(token: string) {
     if (!token) throw HttpError.unauthorized('Token not provided');
 
-    const decoded = jwt.verify(token, process.env.JWT_SECRET) as TokenPayload;
+    const decoded = jwt.verify(
+      token,
+      process.env.JWT_SECRET_KEY
+    ) as TokenPayload;
 
     const existingUser = await this.userRepository.findOne({
       where: { id: decoded.id },
