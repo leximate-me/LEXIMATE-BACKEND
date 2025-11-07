@@ -1,13 +1,16 @@
 import { FastifyRequest, FastifyReply } from 'fastify';
 import { ToolService } from './tool.service';
+import { HttpError } from '../../common/libs/http-error';
 
 export class ToolController {
   private toolService: ToolService = new ToolService();
 
-  async extractTextFromFile(request: FastifyRequest, reply: FastifyReply) {
-    const imageUrl = (request.query as any).imageUrl as string;
-    const text = await this.toolService.extractTextFromImage(imageUrl);
-    reply.code(200).send(text);
+  async extractTextFromLocalUrl(request: FastifyRequest, reply: FastifyReply) {
+    // Lee el parámetro de la URL
+    const localUrl = (request.params as any).localUrl as string;
+
+    const result = await this.toolService.extractTextFromLocalPath(localUrl);
+    reply.code(200).send({ text: result.text });
   }
 
   async chatBotResponse(request: FastifyRequest, reply: FastifyReply) {

@@ -14,8 +14,8 @@ export async function toolRouter(fastify: FastifyInstance) {
 
   // Extraer texto de imagen
   fastify.post(
-    '/extract-text-from-img',
-    toolController.extractTextFromFile.bind(toolController)
+    '/extract-text/:localUrl',
+    toolController.extractTextFromLocalUrl.bind(toolController)
   );
 
   // Chatbot
