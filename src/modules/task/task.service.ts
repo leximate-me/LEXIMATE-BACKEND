@@ -225,7 +225,9 @@ export class TaskService {
     });
 
     return tasks.map((task) => {
-      const taskFiles = files.filter((file) => file.task.id === task.id);
+      const taskFiles = files.filter(
+        (file) => file.task && file.task.id === task.id
+      );
       return {
         ...task,
         files: taskFiles,
