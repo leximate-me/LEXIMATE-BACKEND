@@ -14,7 +14,7 @@ export async function toolRouter(fastify: FastifyInstance) {
 
   // Extraer texto de imagen
   fastify.post(
-    '/extract-text/:localUrl',
+    '/extract-text',
     toolController.extractTextFromLocalUrl.bind(toolController)
   );
 
