@@ -130,8 +130,13 @@ export class CourseService {
 
     const courseFound = await this.courseRepository.findOne({
       where: { id: courseId },
+      relations: ['users'],
     });
     if (!courseFound) throw HttpError.notFound('Course not found');
+
+    // Elimina la relación con los usuarios
+    courseFound.users = [];
+    await this.courseRepository.save(courseFound);
 
     await this.taskRepository.delete({ course: { id: courseId } });
     await this.postRepository.delete({ course: { id: courseId } });
