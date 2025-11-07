@@ -11,8 +11,13 @@ export class ToolService {
       if (!localUrl) {
         throw HttpError.badRequest('La URL local del PDF es requerida');
       }
-      // Convierte la URL local a ruta absoluta
-      const filePath = path.join(process.cwd(), localUrl.replace(/^\/+/, ''));
+      // Siempre busca en la carpeta public
+      const filePath = path.resolve(
+        process.cwd(),
+        'public',
+        localUrl.replace(/^public\/+/, '').replace(/^\/+/, '')
+      );
+      console.log('Intentando leer:', filePath);
       const buffer = await fs.readFile(filePath);
       const uint8Array = new Uint8Array(buffer);
       const parser = new PDFParse({ data: uint8Array });

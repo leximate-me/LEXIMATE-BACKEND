@@ -7,7 +7,8 @@ export class ToolController {
 
   async extractTextFromLocalUrl(request: FastifyRequest, reply: FastifyReply) {
     // Lee el parámetro de la URL
-    const localUrl = (request.params as any).localUrl as string;
+    const localUrl = (request.query as any).localUrl as string;
+    console.log('Extracting text from local URL:', localUrl);
 
     const result = await this.toolService.extractTextFromLocalPath(localUrl);
     reply.code(200).send({ text: result.text });
