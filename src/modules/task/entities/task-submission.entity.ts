@@ -17,6 +17,7 @@ TaskStatus;
 export class TaskSubmission {
   @PrimaryGeneratedColumn('uuid')
   id: string;
+
   @Column({
     type: 'enum',
     enum: TaskStatus,

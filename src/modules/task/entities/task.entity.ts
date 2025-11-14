@@ -18,13 +18,13 @@ export class Task {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @Column({ length: 50 })
+  @Column({ type: 'varchar', length: 50 })
   title: string;
 
-  @Column({ length: 100, nullable: true })
+  @Column({ type: 'varchar', length: 100, nullable: true })
   description: string;
 
-  @Column({ default: false })
+  @Column({ type: 'bool', default: false })
   status: boolean;
 
   @Column({ type: 'timestamp', nullable: true })

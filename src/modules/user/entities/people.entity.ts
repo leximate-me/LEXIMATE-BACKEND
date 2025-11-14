@@ -12,19 +12,19 @@ export class People {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @Column({ length: 50 })
+  @Column({ type: 'varchar', length: 50 })
   first_name: string;
 
-  @Column({ length: 50 })
+  @Column({ type: 'varchar', length: 50 })
   last_name: string;
 
-  @Column({ length: 8 })
+  @Column({ type: 'varchar', length: 8 })
   dni: string;
 
-  @Column({ length: 100 })
+  @Column({ type: 'varchar', length: 100 })
   institute: string;
 
-  @Column({ length: 15 })
+  @Column({ type: 'varchar', length: 15 })
   phone_number: string;
 
   @Column({ type: 'date' })

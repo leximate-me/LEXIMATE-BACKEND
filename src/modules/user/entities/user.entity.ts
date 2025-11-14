@@ -22,16 +22,16 @@ export class User {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @Column({ length: 50, unique: true })
+  @Column({ type: 'varchar', length: 50, unique: true })
   user_name: string;
 
-  @Column({ length: 50, unique: true })
+  @Column({ type: 'varchar', length: 50, unique: true })
   email: string;
 
-  @Column({ length: 100 })
+  @Column({ type: 'varchar', length: 100 })
   password: string;
 
-  @Column({ default: false })
+  @Column({ type: 'bool', default: false })
   verified: boolean;
 
   @ManyToOne(() => People, (people) => people.users, {

@@ -12,13 +12,13 @@ export class SubmissionFile {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @Column({ length: 100 })
+  @Column({ type: 'varchar' })
   file_id: string;
 
-  @Column()
+  @Column({ type: 'varchar' })
   file_url: string;
 
-  @Column({ length: 50 })
+  @Column({ type: 'varchar' })
   file_type: string;
 
   @ManyToOne(() => TaskSubmission, (submission) => submission.files)
