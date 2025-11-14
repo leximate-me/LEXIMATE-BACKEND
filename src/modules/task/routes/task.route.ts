@@ -42,6 +42,12 @@ export async function taskRouter(fastify: FastifyInstance) {
     handler: taskController.createSubmission.bind(taskController),
   });
 
+  fastify.patch('/:taskId/submissions/:studentId/qualify', {
+    schema: updateTaskSubmissionSchema,
+    preValidation: [authRequired],
+    handler: taskController.qualifySubmission.bind(taskController),
+  });
+
   fastify.get(
     '/:taskId/submissions',
     taskController.getSubmissionsByTask.bind(taskController)

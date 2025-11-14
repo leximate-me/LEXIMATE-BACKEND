@@ -305,6 +305,44 @@ export class TaskService {
     return submission;
   }
 
+  async qualifySubmission(
+    taskId: string,
+    studentId: string,
+    updateDto: UpdateTaskSubmissionDto
+  ) {
+    if (taskId!) throw HttpError.badRequest('Task ID is required');
+
+    if (studentId!) throw HttpError.badRequest('Student ID is required');
+
+    let submission = await this.submissionRepository.findOne({
+      where: { task: { id: taskId }, user: { id: studentId } },
+    });
+
+    if (!submission) {
+      // Crear una entrega vacía para poder calificar
+      submission = this.submissionRepository.create({
+        task: { id: taskId } as Task,
+        user: { id: studentId } as User,
+        comment: updateDto.comment ?? '',
+        status: updateDto.status ?? TaskStatus.NOT_SUBMITTED,
+        qualification: updateDto.qualification,
+      });
+    } else {
+      if (updateDto.qualification !== undefined) {
+        submission.qualification = updateDto.qualification;
+      }
+      if (updateDto.comment !== undefined) {
+        submission.comment = updateDto.comment;
+      }
+      if (updateDto.status !== undefined) {
+        submission.status = updateDto.status;
+      }
+    }
+
+    await this.submissionRepository.save(submission);
+    return submission;
+  }
+
   async getSubmissionsByTask(taskId: string) {
     return this.submissionRepository.find({
       where: { task: { id: taskId } },

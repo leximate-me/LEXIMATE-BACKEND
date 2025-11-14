@@ -112,6 +112,24 @@ export class TaskController {
     reply.code(201).send(submission);
   }
 
+  async qualifySubmission(
+    request: FastifyRequest<{
+      Params: { taskId: string; studentId: string };
+      Body: UpdateTaskSubmissionDto;
+    }>,
+    reply: FastifyReply
+  ) {
+    const { taskId, studentId } = request.params;
+    const updateDto: UpdateTaskSubmissionDto = request.body;
+
+    const result = await this.taskService.qualifySubmission(
+      taskId,
+      studentId,
+      updateDto
+    );
+    reply.send(result);
+  }
+
   async getSubmissionsByTask(
     request: FastifyRequest<{ Params: { taskId: string } }>,
     reply: FastifyReply
