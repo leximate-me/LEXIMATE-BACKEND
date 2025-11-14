@@ -5,8 +5,9 @@
   "main": "build/index.js",
   "type": "commonjs",
   "scripts": {
+    "load:workflows": "tsx scripts/load-n8n-workflows.ts",
+    "start:dev": "nodemon",
     "start:build": "swc src -d dist && tsc-alias -p tsconfig.json",
-    "start:dev": "nodemon --exec tsx src/index.ts",
     "start:prod": "node dist/index.js"
   },
   "keywords": [],

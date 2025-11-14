@@ -1,0 +1,225 @@
+{
+  "name": "Gemini_Chatbot",
+  "nodes": [
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.body.message }}",
+        "options": {
+          "systemMessage": "Eres un asistente encargado de responde preguntas utilizando una tool de recuperacion de documentos.\n\nUtiliza tecnicas y transformaciones para el contenido del texto. Las respuestas seran enviadas a personas con dislexia.\n\nFormato requerido de respuesta : \nMarkdown\n"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2.2,
+      "position": [
+        320,
+        0
+      ],
+      "id": "32e96b8f-40a8-4290-a7cd-54a3d7991a58",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        192,
+        208
+      ],
+      "id": "b5fd69ca-0c85-445d-b4ac-5767758a1404",
+      "name": "Google Gemini Chat Model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "ktRSlQa7Xc6uzCYI",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "retrieve-as-tool",
+        "toolDescription": "Un Tool para recuperacion de documentos",
+        "tableName": {
+          "__rl": true,
+          "value": "documents",
+          "mode": "list",
+          "cachedResultName": "documents"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.vectorStoreSupabase",
+      "typeVersion": 1.3,
+      "position": [
+        576,
+        208
+      ],
+      "id": "0466bb8b-1006-484f-9edc-b73c84c534e2",
+      "name": "Supabase Vector Store",
+      "credentials": {
+        "supabaseApi": {
+          "id": "dnJIrsd9rEEFReQk",
+          "name": "Supabase account"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "type": "@n8n/n8n-nodes-langchain.embeddingsGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        672,
+        384
+      ],
+      "id": "ee295bac-3129-4b4b-be4c-504bb7d2c52b",
+      "name": "Embeddings Google Gemini",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "ktRSlQa7Xc6uzCYI",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "query_chat",
+        "authentication": "jwtAuth",
+        "responseMode": "responseNode",
+        "options": {
+          "rawBody": false
+        }
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "7d10f903-029a-4aef-83be-a143295f1cff",
+      "name": "Webhook",
+      "webhookId": "d9c59664-2f52-4092-8967-0a9246565d00",
+      "credentials": {
+        "jwtAuth": {
+          "id": "3h9HxvvVt7OrRoZf",
+          "name": "JWT Auth account"
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [
+        704,
+        0
+      ],
+      "id": "7f5251bf-e596-4aab-8c52-1fe7bb150e30",
+      "name": "Respond to Webhook"
+    },
+    {
+      "parameters": {
+        "sessionIdType": "customKey",
+        "sessionKey": "={{ $json.headers.authorization }}"
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryPostgresChat",
+      "typeVersion": 1.3,
+      "position": [
+        336,
+        208
+      ],
+      "id": "c03ef63a-3e2c-4f5e-bfaf-09b057ce75b8",
+      "name": "Postgres Chat Memory",
+      "credentials": {
+        "postgres": {
+          "id": "XrlhiFAeG9TtV3SK",
+          "name": "Postgres account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Supabase Vector Store": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Embeddings Google Gemini": {
+      "ai_embedding": [
+        [
+          {
+            "node": "Supabase Vector Store",
+            "type": "ai_embedding",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Postgres Chat Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "dce355f6-9c61-48f0-b459-705b4917651d",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "a4047b36dbb0adaf97da0decbc61aca237a31b593b159bb9a3b8d78dcfcfa2df"
+  },
+  "id": "eERq3KPTbh62zbbt",
+  "tags": []
+}

@@ -2,25 +2,82 @@ services:
   postgres:
     image: postgres:16-alpine
     restart: always
+    container_name: leximate_db
     ports:
       - '${DB_PORT}:5432'
     environment:
       POSTGRES_DB: ${DB_NAME}
       POSTGRES_USER: ${DB_USER}
       POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_INITDB_ARGS: '-c max_connections=100 -c shared_buffers=256MB'
     volumes:
-      - ./postgres:/var/lib/postgres/data
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - leximate-network
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U ${DB_USER}']
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  backend:
+    build: .
+    container_name: leximate-backend
+    restart: always
+    ports:
+      - '8080:8080'
+    env_file:
+      - .env
+    volumes:
+      - .:/app
+      - /app/node_modules
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - leximate-network
+    command: npm run start:dev
+
   n8n:
     image: n8nio/n8n:latest
+    container_name: leximate-n8n
+    restart: always
     ports:
       - '5678:5678'
     volumes:
       - n8n_data:/home/node/.n8n
+      - ./n8n/workflows:/home/node/.n8n/workflows
+      - ./n8n/credentials:/home/node/.n8n/credentials
     environment:
       - TZ=America/Argentina/Buenos_Aires
       - GENERIC_TIMEZONE=America/Argentina/Buenos_Aires
       - N8N_RUNNERS_ENABLED=true
       - N8N_ENFORCE_SETTINGS_FILE_PERMISSIONS=true
+      - N8N_USER_MANAGEMENT_DISABLED=false
+      - N8N_SETUP_SKIP_INSTANCE_OWNER=false
+      - N8N_ENCRYPTION_KEY=${N8N_ENCRYPTION_KEY}
+      - N8N_USER_MANAGEMENT_JWT_SECRET=${N8N_JWT_SECRET}
+      # Database configuration
+      # - DB_TYPE=postgresdb
+      # - DB_POSTGRE_HOST=postgres
+      # - DB_POSTGRE_PORT=5432
+      # - DB_POSTGRE_DATABASE=${DB_NAME}
+      # - DB_POSTGRE_USER=${DB_USER}
+      # - DB_POSTGRE_PASSWORD=${DB_PASSWORD}
+      # Security deprecations fixes
+      - N8N_BLOCK_ENV_ACCESS_IN_NODE=false
+      - N8N_GIT_NODE_DISABLE_BARE_REPOS=true
+      - DB_SQLITE_POOL_SIZE=5
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - leximate-network
 
 volumes:
   n8n_data:
+  postgres_data:
+
+networks:
+  leximate-network:
+    driver: bridge

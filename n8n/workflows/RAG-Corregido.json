@@ -1,0 +1,205 @@
+{
+  "name": "RAG-Corregido",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "rag",
+        "options": {
+          "binaryPropertyName": "file"
+        }
+      },
+      "name": "Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "64bfb5fb-53e9-41f4-a188-24b37c350871",
+      "webhookId": "7ddd6f2d-1ae1-488f-9e99-80cd84c1f00c"
+    },
+    {
+      "parameters": {
+        "operation": "pdf",
+        "binaryPropertyName": "file0",
+        "options": {}
+      },
+      "name": "Extract from File",
+      "type": "n8n-nodes-base.extractFromFile",
+      "typeVersion": 1,
+      "position": [
+        160,
+        0
+      ],
+      "id": "2735bf0c-97f1-4589-9c83-5468da616a44"
+    },
+    {
+      "parameters": {
+        "chunkSize": 200,
+        "chunkOverlap": 50,
+        "options": {}
+      },
+      "name": "Recursive Character Text Splitter",
+      "type": "@n8n/n8n-nodes-langchain.textSplitterRecursiveCharacterTextSplitter",
+      "typeVersion": 1,
+      "position": [
+        704,
+        336
+      ],
+      "id": "8ea0be2f-c56c-4f71-b77e-1ba0801b8ef5"
+    },
+    {
+      "parameters": {
+        "mode": "insert",
+        "tableName": {
+          "__rl": true,
+          "value": "documents",
+          "mode": "list"
+        },
+        "options": {
+          "queryName": "match_documents"
+        }
+      },
+      "name": "Supabase Vector Store",
+      "type": "@n8n/n8n-nodes-langchain.vectorStoreSupabase",
+      "typeVersion": 1.3,
+      "position": [
+        480,
+        0
+      ],
+      "id": "f789ad92-d853-4d63-8bd0-6f9a2d18dcb8",
+      "credentials": {
+        "supabaseApi": {
+          "id": "dnJIrsd9rEEFReQk",
+          "name": "Supabase account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "textSplittingMode": "custom",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.documentDefaultDataLoader",
+      "typeVersion": 1.1,
+      "position": [
+        608,
+        176
+      ],
+      "id": "fb3ac9b3-df2e-4c1c-8d38-726dff08494e",
+      "name": "Default Data Loader"
+    },
+    {
+      "parameters": {
+        "jsCode": "const items = [];\n\nfor (const item of $input.all()) {\n  const json = item.json;\n  const info = json.info ?? {};\n  const metadata = json.metadata ?? {};\n\n  // Normalizamos claves de metadata (reemplaza \":\" por \"_\")\n  const normalized = Object.fromEntries(\n    Object.entries(metadata).map(([k, v]) => [k.replace(':', '_'), v])\n  );\n\n  const outputJson = {\n    // Info principal\n    creationDate: info.CreationDate ?? null,\n    creator: info.Creator ?? null,\n    modDate: info.ModDate ?? null,\n    producer: info.Producer ?? null,\n    language: info.Language ?? null,\n\n    // Metadata XMP normalizada\n    xmpCreateDate: normalized.xmp_createdate ?? null,\n    xmpCreatorTool: normalized.xmp_creatortool ?? null,\n    xmpModifyDate: normalized.xmp_modifydate ?? null,\n    xmpMetadataDate: normalized.xmp_metadatadate ?? null,\n    pdfProducer: normalized.pdf_producer ?? null,\n    dcFormat: normalized.dc_format ?? null,\n    xmpmmDocumentId: normalized.xmpmm_documentid ?? null,\n    xmpmmInstanceId: normalized.xmpmm_instanceid ?? null,\n\n    // Texto extraído\n    text: json.text ?? null,\n  };\n\n  items.push({ json: outputJson });\n}\n\nreturn items;\n"
+      },
+      "name": "Procesar Metadata",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        320,
+        0
+      ],
+      "id": "3f041e58-b428-4f2e-92f2-b8826cbc66ab",
+      "alwaysOutputData": false
+    },
+    {
+      "parameters": {},
+      "type": "@n8n/n8n-nodes-langchain.embeddingsGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        400,
+        224
+      ],
+      "id": "389ee9e9-51ca-4478-8573-b9a287a73362",
+      "name": "Embeddings Google Gemini",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "ktRSlQa7Xc6uzCYI",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Extract from File",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Default Data Loader": {
+      "ai_document": [
+        [
+          {
+            "node": "Supabase Vector Store",
+            "type": "ai_document",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Recursive Character Text Splitter": {
+      "ai_textSplitter": [
+        [
+          {
+            "node": "Default Data Loader",
+            "type": "ai_textSplitter",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract from File": {
+      "main": [
+        [
+          {
+            "node": "Procesar Metadata",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Procesar Metadata": {
+      "main": [
+        [
+          {
+            "node": "Supabase Vector Store",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Embeddings Google Gemini": {
+      "ai_embedding": [
+        [
+          {
+            "node": "Supabase Vector Store",
+            "type": "ai_embedding",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "8364d7ff-8f3d-4d0a-84d8-66cc25aa62e3",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "a4047b36dbb0adaf97da0decbc61aca237a31b593b159bb9a3b8d78dcfcfa2df"
+  },
+  "id": "Mo97FyzYgAGoLIon",
+  "tags": []
+}
