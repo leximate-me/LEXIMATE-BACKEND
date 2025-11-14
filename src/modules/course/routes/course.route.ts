@@ -1,12 +1,16 @@
 import { FastifyInstance } from 'fastify';
-import { verifyUserRequired } from '../../../common/middlewares/user.middleware';
-import { authRequired } from '../../../common/middlewares/token.middleware';
-import { requireRole } from '../../../common/middlewares/auth.middleware';
-import { postRouter } from '../../post/routes/post.route';
-import { CourseController } from '../course.controller';
-import { taskRouter } from '../../task/routes/task.route';
-import { createCourseSchema } from '../schemas/create-course.schema';
-import { updateCourseSchema } from '../schemas/update-course.schema';
+import {
+  verifyUserRequired,
+  authRequired,
+  requireRole,
+} from '@common/middlewares';
+
+import { postRouter } from '@post/routes/post.route';
+import { taskRouter } from '@task/routes/task.route';
+
+import { createCourseSchema, updateCourseSchema } from '@course/schemas';
+
+import { CourseController } from '@course/course.controller';
 
 export async function courseRouter(fastify: FastifyInstance) {
   const courseController = new CourseController();

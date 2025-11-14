@@ -1,7 +1,6 @@
 import { FastifyRequest, FastifyReply } from 'fastify';
-import { PostService } from './post.service';
-import { CreatePostDto } from './dtos/create-post.dto';
-import { UpdatePostDto } from './dtos/update-post.dto';
+import { CreatePostDto, UpdatePostDto } from '@post/dtos';
+import { PostService } from '@post/post.service';
 
 export class PostController {
   private postService: PostService = new PostService();

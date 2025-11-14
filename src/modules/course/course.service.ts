@@ -2,8 +2,8 @@ import crypto from 'crypto';
 import { AppDataSource } from '@database/db';
 import { HttpError } from '@common/libs/http-error';
 
-import { Post } from '@post/entities/post.entity';
 import { Course } from '@course/entities/course.entity';
+import { Post } from '@post/entities/post.entity';
 import { User } from '@user/entities';
 import { Task } from '@task/entities/task.entity';
 

@@ -1,10 +1,11 @@
 import { AppDataSource } from '@database/db';
 import { HttpError } from '@common/libs/http-error';
+
 import { Post } from '@post/entities/post.entity';
 import { Comment } from '@comment/entities/comment.entity';
 import { User } from '@user/entities';
-import { UpdateCommentDto } from '@comment/dtos/update-comment.dto';
-import { CreateCommentDto } from '@comment/dtos/create-comment.dto';
+
+import { UpdateCommentDto, CreateCommentDto } from '@comment/dtos';
 
 export class CommentService {
   private readonly commentRepository = AppDataSource.getRepository(Comment);

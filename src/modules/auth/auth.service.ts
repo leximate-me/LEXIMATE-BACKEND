@@ -1,16 +1,17 @@
 import jwt from 'jsonwebtoken';
-import { createAccessToken } from '../../common/libs/jwt';
-import { resend } from '../../common/libs/resend';
-import { AppDataSource } from '../../database/db';
-import { User, People, Role, UserFile } from '../user/entities';
-import { uploadImage } from '../../common/libs/cloudinary';
-import { UserService } from '../user/user.service';
-import { RegisterAuthDto } from './dtos/register-auth.dto';
-import { LoginAuthDto } from './dtos/login-auth.dto';
-import { HttpError } from '../../common/libs/http-error';
-import { TokenPayload } from '../../common/interfaces/token-payload.interface';
-import { BcryptAdapter } from '../../common/adapters/hash.adapter';
-import { UpdateUserDto } from '../user/dtos/update-user.dto';
+import { AppDataSource } from '@database/db';
+import { createAccessToken } from '@common/libs/jwt';
+import { resend } from '@common/libs/resend';
+import { uploadImage } from '@common/libs/cloudinary';
+import { HttpError } from '@common/libs/http-error';
+import { TokenPayload } from '@common/interfaces/token-payload.interface';
+import { BcryptAdapter } from '@common/adapters/hash.adapter';
+
+import { User, UserFile } from '@user/entities';
+import { RegisterAuthDto, LoginAuthDto } from '@auth/dtos';
+import { UpdateUserDto } from '@user/dtos/update-user.dto';
+
+import { UserService } from '@user/user.service';
 
 export class AuthService {
   private readonly userService: UserService = new UserService();

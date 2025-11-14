@@ -3,16 +3,16 @@ import fastifyEnv from '@fastify/env';
 import avjErrors from 'ajv-errors';
 import 'reflect-metadata';
 
+import { applyMiddlewares } from '@common/middlewares/app.middleware';
+import { logger } from '@common/configs/logger.config';
+import { HttpError } from '@common/libs/http-error';
+import { envSchema } from '@common/configs/env-schema.config';
+
 import { authRouter } from '@modules/auth/routes/auth.route';
 import { courseRouter } from '@modules/course/routes/course.route';
 import { toolRouter } from '@modules/tool/routes/tool.route';
 import { postRouter } from '@modules/post/routes/post.route';
-
-import { applyMiddlewares } from '@common/middlewares/app.middleware';
 import { seedRouter } from '@modules/seed/routes/seed.route';
-import { logger } from '@common/configs/logger.config';
-import { HttpError } from '@common/libs/http-error';
-import { envSchema } from '@common/configs/env-schema.config';
 
 export class App {
   private app: FastifyInstance;
@@ -42,8 +42,8 @@ export class App {
     await this.app.register(seedRouter, { prefix: '/api/seed' });
   }
 
-  private serErrorHandler() {
-    this.app.setSchemaErrorFormatter((errors, dataVar) => {
+  private async serErrorHandler() {
+    await this.app.setSchemaErrorFormatter((errors, dataVar) => {
       const err = new Error('Error de validación');
       (err as any).statusCode = 400;
       (err as any).error = 'Bad Request';
@@ -56,7 +56,7 @@ export class App {
       return err;
     });
 
-    this.app.setErrorHandler((error, request, reply) => {
+    await this.app.setErrorHandler((error, request, reply) => {
       if ((error as any).validation) {
         reply.send(error);
         return;
@@ -95,9 +95,12 @@ export class App {
       schema: envSchema,
       dotenv: true,
     });
+
     await this.applyMiddlewares();
     await this.setRoutes();
-    this.serErrorHandler();
+    await this.serErrorHandler();
+
+    await this.app.ready();
   }
 
   public async listen() {

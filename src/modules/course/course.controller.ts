@@ -1,7 +1,6 @@
 import { FastifyRequest, FastifyReply } from 'fastify';
+import { CreateCourseDto, UpdateCourseDto } from '@course/dtos';
 import { CourseService } from '@course/course.service';
-import { CreateCourseDto } from '@course/dtos/create-course.dto';
-import { UpdateCourseDto } from '@course/dtos/update-course.dto';
 
 export class CourseController {
   private courseService: CourseService = new CourseService();

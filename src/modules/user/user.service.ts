@@ -1,8 +1,7 @@
-import { HttpError } from '../../common/libs/http-error';
-import { AppDataSource } from '../../database/db';
-import { CreateUserDto } from './dtos/create-user.dto';
-import { UpdateUserDto } from './dtos/update-user.dto';
-import { User, People, Role } from './entities';
+import { HttpError } from '@common/libs/http-error';
+import { AppDataSource } from '@database/db';
+import { User, People, Role } from '@user/entities';
+import { CreateUserDto, UpdateUserDto } from '@user/dtos';
 
 export class UserService {
   private readonly userRepository = AppDataSource.getRepository(User);

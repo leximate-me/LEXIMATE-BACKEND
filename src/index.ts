@@ -1,33 +1,27 @@
 import { App } from './app';
-import { connectDB } from './database/db';
+import { AppDataSource } from './database/db';
 import 'dotenv/config';
 import figlet from 'figlet';
 
 async function main() {
   const app = new App();
-  const log = app.getLogger();
 
-  figlet.text(
-    'LEXIMATE',
-    { font: 'Ghost' },
-    (err: Error | null, data: string | undefined) => {
-      if (err) {
-        log.error(err, 'Error generando texto ASCII');
-        return;
-      }
-      log.info('\n' + data);
+  figlet.text('LEXIMATE', { font: 'Ghost' }, (err: Error, data: string) => {
+    if (err) {
+      app.getLogger().error(err, 'Error generating ASCII art');
+      return;
     }
-  );
-  try {
-    await app.prepare();
+    app.getLogger().info('\n' + data);
+  });
 
-    await connectDB(log);
+  await AppDataSource.initialize(app.getLogger());
 
-    await app.listen();
-  } catch (error) {
-    log.error(error);
-    process.exit(1);
-  }
+  await app.prepare();
+
+  await app.listen();
 }
 
-main();
+main().catch((error) => {
+  console.error('Unhandled error in main:', error);
+  process.exit(1);
+});

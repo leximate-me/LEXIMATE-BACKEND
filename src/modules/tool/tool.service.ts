@@ -1,9 +1,10 @@
-import FormData from 'form-data';
-import axios from 'axios';
-import { HttpError } from '../../common/libs/http-error';
 import { PDFParse, TextResult } from 'pdf-parse';
 import { promises as fs } from 'fs';
+import FormData from 'form-data';
+import axios from 'axios';
 import path from 'path';
+
+import { HttpError } from '@common/libs/http-error';
 
 export class ToolService {
   async extractTextFromLocalPath(localUrl: string): Promise<TextResult> {

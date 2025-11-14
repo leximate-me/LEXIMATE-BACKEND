@@ -1,3 +1,3 @@
-export interface CreateCommentDto {
+export class CreateCommentDto {
   content: string;
 }

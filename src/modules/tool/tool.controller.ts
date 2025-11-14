@@ -1,6 +1,5 @@
 import { FastifyRequest, FastifyReply } from 'fastify';
-import { ToolService } from './tool.service';
-import { HttpError } from '../../common/libs/http-error';
+import { ToolService } from '@tool/tool.service';
 
 export class ToolController {
   private toolService: ToolService = new ToolService();

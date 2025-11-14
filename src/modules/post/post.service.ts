@@ -1,10 +1,11 @@
-import { AppDataSource } from '../../database/db';
-import { User } from '../user/entities';
-import { Course } from '../course/entities/course.entity';
-import { Post } from './entities/post.entity';
-import { HttpError } from '../../common/libs/http-error';
-import { CreatePostDto } from './dtos/create-post.dto';
-import { UpdatePostDto } from './dtos/update-post.dto';
+import { AppDataSource } from '@database/db';
+import { HttpError } from '@common/libs/http-error';
+
+import { User } from '@user/entities';
+import { Course } from '@course/entities/course.entity';
+import { Post } from '@post/entities/post.entity';
+
+import { CreatePostDto, UpdatePostDto } from '@post/dtos';
 
 export class PostService {
   private readonly courseRepository = AppDataSource.getRepository(Course);

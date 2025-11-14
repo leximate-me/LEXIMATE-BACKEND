@@ -38,6 +38,7 @@ export class TaskSubmission {
   user: User;
 
   @OneToMany(() => SubmissionFile, (file) => file.submission, {
+    onDelete: 'CASCADE',
     cascade: true,
   })
   files: SubmissionFile[];

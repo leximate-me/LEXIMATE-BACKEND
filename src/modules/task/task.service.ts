@@ -1,18 +1,17 @@
-import { AppDataSource } from '../../database/db';
 import { In } from 'typeorm';
-import { User } from '../user/entities';
-import { Course } from '../course/entities/course.entity';
-import { Task } from './entities/task.entity';
-import { TaskFile } from './entities/task-file.entity';
-import { HttpError } from '../../common/libs/http-error';
-import { CreateTaskDto } from './dtos/create-task.dto';
-import { UpdateTaskDto } from './dtos/update-task.dto';
-import { FileProps } from '../../common/interfaces/file-props';
-import { TaskSubmission } from './entities/task-submission.entity';
-import { SubmissionFile } from './entities/submission-file.entity';
-import { CreateTaskSubmissionDto } from './dtos/create-task-submission.dto';
-import { UpdateTaskSubmissionDto } from './dtos/update-task-submission.dto';
-import { TaskStatus } from '../../common/enums/task-status';
+import { AppDataSource } from '@database/db';
+import { HttpError } from '@common/libs/http-error';
+import { FileProps } from '@common/interfaces/file-props';
+import { TaskStatus } from '@common/enums/task-status';
+
+import { Course } from '@course/entities/course.entity';
+import { User } from '@user/entities';
+import { Task, SubmissionFile, TaskFile, TaskSubmission } from '@task/entities';
+
+import { CreateTaskDto } from '@task/dtos/create-task.dto';
+import { UpdateTaskDto } from '@task/dtos/update-task.dto';
+import { CreateTaskSubmissionDto } from '@task/dtos/create-task-submission.dto';
+import { UpdateTaskSubmissionDto } from '@task/dtos/update-task-submission.dto';
 
 export class TaskService {
   private readonly userRepository = AppDataSource.getRepository(User);
@@ -23,6 +22,7 @@ export class TaskService {
     AppDataSource.getRepository(TaskSubmission);
   private readonly submissionFileRepository =
     AppDataSource.getRepository(SubmissionFile);
+  private dataSource = AppDataSource.getDataSource();
 
   async create(
     courseId: string,
@@ -30,7 +30,7 @@ export class TaskService {
     createTaskDto: CreateTaskDto,
     fileProps?: FileProps
   ) {
-    const queryRunner = AppDataSource.createQueryRunner();
+    const queryRunner = this.dataSource.createQueryRunner();
     await queryRunner.connect();
     await queryRunner.startTransaction();
 
@@ -87,7 +87,7 @@ export class TaskService {
     updateTaskDto: UpdateTaskDto,
     fileProps?: FileProps
   ) {
-    const queryRunner = AppDataSource.createQueryRunner();
+    const queryRunner = this.dataSource.createQueryRunner();
     await queryRunner.connect();
     await queryRunner.startTransaction();
 
@@ -144,7 +144,7 @@ export class TaskService {
   }
 
   async delete(taskId: string, courseId: string, userId: string) {
-    const queryRunner = AppDataSource.createQueryRunner();
+    const queryRunner = this.dataSource.createQueryRunner();
     await queryRunner.connect();
     await queryRunner.startTransaction();
 

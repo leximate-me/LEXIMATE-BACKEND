@@ -1,7 +1,6 @@
 import { FastifyRequest, FastifyReply } from 'fastify';
+import { RegisterAuthDto, LoginAuthDto } from './dtos';
 import { AuthService } from './auth.service';
-import { RegisterAuthDto } from './dtos/register-auth.dto';
-import { LoginAuthDto } from './dtos/login-auth.dto';
 
 export class AuthController {
   private authService: AuthService = new AuthService();

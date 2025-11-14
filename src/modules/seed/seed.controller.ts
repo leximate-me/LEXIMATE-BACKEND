@@ -1,6 +1,5 @@
-import { Request, Response } from 'express';
-import { SeedService } from './seed.service';
 import { FastifyRequest, FastifyReply } from 'fastify';
+import { SeedService } from '@seed/seed.service';
 
 export class SeedController {
   private readonly seedService = new SeedService();

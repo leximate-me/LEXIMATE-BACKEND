@@ -1,4 +1,4 @@
-export interface RegisterAuthDto {
+export class RegisterAuthDto {
   first_name: string;
   last_name: string;
   dni: string;

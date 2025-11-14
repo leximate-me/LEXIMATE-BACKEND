@@ -1,16 +1,13 @@
-import { AppDataSource } from '../../database/db';
-import { User } from '../user/entities/user.entity';
-import { Role } from '../user/entities/role.entity';
-import { People } from '../user/entities/people.entity';
-import { Permission } from '../user/entities/permission.entity';
-import { Course } from '../course/entities/course.entity';
-import { Post } from '../post/entities/post.entity';
-import { Task } from '../task/entities/task.entity';
-import { UserFile } from '../user/entities';
-import { TaskFile } from '../task/entities/task-file.entity';
-import { Comment } from '../comment/entities/comment.entity';
-import { BcryptAdapter } from '../../common/adapters/hash.adapter';
 import { Not, IsNull } from 'typeorm';
+import { AppDataSource } from '@database/db';
+import { User, People, Permission, Role, UserFile } from '@user/entities';
+import { BcryptAdapter } from '@common/adapters/hash.adapter';
+
+import { Course } from '@course/entities/course.entity';
+import { Post } from '@post/entities/post.entity';
+import { Task } from '@task/entities/task.entity';
+import { TaskFile } from '@task/entities/task-file.entity';
+import { Comment } from '@comment/entities/comment.entity';
 
 export class SeedService {
   private readonly userRepository = AppDataSource.getRepository(User);
@@ -25,10 +22,11 @@ export class SeedService {
   private readonly fileUserRepository = AppDataSource.getRepository(UserFile);
   private readonly fileTaskRepository = AppDataSource.getRepository(TaskFile);
   private readonly bcryptAdapter = new BcryptAdapter();
+  private dataSource = AppDataSource.getDataSource();
 
   async seedAll() {
-    await AppDataSource.query('DELETE FROM "user_courses_course"');
-    await AppDataSource.query('DELETE FROM "role_permissions_permission"');
+    await this.dataSource.query('DELETE FROM "user_courses_course"');
+    await this.dataSource.query('DELETE FROM "role_permissions_permission"');
 
     await this.fileTaskRepository.delete({ id: Not(IsNull()) });
     await this.fileUserRepository.delete({ id: Not(IsNull()) });
