@@ -5,8 +5,6 @@ export const createTaskSubmissionSchema = {
     type: 'object',
     properties: {
       comment: { type: 'string' },
-      status: { type: 'string', enum: Object.values(TaskStatus) },
-      qualification: { type: 'number' },
     },
     additionalProperties: false,
   },

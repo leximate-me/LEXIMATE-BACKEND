@@ -1,5 +1,5 @@
-import Tesseract from 'tesseract.js';
-import { FormData, fetch } from 'undici';
+import FormData from 'form-data';
+import axios from 'axios';
 import { HttpError } from '../../common/libs/http-error';
 import { PDFParse, TextResult } from 'pdf-parse';
 import { promises as fs } from 'fs';
@@ -11,7 +11,6 @@ export class ToolService {
       if (!localUrl) {
         throw HttpError.badRequest('La URL local del PDF es requerida');
       }
-      // Siempre busca en la carpeta public
       const filePath = path.resolve(
         process.cwd(),
         'public',
@@ -30,55 +29,53 @@ export class ToolService {
   }
 
   async getMarkdownUrl(url: string) {
-    const response = await fetch(`https://r.jina.ai/${url}`);
-
-    if (!response.ok) {
+    try {
+      const response = await axios.get(`https://r.jina.ai/${url}`);
+      return response.data;
+    } catch (error) {
       throw HttpError.badRequest('No se pudo obtener el markdown');
     }
-    console.log(response);
-
-    return await response.text();
   }
 
   async getChatBotResponse(message: string, token: string) {
-    const response = await fetch(process.env.N8N_CHAT_PROD_URL, {
-      method: 'POST',
-      headers: {
-        'content-type': 'application/json',
-        Authorization: `Bearer ${token}`,
-      },
-      body: JSON.stringify({ message }),
-    });
-
-    if (!response) {
+    try {
+      const response = await axios.post(
+        process.env.N8N_CHAT_PROD_URL!,
+        { message },
+        {
+          headers: {
+            'content-type': 'application/json',
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      return response.data;
+    } catch (error) {
       throw HttpError.internalServerError('No response from chatbot service');
     }
-
-    return await response.json();
   }
 
   async sendFilesToChatBot(files: Express.Multer.File[], token: string) {
     const formData = new FormData();
 
     files.forEach((file) => {
-      formData.append(
-        'file',
-        new Blob([new Uint8Array(file.buffer)]),
-        file.originalname
-      );
+      formData.append('file', file.buffer, file.originalname);
     });
 
-    const response = await fetch(process.env.N8N_RAG_PROD_URL, {
-      method: 'POST',
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-      body: formData,
-    });
-    if (!response) {
+    try {
+      const response = await axios.post(
+        process.env.N8N_RAG_PROD_URL!,
+        formData,
+        {
+          headers: {
+            ...formData.getHeaders(),
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      return response.data;
+    } catch (error) {
       throw HttpError.internalServerError('No response from chatbot service');
     }
-
-    return await response.json();
   }
 }

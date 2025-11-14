@@ -12,6 +12,7 @@ import { TaskSubmission } from './entities/task-submission.entity';
 import { SubmissionFile } from './entities/submission-file.entity';
 import { CreateTaskSubmissionDto } from './dtos/create-task-submission.dto';
 import { UpdateTaskSubmissionDto } from './dtos/update-task-submission.dto';
+import { TaskStatus } from '../../common/enums/task-status';
 
 export class TaskService {
   private readonly userRepository = AppDataSource.getRepository(User);
@@ -283,8 +284,8 @@ export class TaskService {
       task,
       user,
       comment: submissionDto.comment,
-      status: submissionDto.status,
-      qualification: submissionDto.qualification,
+      status: TaskStatus.SUBMITTED,
+      qualification: null,
     });
 
     await this.submissionRepository.save(submission);

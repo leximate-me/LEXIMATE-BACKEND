@@ -38,7 +38,7 @@ export async function taskRouter(fastify: FastifyInstance) {
 
   fastify.post('/:taskId/submissions', {
     schema: createTaskSubmissionSchema,
-    preHandler: [uploadToStorage],
+    preValidation: [uploadToStorage],
     handler: taskController.createSubmission.bind(taskController),
   });
 
