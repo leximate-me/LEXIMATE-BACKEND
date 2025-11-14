@@ -8,7 +8,21 @@
     "transform": {
       "decoratorMetadata": true
     },
-    "target": "es2020"
+    "target": "es2020",
+    "paths": {
+      "@modules/*": ["src/modules/*"],
+      "@common/*": ["src/common/*"],
+      "@database/*": ["src/database/*"],
+      "@config/*": ["src/common/configs/*"],
+      "@auth/*": ["src/modules/auth/*"],
+      "@user/*": ["src/modules/user/*"],
+      "@post/*": ["src/modules/post/*"],
+      "@comment/*": ["src/modules/comment/*"],
+      "@course/*": ["src/modules/course/*"],
+      "@task/*": ["src/modules/task/*"],
+      "@tool/*": ["src/modules/tool/*"],
+      "@seed/*": ["src/modules/seed/*"]
+    }
   },
   "module": {
     "type": "commonjs"

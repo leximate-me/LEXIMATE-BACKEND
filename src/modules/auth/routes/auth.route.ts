@@ -1,10 +1,10 @@
 import { FastifyInstance } from 'fastify';
-import { AuthController } from '../auth.controller';
-import { authRequired } from '../../../common/middlewares/token.middleware';
-import { verifyUserRequired } from '../../../common/middlewares/user.middleware';
-import { uploadToStorage } from '../../../common/middlewares/upload.middleware';
-import { registerAuthSchema } from '../schemas/register-auth.schema';
-import { loginAuthSchema } from '../schemas/login-auth.schema';
+import { AuthController } from '@auth/auth.controller';
+import { authRequired } from '@common/middlewares/token.middleware';
+import { verifyUserRequired } from '@common/middlewares/user.middleware';
+import { uploadToStorage } from '@common/middlewares/upload.middleware';
+import { registerAuthSchema } from '@auth/schemas/register-auth.schema';
+import { loginAuthSchema } from '@auth/schemas/login-auth.schema';
 
 export async function authRouter(fastify: FastifyInstance) {
   const authController = new AuthController();

@@ -1,12 +1,14 @@
 import crypto from 'crypto';
-import { AppDataSource } from '../../database/db';
-import { Post } from '../post/entities/post.entity';
-import { Course } from './entities/course.entity';
-import { User } from '../user/entities';
-import { Task } from '../task/entities/task.entity';
-import { HttpError } from '../../common/libs/http-error';
-import { CreateCourseDto } from './dtos/create-course.dto';
-import { UpdateCourseDto } from './dtos/update-course.dto';
+import { AppDataSource } from '@database/db';
+import { HttpError } from '@common/libs/http-error';
+
+import { Post } from '@post/entities/post.entity';
+import { Course } from '@course/entities/course.entity';
+import { User } from '@user/entities';
+import { Task } from '@task/entities/task.entity';
+
+import { CreateCourseDto } from '@course/dtos/create-course.dto';
+import { UpdateCourseDto } from '@course/dtos/update-course.dto';
 
 export class CourseService {
   private readonly userRepository = AppDataSource.getRepository(User);

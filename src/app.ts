@@ -1,17 +1,18 @@
 import Fastify, { FastifyInstance } from 'fastify';
-import 'reflect-metadata';
-import { applyMiddlewares } from './common/middlewares/app.middleware';
-import { authRouter } from './modules/auth/routes/auth.route';
-import { courseRouter } from './modules/course/routes/course.route';
-import { toolRouter } from './modules/tool/routes/tool.route';
-import { postRouter } from './modules/post/routes/post.route';
-
-import { seedRouter } from './modules/seed/routes/seed.route';
-import { logger } from './common/configs/logger.config';
-import { HttpError } from './common/libs/http-error';
-import avjErrors from 'ajv-errors';
 import fastifyEnv from '@fastify/env';
-import { envSchema } from './common/configs/env-schema.config';
+import avjErrors from 'ajv-errors';
+import 'reflect-metadata';
+
+import { authRouter } from '@modules/auth/routes/auth.route';
+import { courseRouter } from '@modules/course/routes/course.route';
+import { toolRouter } from '@modules/tool/routes/tool.route';
+import { postRouter } from '@modules/post/routes/post.route';
+
+import { applyMiddlewares } from '@common/middlewares/app.middleware';
+import { seedRouter } from '@modules/seed/routes/seed.route';
+import { logger } from '@common/configs/logger.config';
+import { HttpError } from '@common/libs/http-error';
+import { envSchema } from '@common/configs/env-schema.config';
 
 export class App {
   private app: FastifyInstance;

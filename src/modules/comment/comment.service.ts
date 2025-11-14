@@ -1,10 +1,10 @@
-import { AppDataSource } from '../../database/db';
-import { Post } from '../post/entities/post.entity';
-import { Comment } from './entities/comment.entity';
-import { User } from '../user/entities';
-import { HttpError } from '../../common/libs/http-error';
-import { UpdateCommentDto } from './dtos/update-comment.dto';
-import { CreateCommentDto } from './dtos/create-comment.dto';
+import { AppDataSource } from '@database/db';
+import { HttpError } from '@common/libs/http-error';
+import { Post } from '@post/entities/post.entity';
+import { Comment } from '@comment/entities/comment.entity';
+import { User } from '@user/entities';
+import { UpdateCommentDto } from '@comment/dtos/update-comment.dto';
+import { CreateCommentDto } from '@comment/dtos/create-comment.dto';
 
 export class CommentService {
   private readonly commentRepository = AppDataSource.getRepository(Comment);

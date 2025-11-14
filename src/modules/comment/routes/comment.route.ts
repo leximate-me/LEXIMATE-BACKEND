@@ -1,10 +1,10 @@
 import { FastifyInstance } from 'fastify';
-import { verifyUserRequired } from '../../../common/middlewares/user.middleware';
-import { authRequired } from '../../../common/middlewares/token.middleware';
-import { CommentController } from '../comment.controller';
-import { requireRole } from '../../../common/middlewares/auth.middleware';
-import { createCommentSchema } from '../schemas/create-comment.schema';
-import { updateCommentSchema } from '../schemas/update-comment.schema';
+import { verifyUserRequired } from '@common/middlewares/user.middleware';
+import { authRequired } from '@common/middlewares/token.middleware';
+import { CommentController } from '@comment/comment.controller';
+import { requireRole } from '@common/middlewares/auth.middleware';
+import { createCommentSchema } from '@comment/schemas/create-comment.schema';
+import { updateCommentSchema } from '@comment/schemas/update-comment.schema';
 
 export async function commentRouter(fastify: FastifyInstance) {
   const commentController = new CommentController();
