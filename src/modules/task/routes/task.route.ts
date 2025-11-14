@@ -17,57 +17,70 @@ export async function taskRouter(fastify: FastifyInstance) {
   // Middlewares globales para todas las rutas de este router
   fastify.addHook('preHandler', authRequired);
   fastify.addHook('preHandler', verifyUserRequired);
-  fastify.addHook('preHandler', requireRole(['teacher', 'admin']));
 
   // Crear tarea
   fastify.post('/', {
     schema: createTaskSchema,
     preValidation: [uploadToStorage],
+    preHandler: [requireRole(['teacher', 'admin'])],
     handler: taskController.create.bind(taskController),
   });
 
   // Actualizar tarea
   fastify.put('/:taskId', {
     schema: updateTaskSchema,
-    preHandler: [uploadToStorage],
+    preValidation: [uploadToStorage],
+    preHandler: [requireRole(['teacher', 'admin'])],
     handler: taskController.update.bind(taskController),
   });
 
   // Eliminar tarea
-  fastify.delete('/:taskId', taskController.delete.bind(taskController));
+  fastify.delete('/:taskId', {
+    preHandler: [requireRole(['teacher', 'admin'])],
+    handler: taskController.delete.bind(taskController),
+  });
 
   fastify.post('/:taskId/submissions', {
     schema: createTaskSubmissionSchema,
     preValidation: [uploadToStorage],
+    preHandler: [requireRole(['teacher', 'student', 'admin'])],
     handler: taskController.createSubmission.bind(taskController),
   });
 
   fastify.patch('/:taskId/submissions/:studentId/qualify', {
     schema: updateTaskSubmissionSchema,
     preValidation: [authRequired],
+    preHandler: [requireRole(['teacher', 'admin'])],
     handler: taskController.qualifySubmission.bind(taskController),
   });
 
-  fastify.get(
-    '/:taskId/submissions',
-    taskController.getSubmissionsByTask.bind(taskController)
-  );
+  fastify.get('/:taskId/submissions', {
+    preHandler: [requireRole(['teacher', 'student', 'admin'])],
+    handler: taskController.getSubmissionsByTask.bind(taskController),
+  });
 
   // Obtener todas las tareas del curso
-  fastify.get('/', taskController.getAllByCourse.bind(taskController));
+  fastify.get('/', {
+    preHandler: [requireRole(['teacher', 'student', 'admin'])],
+    handler: taskController.getAllByCourse.bind(taskController),
+  });
 
   // Obtener una tarea por ID
-  fastify.get('/:taskId', taskController.getOne.bind(taskController));
+  fastify.get('/:taskId', {
+    preHandler: [requireRole(['teacher', 'student', 'admin'])],
+    handler: taskController.getOne.bind(taskController),
+  });
 
   fastify.put('/submissions/:submissionId', {
     schema: updateTaskSubmissionSchema,
-    preHandler: [uploadToStorage],
+    preValidation: [uploadToStorage],
+    preHandler: [requireRole(['teacher', 'student', 'admin'])],
     handler: taskController.updateSubmission.bind(taskController),
   });
 
   // Eliminar entrega
-  fastify.delete(
-    '/submissions/:submissionId',
-    taskController.deleteSubmission.bind(taskController)
-  );
+  fastify.delete('/submissions/:submissionId', {
+    preHandler: [requireRole(['teacher', 'student', 'admin'])],
+    handler: taskController.deleteSubmission.bind(taskController),
+  });
 }

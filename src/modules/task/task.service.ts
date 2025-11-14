@@ -310,23 +310,31 @@ export class TaskService {
     studentId: string,
     updateDto: UpdateTaskSubmissionDto
   ) {
-    if (taskId!) throw HttpError.badRequest('Task ID is required');
-
-    if (studentId!) throw HttpError.badRequest('Student ID is required');
+    if (!taskId) throw HttpError.badRequest('Task ID is required');
+    if (!studentId) throw HttpError.badRequest('Student ID is required');
 
     let submission = await this.submissionRepository.findOne({
       where: { task: { id: taskId }, user: { id: studentId } },
+      relations: ['task', 'user', 'files'],
     });
 
     if (!submission) {
-      // Crear una entrega vacía para poder calificar
+      // Obtener los objetos completos de Task y User
+      const task = await this.taskRepository.findOne({ where: { id: taskId } });
+      if (!task) throw HttpError.notFound('Task not found');
+      const user = await this.userRepository.findOne({
+        where: { id: studentId },
+      });
+      if (!user) throw HttpError.notFound('User not found');
+
       submission = this.submissionRepository.create({
-        task: { id: taskId } as Task,
-        user: { id: studentId } as User,
+        task,
+        user,
         comment: updateDto.comment ?? '',
         status: updateDto.status ?? TaskStatus.NOT_SUBMITTED,
         qualification: updateDto.qualification,
       });
+      await this.submissionRepository.save(submission);
     } else {
       if (updateDto.qualification !== undefined) {
         submission.qualification = updateDto.qualification;
@@ -337,10 +345,13 @@ export class TaskService {
       if (updateDto.status !== undefined) {
         submission.status = updateDto.status;
       }
+      await this.submissionRepository.save(submission);
     }
 
-    await this.submissionRepository.save(submission);
-    return submission;
+    return await this.submissionRepository.findOne({
+      where: { id: submission.id },
+      relations: ['task', 'user', 'files'],
+    });
   }
 
   async getSubmissionsByTask(taskId: string) {
