@@ -1,0 +1,5 @@
+onlyBuiltDependencies:
+  - '@swc/core'
+  - aws-sdk
+  - esbuild
+  - tesseract.js

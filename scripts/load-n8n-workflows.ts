@@ -1,9 +1,15 @@
 import axios from 'axios';
 import { promises as fs } from 'fs';
 import path from 'path';
+import dotenv from 'dotenv';
+
+dotenv.config();
 
 const N8N_API_URL = process.env.N8N_API_URL || 'http://localhost:5678';
 const N8N_API_KEY = process.env.N8N_API_KEY;
+
+console.log(`N8N_API_URL: ${N8N_API_URL}`);
+console.log(`N8N_API_KEY: ${N8N_API_KEY}`);
 
 interface Workflow {
   name: string;
@@ -17,7 +23,6 @@ async function loadWorkflows() {
   try {
     const workflowsDir = path.join(__dirname, '../n8n/workflows');
 
-    // Crea la carpeta si no existe
     try {
       await fs.mkdir(workflowsDir, { recursive: true });
     } catch (e) {
@@ -42,11 +47,10 @@ async function loadWorkflows() {
       console.log(`📝 Procesando: ${workflow.name}`);
 
       try {
-        // Obtiene los workflows existentes
         const existingWorkflows = await axios.get(
-          `${N8N_API_URL}/rest/workflows`,
+          `${N8N_API_URL}/api/v1/workflows`,
           {
-            headers: N8N_API_KEY ? { 'X-N8N-API-KEY': N8N_API_KEY } : {},
+            headers: { 'X-N8N-API-KEY': N8N_API_KEY },
             timeout: 10000,
           }
         );
@@ -56,39 +60,77 @@ async function loadWorkflows() {
         );
 
         if (existing) {
-          // Actualiza el workflow existente
+          // Actualiza el workflow existente (SIN active)
           await axios.put(
-            `${N8N_API_URL}/rest/workflows/${existing.id}`,
+            `${N8N_API_URL}/api/v1/workflows/${existing.id}`,
             {
               name: workflow.name,
               nodes: workflow.nodes,
               connections: workflow.connections,
-              active: workflow.active ?? false,
               settings: workflow.settings ?? {},
             },
             {
-              headers: N8N_API_KEY ? { 'X-N8N-API-KEY': N8N_API_KEY } : {},
+              headers: { 'X-N8N-API-KEY': N8N_API_KEY },
               timeout: 10000,
             }
           );
-          console.log(`✅ Workflow actualizado: ${workflow.name}\n`);
+          console.log(`✅ Workflow actualizado: ${workflow.name}`);
+
+          // Activa/desactiva el workflow por separado (POST en lugar de PATCH)
+          if (workflow.active) {
+            await axios.post(
+              `${N8N_API_URL}/api/v1/workflows/${existing.id}/activate`,
+              {},
+              {
+                headers: { 'X-N8N-API-KEY': N8N_API_KEY },
+                timeout: 10000,
+              }
+            );
+            console.log(`🟢 Workflow activado: ${workflow.name}\n`);
+          } else {
+            await axios.post(
+              `${N8N_API_URL}/api/v1/workflows/${existing.id}/deactivate`,
+              {},
+              {
+                headers: { 'X-N8N-API-KEY': N8N_API_KEY },
+                timeout: 10000,
+              }
+            );
+            console.log(`🔴 Workflow desactivado: ${workflow.name}\n`);
+          }
         } else {
-          // Crea un nuevo workflow
-          await axios.post(
-            `${N8N_API_URL}/rest/workflows`,
+          // Crea un nuevo workflow (SIN active)
+          const createResponse = await axios.post(
+            `${N8N_API_URL}/api/v1/workflows`,
             {
               name: workflow.name,
               nodes: workflow.nodes,
               connections: workflow.connections,
-              active: workflow.active ?? false,
               settings: workflow.settings ?? {},
             },
             {
-              headers: N8N_API_KEY ? { 'X-N8N-API-KEY': N8N_API_KEY } : {},
+              headers: { 'X-N8N-API-KEY': N8N_API_KEY },
               timeout: 10000,
             }
           );
-          console.log(`✅ Workflow creado: ${workflow.name}\n`);
+          console.log(`✅ Workflow creado: ${workflow.name}`);
+
+          const newWorkflowId = createResponse.data.id;
+
+          // Activa/desactiva el workflow por separado (POST en lugar de PATCH)
+          if (workflow.active) {
+            await axios.post(
+              `${N8N_API_URL}/api/v1/workflows/${newWorkflowId}/activate`,
+              {},
+              {
+                headers: { 'X-N8N-API-KEY': N8N_API_KEY },
+                timeout: 10000,
+              }
+            );
+            console.log(`🟢 Workflow activado: ${workflow.name}\n`);
+          } else {
+            console.log(`🔴 Workflow desactivado: ${workflow.name}\n`);
+          }
         }
       } catch (error: any) {
         console.error(
@@ -106,22 +148,24 @@ async function loadWorkflows() {
   }
 }
 
-// Espera a que n8n esté listo
 async function waitForN8n() {
   let attempts = 0;
   const maxAttempts = 30;
 
   while (attempts < maxAttempts) {
     try {
-      await axios.get(`${N8N_API_URL}/rest/workflows`, {
-        timeout: 5000,
-        headers: N8N_API_KEY ? { 'X-N8N-API-KEY': N8N_API_KEY } : {},
+      console.log(`🔍 Intentando conectar a ${N8N_API_URL}...`);
+      const response = await axios.get(`${N8N_API_URL}/api/v1/workflows`, {
+        timeout: 15000,
+        headers: { 'X-N8N-API-KEY': N8N_API_KEY },
       });
       console.log('✅ n8n está listo\n');
+      console.log(`Respuesta: ${response.status}\n`);
       return true;
-    } catch (error) {
+    } catch (error: any) {
       attempts++;
       console.log(`⏳ Esperando n8n... (${attempts}/${maxAttempts})`);
+      console.log(`   Error: ${error.message}`);
       await new Promise((resolve) => setTimeout(resolve, 2000));
     }
   }
