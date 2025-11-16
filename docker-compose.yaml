@@ -23,7 +23,7 @@ services:
   backend:
     build: .
     container_name: leximate-backend
-    restart: always
+    restart: no
     ports:
       - '8080:8080'
     env_file:
@@ -37,6 +37,8 @@ services:
     networks:
       - leximate-network
     command: npm run start:dev
+    stdin_open: true
+    tty: true
 
   n8n:
     image: n8nio/n8n:latest

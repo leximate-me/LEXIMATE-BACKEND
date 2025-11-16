@@ -1,18 +1,24 @@
 {
   "watch": ["src"],
   "ext": "ts",
-  "ignore": ["src/**/*.spec.ts", "src/**/*.test.ts", "dist", "node_modules", ".git"],
+  "ignore": [
+    "src/**/*.spec.ts",
+    "src/**/*.test.ts",
+    "dist",
+    "node_modules",
+    ".git"
+  ],
   "exec": "tsx src/index.ts",
   "env": {
     "NODE_ENV": "development"
   },
-  "delay": 500,
-  "legacyWatch": false,
-  "polling": false,
+  "delay": 1000,
+  "legacyWatch": true,
+  "polling": true,
+  "pollingInterval": 1000,
   "verbose": true,
   "events": {
     "restart": "echo 'App restarted'",
     "crash": "echo 'App crashed'"
-  },
-  "runOnChangeOnly": false
+  }
 }
