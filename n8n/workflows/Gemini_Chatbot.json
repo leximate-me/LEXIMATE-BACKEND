@@ -25,15 +25,15 @@
       "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
       "typeVersion": 1,
       "position": [
-        192,
-        208
+        176,
+        192
       ],
       "id": "b5fd69ca-0c85-445d-b4ac-5767758a1404",
       "name": "Google Gemini Chat Model",
       "credentials": {
         "googlePalmApi": {
-          "id": "ktRSlQa7Xc6uzCYI",
-          "name": "Google Gemini(PaLM) Api account"
+          "id": "e8Lec2NL0uMhLcSw",
+          "name": "Google PaLM API"
         }
       }
     },
@@ -59,8 +59,8 @@
       "name": "Supabase Vector Store",
       "credentials": {
         "supabaseApi": {
-          "id": "dnJIrsd9rEEFReQk",
-          "name": "Supabase account"
+          "id": "2jn2LMn5OmPzcauI",
+          "name": "Supabase Vector Store"
         }
       }
     },
@@ -76,15 +76,15 @@
       "name": "Embeddings Google Gemini",
       "credentials": {
         "googlePalmApi": {
-          "id": "ktRSlQa7Xc6uzCYI",
-          "name": "Google Gemini(PaLM) Api account"
+          "id": "e8Lec2NL0uMhLcSw",
+          "name": "Google PaLM API"
         }
       }
     },
     {
       "parameters": {
         "httpMethod": "POST",
-        "path": "query_chat",
+        "path": "d9c59664-2f52-4092-8967-0a9246565d00",
         "authentication": "jwtAuth",
         "responseMode": "responseNode",
         "options": {
@@ -102,8 +102,8 @@
       "webhookId": "d9c59664-2f52-4092-8967-0a9246565d00",
       "credentials": {
         "jwtAuth": {
-          "id": "3h9HxvvVt7OrRoZf",
-          "name": "JWT Auth account"
+          "id": "KfiNOwiljdxLuwW3",
+          "name": "JWT Auth"
         }
       },
       "onError": "continueRegularOutput"
@@ -136,8 +136,8 @@
       "name": "Postgres Chat Memory",
       "credentials": {
         "postgres": {
-          "id": "XrlhiFAeG9TtV3SK",
-          "name": "Postgres account"
+          "id": "PX1ZXWuTMdNYsw4v",
+          "name": "PostgreSQL Account"
         }
       }
     }
@@ -211,15 +211,16 @@
       ]
     }
   },
-  "active": true,
+  "active": false,
   "settings": {
-    "executionOrder": "v1"
+    "executionOrder": "v1",
+    "callerPolicy": "workflowsFromSameOwner",
+    "availableInMCP": false
   },
-  "versionId": "dce355f6-9c61-48f0-b459-705b4917651d",
+  "versionId": "2ce3a0e3-8411-4404-b009-37bf2fff10d8",
   "meta": {
-    "templateCredsSetupCompleted": true,
-    "instanceId": "a4047b36dbb0adaf97da0decbc61aca237a31b593b159bb9a3b8d78dcfcfa2df"
+    "instanceId": "30421daf0363a76abe23b5b660c90baa6479d53177619e14647bc98265d657a6"
   },
-  "id": "eERq3KPTbh62zbbt",
+  "id": "OF4ikJHdCleowBUN",
   "tags": []
 }

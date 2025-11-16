@@ -44,27 +44,9 @@ services:
     restart: always
     ports:
       - '5678:5678'
-    volumes:
-      - n8n_data:/home/node/.n8n
-      - ./n8n/workflows:/home/node/.n8n/workflows
-      - ./n8n/credentials:/home/node/.n8n/credentials
     environment:
-      - TZ=America/Argentina/Buenos_Aires
-      - GENERIC_TIMEZONE=America/Argentina/Buenos_Aires
+      - N8N_ENFORCE_SETTINGS_FILE_PERMISSIONS=false
       - N8N_RUNNERS_ENABLED=true
-      - N8N_ENFORCE_SETTINGS_FILE_PERMISSIONS=true
-      - N8N_USER_MANAGEMENT_DISABLED=false
-      - N8N_SETUP_SKIP_INSTANCE_OWNER=false
-      - N8N_ENCRYPTION_KEY=${N8N_ENCRYPTION_KEY}
-      - N8N_USER_MANAGEMENT_JWT_SECRET=${N8N_JWT_SECRET}
-      # Database configuration
-      # - DB_TYPE=postgresdb
-      # - DB_POSTGRE_HOST=postgres
-      # - DB_POSTGRE_PORT=5432
-      # - DB_POSTGRE_DATABASE=${DB_NAME}
-      # - DB_POSTGRE_USER=${DB_USER}
-      # - DB_POSTGRE_PASSWORD=${DB_PASSWORD}
-      # Security deprecations fixes
       - N8N_BLOCK_ENV_ACCESS_IN_NODE=false
       - N8N_GIT_NODE_DISABLE_BARE_REPOS=true
       - DB_SQLITE_POOL_SIZE=5
@@ -73,10 +55,12 @@ services:
         condition: service_healthy
     networks:
       - leximate-network
+    volumes:
+      - n8n_data:/home/node/.n8n
 
 volumes:
-  n8n_data:
   postgres_data:
+  n8n_data:
 
 networks:
   leximate-network:

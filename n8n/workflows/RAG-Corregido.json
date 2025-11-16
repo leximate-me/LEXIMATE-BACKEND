@@ -4,7 +4,7 @@
     {
       "parameters": {
         "httpMethod": "POST",
-        "path": "rag",
+        "path": "7ddd6f2d-1ae1-488f-9e99-80cd84c1f00c",
         "options": {
           "binaryPropertyName": "file"
         }
@@ -71,8 +71,8 @@
       "id": "f789ad92-d853-4d63-8bd0-6f9a2d18dcb8",
       "credentials": {
         "supabaseApi": {
-          "id": "dnJIrsd9rEEFReQk",
-          "name": "Supabase account"
+          "id": "2jn2LMn5OmPzcauI",
+          "name": "Supabase Vector Store"
         }
       }
     },
@@ -116,8 +116,8 @@
       "name": "Embeddings Google Gemini",
       "credentials": {
         "googlePalmApi": {
-          "id": "ktRSlQa7Xc6uzCYI",
-          "name": "Google Gemini(PaLM) Api account"
+          "id": "e8Lec2NL0uMhLcSw",
+          "name": "Google PaLM API"
         }
       }
     }
@@ -191,15 +191,17 @@
       ]
     }
   },
-  "active": true,
+  "active": false,
   "settings": {
-    "executionOrder": "v1"
+    "executionOrder": "v1",
+    "callerPolicy": "workflowsFromSameOwner",
+    "availableInMCP": false
   },
-  "versionId": "8364d7ff-8f3d-4d0a-84d8-66cc25aa62e3",
+  "versionId": "0e80aefa-d1e1-4fd8-8f58-664f9714464f",
   "meta": {
     "templateCredsSetupCompleted": true,
-    "instanceId": "a4047b36dbb0adaf97da0decbc61aca237a31b593b159bb9a3b8d78dcfcfa2df"
+    "instanceId": "30421daf0363a76abe23b5b660c90baa6479d53177619e14647bc98265d657a6"
   },
-  "id": "Mo97FyzYgAGoLIon",
+  "id": "4y22PyyxkCBRjxw7",
   "tags": []
 }

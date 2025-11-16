@@ -1,193 +1,262 @@
 # LEXIMATE-BACKEND
 
-Este proyecto es el backend de LEXIMATE, una aplicación que gestiona tareas,
-cursos, usuarios, posts y comentarios. Está construido con Node.js y TypeScript,
-utilizando Fastify como framework web y TypeORM para la interacción con la base
-de datos PostgreSQL.
+Backend de LEXIMATE - Plataforma de gestión de cursos, tareas y aprendizaje colaborativo.
 
-## Requisitos Previos
+Construido con **Node.js**, **TypeScript**, **Fastify** y **PostgreSQL**.
 
-Antes de ejecutar este proyecto, asegúrate de tener instalado lo siguiente:
+## Requisitos
 
-- **Node.js**: Versión 18 o superior. Puedes descargarlo desde
-  [nodejs.org](https://nodejs.org/).
-- **npm** o **Yarn**: Gestores de paquetes para Node.js. npm viene incluido con
-  Node.js. Para Yarn, visita [yarnpkg.com](https://yarnpkg.com/).
-- **Docker** y **Docker Compose**: Para levantar la base de datos PostgreSQL.
-  Puedes descargarlos desde [docker.com](https://www.docker.com/).
-- **TypeScript**: Para la compilación del código. Se instalará como dependencia
-  de desarrollo.
-- **PostgreSQL**: Aunque se recomienda usar Docker para la base de datos, si
-  prefieres una instalación local, asegúrate de tener PostgreSQL instalado y
-  configurado.
+- Node.js 18+
+- Docker & Docker Compose
+- pnpm (recomendado) o npm
 
-## Instalación
+## Inicio Rápido
 
-Sigue estos pasos para configurar y ejecutar el proyecto localmente:
+### 1. Instalar Dependencias
 
-1.**Clonar el repositorio**:
+\\\ash
+pnpm install
+\\\
 
-        ```bash
-        git clone <URL_DEL_REPOSITORIO>
-        cd LEXIMATE-BACKEND
-        ```
+### 2. Configurar Variables de Entorno
 
-2.**Instalar dependencias**: Utiliza npm o Yarn para instalar las dependencias
-del proyecto:
+Crea un archivo .env en la raíz. Variables principales:
 
-        ```bash
-        npm install
-        # o
-        yarn install
-        ```
+\\\nv
+# Base de datos
+DB_HOST=localhost
+DB_PORT=5432
+DB_NAME=leximate
+DB_USER=postgres
+DB_PASSWORD=postgres
 
-3.**Configuración de Variables de Entorno**: Crea un archivo `.env` en la raíz
-del proyecto. Puedes usar el archivo `.env.example` (si existe) como plantilla.
-Las variables de entorno esenciales incluyen: - `PORT`: Puerto en el que se
-ejecutará el servidor (ej. `3000`). - `DATABASE_URL`: URL de conexión a la base
-de datos PostgreSQL (ej.
-`postgresql://user:password@localhost:5432/database_name`). - `JWT_SECRET`:
-Clave secreta para la firma de tokens JWT. - `CLOUDINARY_CLOUD_NAME`,
-`CLOUDINARY_API_KEY`, `CLOUDINARY_API_SECRET`: Credenciales para Cloudinary (si
-se usa para almacenamiento de archivos). - `AWS_ACCESS_KEY_ID`,
-`AWS_SECRET_ACCESS_KEY`, `AWS_REGION`, `AWS_BUCKET_NAME`: Credenciales para AWS
-S3 (si se usa para almacenamiento de archivos). - `RESEND_API_KEY`: Clave API
-para Resend (si se usa para envío de correos electrónicos). - Otras variables
-específicas de tu entorno.
+# JWT
+JWT_SECRET_KEY=tu_secreto_aqui
 
-    Ejemplo de `.env`:
+# Google Gemini
+GOOGLE_PALM_HOST=https://generativelanguage.googleapis.com
+GOOGLE_GEMINI_API_KEY=tu_api_key
 
-    ```
-    PORT=3000
-    DATABASE_URL="postgresql://user:password@localhost:5432/leximate_db"
-    JWT_SECRET="supersecretkey"
-    CLOUDINARY_CLOUD_NAME="your_cloud_name"
-    CLOUDINARY_API_KEY="your_api_key"
-    CLOUDINARY_API_SECRET="your_api_secret"
-    # AWS_ACCESS_KEY_ID="your_aws_access_key"
-    # AWS_SECRET_ACCESS_KEY="your_aws_secret_access_key"
-    # AWS_REGION="us-east-1"
-    # AWS_BUCKET_NAME="your_aws_bucket_name"
-    RESEND_API_KEY="re_your_resend_api_key"
-    ```
+# Supabase
+SUPABASE_HOST=tu_host
+SERVICE_ROLE_SECRET=tu_secret
 
-4.**Levantar la Base de Datos (con Docker Compose)**: Si estás utilizando Docker
-Compose para PostgreSQL, ejecuta:
+# n8n
+N8N_API_URL=http://localhost:5678
+N8N_API_KEY=tu_api_key
+N8N_ENCRYPTION_KEY=tu_encryption_key
+N8N_JWT_SECRET=tu_jwt_secret
 
-        ```bash
-        docker-compose up -d
-        ```
+# Cloudinary (opcional)
+CLOUDINARY_CLOUD_NAME=tu_cloud_name
+CLOUDINARY_API_KEY=tu_api_key
+CLOUDINARY_API_SECRET=tu_api_secret
 
-    Esto iniciará un contenedor de PostgreSQL en segundo plano. Asegúrate de que
-    tu `DATABASE_URL` en el archivo `.env` apunte a este contenedor (ej.
-    `postgresql://user:password@localhost:5432/leximate_db`).
+# Resend (opcional)
+RESEND_API_KEY=tu_api_key
+\\\
 
-5.**Ejecutar Migraciones de Base de Datos**: Una vez que la base de datos esté
-en funcionamiento, ejecuta las migraciones para crear el esquema de la base de
-datos:
-`bash     npm run typeorm migration:run     # o     yarn typeorm migration:run     `
+## Docker - Comandos Principales
 
-## Ejecución del Proyecto
+### Aplicación Completa
 
-### Modo Desarrollo
+\\\ash
+# Levanta todo (PostgreSQL + n8n + Backend)
+pnpm docker:up
 
-Para iniciar el servidor en modo desarrollo (con recarga automática):
+# Detiene todo
+pnpm docker:down
 
-```bash
+# Reinicia desde cero
+pnpm docker:rebuild
 
-npm run dev
-# o
-yarn dev
+# Ver logs
+pnpm docker:logs
+pnpm docker:logs:backend
+pnpm docker:logs:postgres
+pnpm docker:logs:n8n
+\\\
 
-```
+### Base de Datos (PostgreSQL)
 
-El servidor estará disponible en `http://localhost:PORT` (donde `PORT` es el
-puerto configurado en tu archivo `.env`).
+\\\ash
+pnpm docker:db:up
+pnpm docker:db:down
+pnpm docker:db:reset
+pnpm docker:db:shell
+\\\
 
-### Modo Producción
+### n8n (Workflows)
 
-Para compilar y ejecutar el proyecto en modo producción:
+\\\ash
+pnpm docker:n8n:up
+pnpm docker:n8n:down
+pnpm docker:n8n:reset
+\\\
 
-1.  **Compilar el código TypeScript**:
+### Backend
 
-        ```bash
+\\\ash
+pnpm docker:backend:up
+pnpm docker:backend:down
+pnpm docker:backend:restart
+pnpm docker:backend:rebuild
+\\\
 
-        npm run build
-        # o
-        yarn build
-        ```
+### Utilidades
 
-2.  **Iniciar el servidor**:
-
-        ```bash
-            npm run start
-            # o
-            yarn start
-        ```
-
-## Estructura del Proyecto
-
-El proyecto sigue una estructura modular, organizada de la siguiente manera:
-
-```
-
-.
-├── src/
-│   ├── app.ts                  # Configuración principal de la aplicación Fastify
-│   ├── index.ts                # Punto de entrada de la aplicación
-│   ├── common/                 # Módulos comunes (adaptadores, configuraciones, middlewares, tipos)
-│   │   ├── adapters/
-│   │   ├── configs/
-│   │   ├── enums/
-│   │   ├── interfaces/
-│   │   ├── libs/
-│   │   └── middlewares/
-│   ├── database/               # Configuración de la base de datos y TypeORM
-│   │   └── db.ts
-│   └── modules/                # Módulos de la aplicación (auth, comment, course, post, seed, task, tool, user)
-│       ├── auth/
-│       ├── comment/
-│       ├── course/
-│       ├── post/
-│       ├── seed/
-│       ├── task/
-│       ├── tool/
-│       └── user/
-├── .dockerignore
-├── .gitignore
-├── docker-compose.yaml         # Configuración de Docker Compose para servicios
-├── nodemon.json                # Configuración de Nodemon para desarrollo
-├── package.json                # Metadatos del proyecto y dependencias
-├── tsconfig.json               # Configuración de TypeScript
-└── README.md                   # Este archivo
-```
-
-## Dependencias Clave
-
-Aquí se listan algunas de las dependencias más importantes utilizadas en el
-proyecto:
-
-- **Fastify**: Framework web rápido y de bajo overhead.
-- **TypeORM**: ORM para TypeScript y JavaScript que soporta PostgreSQL.
-- **pg**: Cliente de PostgreSQL para Node.js.
-- **bcryptjs**: Para el hashing de contraseñas.
-- **jsonwebtoken**: Para la creación y verificación de tokens JWT.
-- **dotenv** y **env-var**: Para la gestión de variables de entorno.
-- **pino**: Logger de alto rendimiento.
-- **cloudinary**, **aws-sdk**, **multer**: Para la carga y gestión de archivos.
-- **pdf-parse**, **tesseract.js**: Para el procesamiento de documentos.
-- **resend**: Para el envío de correos electrónicos.
-- **zod**: Para la validación de esquemas.
+\\\ash
+pnpm docker:status
+pnpm docker:shell:backend
+pnpm docker:shell:postgres
+pnpm docker:clean
+\\\
 
 ## Scripts Disponibles
 
-- `npm install` / `yarn install`: Instala todas las dependencias.
-- `npm run build` / `yarn build`: Compila el código TypeScript a JavaScript.
-- `npm run dev` / `yarn dev`: Inicia el servidor en modo desarrollo con
-  `nodemon`.
-- `npm run start` / `yarn start`: Inicia el servidor compilado en modo
-  producción.
-- `npm run typeorm <comando>` / `yarn typeorm <comando>`: Ejecuta comandos de
-  TypeORM (ej. `migration:run`, `migration:generate`).
+### Desarrollo
 
----
+\\\ash
+pnpm start:dev      # Inicia en desarrollo con hot-reload
+pnpm start:build    # Compila el proyecto
+pnpm start:prod     # Ejecuta la versión compilada
+\\\
+
+### n8n - Workflows y Credenciales
+
+\\\ash
+pnpm load:workflows    # Carga workflows desde /n8n/workflows/
+pnpm load:credentials  # Carga credenciales desde .env
+pnpm load:all          # Carga workflows + credenciales
+\\\
+
+## Estructura del Proyecto
+
+\\\
+src/
+├── app.ts              # Configuración de Fastify
+├── index.ts            # Punto de entrada
+├── common/
+│   ├── adapters/       # Adaptadores (hash, etc)
+│   ├── configs/        # Configuración de variables
+│   ├── enums/          # Enumeraciones
+│   ├── interfaces/     # Interfaces
+│   ├── libs/           # Librerías (JWT, Cloudinary, etc)
+│   ├── middlewares/    # Middlewares de Fastify
+│   └── types/          # Tipos de TypeScript
+├── database/
+│   └── db.ts           # Conexión a BD
+└── modules/            # Módulos de negocio
+    ├── auth/           # Autenticación
+    ├── user/           # Usuarios
+    ├── course/         # Cursos
+    ├── task/           # Tareas
+    ├── post/           # Posts
+    ├── comment/        # Comentarios
+    ├── tool/           # Herramientas (OCR, Chatbot)
+    └── seed/           # Datos iniciales
+
+docs/                   # Documentación de rutas
+scripts/                # Scripts de utilidad
+n8n/                    # Workflows y credenciales
+\\\
+
+## Rutas de la API
+
+Documentación completa en /docs:
+
+- [auth.md](docs/auth.md) - Autenticación (login, registro, perfil)
+- [user.md](docs/user.md) - Gestión de usuarios
+- [course.md](docs/course.md) - Cursos
+- [task.md](docs/task.md) - Tareas
+- [post.md](docs/post.md) - Posts
+- [comment.md](docs/comment.md) - Comentarios
+- [tool.md](docs/tool.md) - Herramientas (OCR, Chatbot, Markdown)
+- [routes.md](docs/routes.md) - Referencia simplificada de todas las rutas
+- [seed.md](docs/seed.md) - Datos iniciales
+
+### Ejemplo: Crear un usuario
+
+\\\ash
+curl -X POST http://localhost:8080/api/auth/register \\
+  -H \"Content-Type: application/json\" \\
+  -d '{
+    \"first_name\": \"Juan\",
+    \"last_name\": \"Pérez\",
+    \"email\": \"juan@example.com\",
+    \"password\": \"Password123!\"
+  }'
+\\\
+
+## Autenticación
+
+Los endpoints protegidos requieren el header:
+
+\\\
+Authorization: Bearer <JWT_TOKEN>
+\\\
+
+## n8n - Workflows y Credenciales
+
+### Cargar Workflows
+
+\\\ash
+pnpm load:workflows
+\\\
+
+Los workflows se cargan desde 
+8n/workflows/*.json. Credenciales disponibles:
+
+- Google PaLM API - Para Gemini
+- Supabase Vector Store - Vector database
+- PostgreSQL Account - Base de datos
+- JWT Auth - Autenticación
+
+### Cargar Credenciales
+
+\\\ash
+pnpm load:credentials
+\\\
+
+## Dependencias Principales
+
+- fastify - Framework web
+- typeorm - ORM para PostgreSQL
+- jsonwebtoken - Tokens JWT
+- bcryptjs - Hash de contraseñas
+- axios - Cliente HTTP
+- pdf-parse - Extracción de PDFs
+- cloudinary - Almacenamiento en nube
+- resend - Envío de emails
+- tesseract.js - OCR
+
+## Debugging
+
+### Hot-reload en Docker
+
+El backend se reinicia automáticamente al editar archivos en src/:
+
+\\\ash
+pnpm docker:up
+# Edita archivos y verás los cambios en tiempo real
+\\\
+
+### Debug Remoto
+
+Accede a Chrome DevTools en chrome://inspect:
+
+\\\ash
+pnpm docker:backend:up
+# Abre chrome://inspect y conecta al puerto 9229
+\\\
+
+## Más Información
+
+- [Documentación de Rutas](docs/routes.md)
+- [TypeORM Docs](https://typeorm.io/)
+- [Fastify Docs](https://www.fastify.io/)
+- [n8n Docs](https://docs.n8n.io/)
+
+## Licencia
+
+MIT
