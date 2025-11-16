@@ -68,6 +68,9 @@ importers:
       fastify:
         specifier: ^5.6.1
         version: 5.6.2
+      fastify-plugin:
+        specifier: ^5.1.0
+        version: 5.1.0
       figlet:
         specifier: ^1.8.0
         version: 1.9.4
@@ -141,9 +144,6 @@ importers:
       '@types/node':
         specifier: ^24.9.1
         version: 24.10.1
-      '@types/pino':
-        specifier: ^7.0.5
-        version: 7.0.5
       nodemon:
         specifier: ^3.1.7
         version: 3.1.11
@@ -1152,10 +1152,6 @@ packages:
 
   '@types/pdf-parse@1.1.5':
     resolution: {integrity: sha512-kBfrSXsloMnUJOKi25s3+hRmkycHfLK6A09eRGqF/N8BkQoPUmaCr+q8Cli5FnfohEz/rsv82zAiPz/LXtOGhA==}
-
-  '@types/pino@7.0.5':
-    resolution: {integrity: sha512-wKoab31pknvILkxAF8ss+v9iNyhw5Iu/0jLtRkUD74cNfOOLJNnqfFKAv0r7wVaTQxRZtWrMpGfShwwBjOcgcg==}
-    deprecated: This is a stub types definition. pino provides its own type definitions, so you do not need this installed.
 
   '@types/qs@6.14.0':
     resolution: {integrity: sha512-eOunJqu0K1923aExK6y8p6fsihYEn/BYuQ4g0CxAAgFc4b/ZLN4CrsRZ55srTdqoiLzU2B2evC+apEIxprEzkQ==}
@@ -4362,10 +4358,6 @@ snapshots:
   '@types/pdf-parse@1.1.5':
     dependencies:
       '@types/node': 24.10.1
-
-  '@types/pino@7.0.5':
-    dependencies:
-      pino: 10.1.0
 
   '@types/qs@6.14.0': {}
 

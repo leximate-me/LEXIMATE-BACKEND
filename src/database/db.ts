@@ -22,7 +22,7 @@ export class AppDataSourceManager {
       });
       try {
         await AppDataSourceManager.dataSource.initialize();
-        log.info('Database connection established successfully.');
+        log.info('🔧 Database connection established successfully.');
       } catch (error) {
         log.error(`Error connecting to the database: ${String(error)}`);
         throw error;

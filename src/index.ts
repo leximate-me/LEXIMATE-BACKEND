@@ -1,6 +1,5 @@
 import { App } from './app';
 import { AppDataSource } from './database/db';
-import 'dotenv/config';
 import figlet from 'figlet';
 
 async function main() {
