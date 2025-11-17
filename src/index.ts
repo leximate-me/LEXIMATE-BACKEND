@@ -11,8 +11,8 @@ if (process.env.NODE_ENV !== 'production') {
 
 const BANNER = `
 ╔════════════════════════════════════╗
-║         🚀 LEXIMATE BACKEND       ║
-║      Backend API Server v1.0      ║
+║         🚀 LEXIMATE BACKEND        ║
+║      Esto va ser epico papus       ║
 ╚════════════════════════════════════╝
 `;
 
