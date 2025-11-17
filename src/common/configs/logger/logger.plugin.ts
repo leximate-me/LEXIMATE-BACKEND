@@ -6,6 +6,11 @@ declare module 'fastify' {
   export interface FastifyRequest {
     correlationId: string;
     startTime: number;
+    hasError?: boolean;
+    bodyInfo?: {
+      count: number;
+      fields: string;
+    };
   }
 }
 
@@ -14,7 +19,8 @@ export interface LoggerOptions {
 }
 
 // ✅ Línea decorativa
-const DIVIDER = '═══════════════════════════════════════';
+const DIVIDER =
+  '══════════════════════════════════════════════════════════════════════════════';
 
 function getMethodEmoji(method: string): string {
   const emojis: Record<string, string> = {
@@ -63,6 +69,7 @@ async function loggerPlugin(
 ) {
   const isDevelopment = process.env.NODE_ENV === 'development';
 
+  // ✅ Hook 1: Guardar datos de la petición
   fastify.addHook(
     'onRequest',
     async (request: FastifyRequest, reply: FastifyReply): Promise<void> => {
@@ -72,27 +79,14 @@ async function loggerPlugin(
 
       request.correlationId = correlationId;
       request.startTime = startTime;
+      request.hasError = false;
       reply.header('X-Request-ID', correlationId);
 
-      const methodEmoji = getMethodEmoji(request.method);
-
-      // ✅ Mostrar barra ARRIBA SIN saltos de línea extra
-      console.log(`\n${DIVIDER}`);
-      // ✅ Mensaje principal
-      console.log(
-        `${methodEmoji} ${request.method.toUpperCase()} ${request.url}`
-      );
-
-      // ✅ Detalles si es desarrollo
-      if (isDevelopment) {
-        const userAgent = request.headers['user-agent'];
-        console.log(
-          `  IP: ${request.ip} | Agent: ${userAgent} | ID: ${correlationId}`
-        );
-      }
+      // ✅ NO loguear aquí, solo guardar datos
     }
   );
 
+  // ✅ Hook 2: Procesar body
   fastify.addHook(
     'preHandler',
     async (request: FastifyRequest, reply: FastifyReply): Promise<void> => {
@@ -102,28 +96,53 @@ async function loggerPlugin(
           : [];
 
         if (bodyKeys.length > 0) {
-          console.log(
-            `  📋 Body: ${bodyKeys.length} fields (${bodyKeys.join(', ')})`
-          );
+          // ✅ Guardar info del body para usar después
+          request.bodyInfo = {
+            count: bodyKeys.length,
+            fields: bodyKeys.join(', '),
+          };
         }
       }
     }
   );
 
+  // ✅ Hook 3: Loguear respuesta exitosa
   fastify.addHook(
     'onResponse',
     async (request: FastifyRequest, reply: FastifyReply): Promise<void> => {
-      const responseTime = Date.now() - request.startTime;
-      const statusEmoji = getStatusEmoji(reply.statusCode);
+      // ✅ Solo ejecutar si NO hay error
+      if (!request.hasError) {
+        const methodEmoji = getMethodEmoji(request.method);
+        const responseTime = Date.now() - request.startTime;
+        const statusEmoji = getStatusEmoji(reply.statusCode);
 
-      console.log(
-        `  ${statusEmoji} ${reply.statusCode} | ${responseTime.toFixed(2)}ms`
-      );
-      // ✅ Mostrar barra ABAJO
-      console.log(`${DIVIDER}\n`);
+        fastify.log.info(DIVIDER);
+        fastify.log.info(
+          `${methodEmoji} ${request.method.toUpperCase()} ${request.url}`
+        );
+
+        if (isDevelopment) {
+          const userAgent = request.headers['user-agent'];
+          fastify.log.debug(
+            `  IP: ${request.ip} | Agent: ${userAgent} | ID: ${request.correlationId}`
+          );
+        }
+
+        if (request.bodyInfo) {
+          fastify.log.info(
+            `  📋 Body: ${request.bodyInfo.count} fields (${request.bodyInfo.fields})`
+          );
+        }
+
+        fastify.log.info(
+          `  ${statusEmoji} ${reply.statusCode} | ${responseTime.toFixed(2)}ms`
+        );
+        fastify.log.info(DIVIDER);
+      }
     }
   );
 
+  // ✅ Hook 4: Loguear errores
   fastify.addHook(
     'onError',
     async (
@@ -131,22 +150,67 @@ async function loggerPlugin(
       reply: FastifyReply,
       error: Error
     ): Promise<void> => {
-      const statusCode = (error as any).statusCode || 500;
+      request.hasError = true;
+
+      const err = error as any;
+      const statusCode = err.statusCode || 500;
       const errorEmoji = getErrorEmoji(statusCode);
       const stackTrace = formatStackTrace(error.stack);
+      const methodEmoji = getMethodEmoji(request.method);
 
-      console.log(`\n${DIVIDER}`);
-      fastify.log.error(
-        {
-          statusCode,
-          errorName: error.name,
-          message: error.message,
-          stack: stackTrace.length > 0 ? stackTrace : undefined,
-          correlationId: request.correlationId,
-        },
-        `${errorEmoji} ${error.name}: ${error.message}`
+      // ✅ Mostrar TODO dentro de las barras SOLO UNA VEZ
+      fastify.log.info(DIVIDER);
+      fastify.log.info(
+        `${methodEmoji} ${request.method.toUpperCase()} ${request.url}`
       );
-      console.log(`${DIVIDER}\n`);
+
+      if (isDevelopment) {
+        const userAgent = request.headers['user-agent'];
+        fastify.log.debug(
+          `  IP: ${request.ip} | Agent: ${userAgent} | ID: ${request.correlationId}`
+        );
+      }
+
+      if (request.bodyInfo) {
+        fastify.log.info(
+          `  📋 Body: ${request.bodyInfo.count} fields (${request.bodyInfo.fields})`
+        );
+      }
+
+      // ✅ Detalles del error
+      fastify.log.error(`  ${errorEmoji} ${error.name}: ${error.message}`);
+      fastify.log.error(`    statusCode: ${statusCode}`);
+      fastify.log.error(`    errorName: "${error.name}"`);
+      fastify.log.error(`    message: "${error.message}"`);
+
+      // ✅ Errores de validación
+      if (err.validation && Array.isArray(err.validation)) {
+        fastify.log.error(`    validation: [`);
+        err.validation.forEach((v: any) => {
+          fastify.log.error(`      {`);
+          let field = v.field;
+          if (!field || field === 'undefined') {
+            field = v.instancePath
+              ? v.instancePath.replace(/^\//, '').split('/')[0]
+              : 'unknown';
+          }
+          fastify.log.error(`        field: "${field}",`);
+          fastify.log.error(`        message: "${v.message}"`);
+          fastify.log.error(`      },`);
+        });
+        fastify.log.error(`    ]`);
+      }
+
+      // ✅ Stack trace
+      if (stackTrace.length > 0) {
+        fastify.log.error(`    stack: [`);
+        stackTrace.forEach((line) => {
+          fastify.log.error(`      "${line}",`);
+        });
+        fastify.log.error(`    ]`);
+      }
+
+      fastify.log.info(DIVIDER);
     }
   );
 }

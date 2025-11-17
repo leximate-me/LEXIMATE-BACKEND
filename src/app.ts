@@ -79,24 +79,50 @@ export class App {
   }
 
   private setErrorHandler() {
-    this.instance.setSchemaErrorFormatter((errors) => {
+    // ✅ Formatter de errores de schema PRIMERO
+    this.instance.setSchemaErrorFormatter((errors, dataType) => {
       const err = new Error('Validation error') as FastifyError;
       err.statusCode = 400;
       (err as any).error = 'Bad Request';
-      (err as any).validation = errors.map((e) => ({
-        field: e.instancePath
-          ? e.instancePath.replace(/^\//, '')
-          : e.params.missingProperty,
-        message: e.message,
-      }));
+
+      // ✅ Extraer correctamente el field del instancePath
+      (err as any).validation = errors.map((e) => {
+        let field: string = 'unknown';
+
+        if (e.instancePath && e.instancePath !== '/') {
+          const pathParts = e.instancePath.split('/').filter(Boolean);
+          field = pathParts[0] || 'unknown';
+        }
+
+        return {
+          field, // ✅ Esto será enviado correctamente
+          message: e.message,
+        };
+      });
+
       return err;
     });
 
+    // ✅ Error handler
     this.instance.setErrorHandler((error, request, reply) => {
       const err = error as any;
 
-      if (err.validation) {
-        reply.send(error);
+      // ✅ Manejo de errores de validación
+      if (err.validation && Array.isArray(err.validation)) {
+        const isTransformed = err.validation[0]?.field !== undefined;
+
+        reply.code(400).send({
+          statusCode: 400,
+          error: 'Bad Request',
+          message: 'Validation error',
+          validation: isTransformed
+            ? err.validation
+            : err.validation.map((e: any) => ({
+                field:
+                  e.instancePath?.replace(/^\//, '').split('/')[0] || 'unknown',
+                message: e.message,
+              })),
+        });
         return;
       }
 
@@ -126,38 +152,28 @@ export class App {
     return this.instance.log;
   }
 
-  // ✅ Preparar ANTES de inicializar DB
   public async prepareConfig() {
-    // 1️⃣ Logger plugin
     await this.instance.register(loggerPlugin);
 
-    // 2️⃣ Environment variables
     await this.instance.register(fastifyEnv, {
       confKey: 'config',
       schema: envSchema,
       dotenv: false,
     });
 
-    // 3️⃣ Actualizar nivel de log
     const config = this.instance.config;
     if (config.LOG_LEVEL) {
       this.instance.log.level = config.LOG_LEVEL.toLowerCase();
     }
 
-    // 4️⃣ Middlewares
     await this.applyMiddlewares();
 
-    // 5️⃣ Error handlers
     this.setErrorHandler();
-
-    // ✅ NO llamar a ready() aquí
   }
 
-  // ✅ Setup rutas DESPUÉS de DB (antes de listen)
   public async setupRoutes() {
     const config = this.instance.config;
 
-    // Log de configuración
     this.instance.log.info(
       {
         environment: config.NODE_ENV,
@@ -169,10 +185,8 @@ export class App {
       '⚙️  Application configured'
     );
 
-    // Registrar rutas
     await this.setRoutes();
 
-    // ✅ Llamar a ready() AQUÍ después de agregar rutas
     await this.instance.ready();
   }
 

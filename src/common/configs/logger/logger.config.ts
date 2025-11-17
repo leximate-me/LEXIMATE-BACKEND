@@ -15,7 +15,7 @@ export function getLoggerOptions() {
             // ✅ Ignorar campos innecesarios
             ignore: 'pid,hostname,level,time',
             // ✅ Mostrar solo el mensaje
-            singleLine: true,
+            singleLine: false,
             quietReqLogger: true,
             // ✅ Sin prefijo de nivel
             levelFirst: false,
