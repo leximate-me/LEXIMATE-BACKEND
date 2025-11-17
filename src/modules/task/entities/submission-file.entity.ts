@@ -21,7 +21,9 @@ export class SubmissionFile {
   @Column({ type: 'varchar' })
   file_type: string;
 
-  @ManyToOne(() => TaskSubmission, (submission) => submission.files)
+  @ManyToOne(() => TaskSubmission, (submission) => submission.submissionFiles, {
+    onDelete: 'CASCADE',
+  })
   submission: TaskSubmission;
 
   @DeleteDateColumn()

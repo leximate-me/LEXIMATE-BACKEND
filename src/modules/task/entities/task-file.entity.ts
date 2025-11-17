@@ -10,7 +10,7 @@ import { Task } from './task.entity';
 @Entity()
 export class TaskFile {
   @PrimaryGeneratedColumn('uuid')
-  id: number;
+  id: string;
 
   @Column({ type: 'varchar' })
   file_id: string;
@@ -21,7 +21,9 @@ export class TaskFile {
   @Column({ type: 'varchar' })
   file_type: string;
 
-  @ManyToOne(() => Task, (task) => task.taskFiles)
+  @ManyToOne(() => Task, (task) => task.taskFiles, {
+    onDelete: 'CASCADE',
+  })
   task: Task;
 
   @DeleteDateColumn()

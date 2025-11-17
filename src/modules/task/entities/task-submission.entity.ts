@@ -31,7 +31,9 @@ export class TaskSubmission {
   })
   qualification?: number;
 
-  @ManyToOne(() => Task, (task) => task.submissions)
+  @ManyToOne(() => Task, (task) => task.submissions, {
+    onDelete: 'CASCADE',
+  })
   task: Task;
 
   @ManyToOne(() => User, (user) => user.taskSubmissions)
@@ -39,7 +41,6 @@ export class TaskSubmission {
 
   @OneToMany(() => SubmissionFile, (file) => file.submission, {
     onDelete: 'CASCADE',
-    cascade: true,
   })
   submissionFiles: SubmissionFile[];
 

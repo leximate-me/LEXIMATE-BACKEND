@@ -39,7 +39,9 @@ export class Task {
   })
   taskFiles: TaskFile[];
 
-  @OneToMany(() => TaskSubmission, (submission) => submission.task)
+  @OneToMany(() => TaskSubmission, (submission) => submission.task, {
+    onDelete: 'CASCADE',
+  })
   submissions: TaskSubmission[];
 
   @DeleteDateColumn()

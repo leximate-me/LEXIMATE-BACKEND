@@ -170,25 +170,23 @@ export class TaskService {
 
       const task = await this.taskRepository.findOne({
         where: { id: taskId, course: { id: courseId } },
-        relations: ['course'],
+        relations: ['taskFiles'],
       });
       if (!task) {
         throw HttpError.notFound('Task not found in this course');
       }
 
-      const file = await this.fileTaskRepository.findOne({
-        where: { task: { id: taskId } },
-      });
-
       let public_id = null;
-      if (file) {
-        public_id = file.file_id;
-        await queryRunner.manager.delete(TaskFile, { id: file.id });
+
+      // Obtén el public_id antes de eliminar
+      if (task.taskFiles && task.taskFiles.length > 0) {
+        public_id = task.taskFiles[0].file_id;
       }
 
-      await queryRunner.manager.delete(Task, { id: taskId });
-
+      // Elimina la tarea (CASCADE elimina automáticamente todo)
+      await queryRunner.manager.remove(task);
       await queryRunner.commitTransaction();
+
       return public_id;
     } catch (error) {
       await queryRunner.rollbackTransaction();
