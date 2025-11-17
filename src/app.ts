@@ -197,14 +197,12 @@ export class App {
         this.instance.redis
       );
       this.instance.log.info(
-        '✅ RedisNotificationService inicializado correctamente'
+        '🧏‍♂️ RedisNotificationService inicializado correctamente'
       );
 
-      // ✅ Configura WebSocket para notificaciones en tiempo real
       await setupWebSocket(this.instance, redisNotificationService);
-      this.instance.log.info('✅ WebSocket configurado para notificaciones');
+      this.instance.log.info('🧏‍♂️ WebSocket configurado para notificaciones');
     } catch (error) {
-      // ✅ CORREGIDO: Loguear el error correctamente
       this.instance.log.error(
         { error },
         '❌ Error inicializando RedisNotificationService'
