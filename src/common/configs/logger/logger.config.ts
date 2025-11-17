@@ -10,12 +10,15 @@ export function getLoggerOptions() {
           target: 'pino-pretty',
           options: {
             colorize: true,
+            // ✅ Timestamp legible
             translateTime: 'HH:MM:ss',
-            ignore: 'pid,hostname,reqId,service,req,res,level',
-            singleLine: false,
+            // ✅ Ignorar campos innecesarios
+            ignore: 'pid,hostname,level,time',
+            // ✅ Mostrar solo el mensaje
+            singleLine: true,
             quietReqLogger: true,
-            customColors:
-              'trace:gray,debug:cyan,info:green,warn:yellow,error:red,fatal:magenta',
+            // ✅ Sin prefijo de nivel
+            levelFirst: false,
           },
         }
       : undefined,

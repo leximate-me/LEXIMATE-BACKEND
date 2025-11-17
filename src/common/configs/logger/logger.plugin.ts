@@ -13,7 +13,9 @@ export interface LoggerOptions {
   level?: string;
 }
 
-// ✅ Función auxiliar para obtener emoji según el método HTTP
+// ✅ Línea decorativa
+const DIVIDER = '═══════════════════════════════════════';
+
 function getMethodEmoji(method: string): string {
   const emojis: Record<string, string> = {
     GET: '📥',
@@ -27,7 +29,6 @@ function getMethodEmoji(method: string): string {
   return emojis[method] || '📡';
 }
 
-// ✅ Función auxiliar para obtener emoji según el status code
 function getStatusEmoji(statusCode: number): string {
   if (statusCode < 300) return '✅';
   if (statusCode < 400) return '🔀';
@@ -35,20 +36,18 @@ function getStatusEmoji(statusCode: number): string {
   return '❌';
 }
 
-// ✅ Función auxiliar para obtener emoji según el tipo de error
 function getErrorEmoji(statusCode: number): string {
-  if (statusCode === 400) return '❌'; // Bad Request
-  if (statusCode === 401) return '🔐'; // Unauthorized
-  if (statusCode === 403) return '🚫'; // Forbidden
-  if (statusCode === 404) return '🔍'; // Not Found
-  if (statusCode === 409) return '⚔️'; // Conflict
-  if (statusCode === 422) return '✔️'; // Unprocessable Entity
-  if (statusCode === 429) return '⏱️'; // Too Many Requests
-  if (statusCode >= 500) return '💥'; // Server Error
+  if (statusCode === 400) return '❌';
+  if (statusCode === 401) return '🔐';
+  if (statusCode === 403) return '🚫';
+  if (statusCode === 404) return '🔍';
+  if (statusCode === 409) return '⚔️';
+  if (statusCode === 422) return '✔️';
+  if (statusCode === 429) return '⏱️';
+  if (statusCode >= 500) return '💥';
   return '⚠️';
 }
 
-// ✅ Función auxiliar para formatear stack trace
 function formatStackTrace(stack?: string): string[] {
   if (!stack) return [];
   return stack
@@ -64,11 +63,6 @@ async function loggerPlugin(
 ) {
   const isDevelopment = process.env.NODE_ENV === 'development';
 
-  if (isDevelopment) {
-    fastify.log.info('🔧 Logger plugin initialized');
-  }
-
-  // Incoming request hook
   fastify.addHook(
     'onRequest',
     async (request: FastifyRequest, reply: FastifyReply): Promise<void> => {
@@ -80,75 +74,56 @@ async function loggerPlugin(
       request.startTime = startTime;
       reply.header('X-Request-ID', correlationId);
 
-      request.log = request.log.child({
-        correlationId,
-      });
-
-      // ✅ Log con mensaje descriptivo
       const methodEmoji = getMethodEmoji(request.method);
-      const logMessage = `${methodEmoji} ${request.method} ${request.url}`;
 
-      const logData: Record<string, any> = {
-        ip: request.ip || (request.headers['x-forwarded-for'] as string),
-        userAgent: request.headers['user-agent'],
-      };
+      // ✅ Mostrar barra ARRIBA SIN saltos de línea extra
+      console.log(`\n${DIVIDER}`);
+      // ✅ Mensaje principal
+      console.log(
+        `${methodEmoji} ${request.method.toUpperCase()} ${request.url}`
+      );
 
-      // ✅ Solo agregar contentType si existe
-      if (request.headers['content-type']) {
-        logData.contentType = request.headers['content-type'];
+      // ✅ Detalles si es desarrollo
+      if (isDevelopment) {
+        const userAgent = request.headers['user-agent'];
+        console.log(
+          `  IP: ${request.ip} | Agent: ${userAgent} | ID: ${correlationId}`
+        );
       }
-
-      // ✅ Solo agregar query si tiene parámetros
-      if (Object.keys(request.query).length > 0) {
-        logData.query = request.query;
-      }
-
-      request.log.info(logData, logMessage);
     }
   );
 
-  // ✅ Pre-handler hook para loguear el body
   fastify.addHook(
     'preHandler',
     async (request: FastifyRequest, reply: FastifyReply): Promise<void> => {
-      // Solo para POST/PUT/PATCH
       if (['POST', 'PUT', 'PATCH'].includes(request.method)) {
         const bodyKeys = request.body
           ? Object.keys(request.body as Record<string, any>)
           : [];
 
         if (bodyKeys.length > 0) {
-          request.log.info(
-            {
-              fields: bodyKeys,
-            },
-            `📋 Request body with ${bodyKeys.length} fields`
+          console.log(
+            `  📋 Body: ${bodyKeys.length} fields (${bodyKeys.join(', ')})`
           );
         }
       }
     }
   );
 
-  // Response hook
   fastify.addHook(
     'onResponse',
     async (request: FastifyRequest, reply: FastifyReply): Promise<void> => {
       const responseTime = Date.now() - request.startTime;
       const statusEmoji = getStatusEmoji(reply.statusCode);
 
-      request.log.info(
-        {
-          statusCode: reply.statusCode,
-          responseTime: `${responseTime.toFixed(2)}ms`,
-        },
-        `${statusEmoji}  Response ${reply.statusCode} in ${responseTime.toFixed(
-          2
-        )}ms`
+      console.log(
+        `  ${statusEmoji} ${reply.statusCode} | ${responseTime.toFixed(2)}ms`
       );
+      // ✅ Mostrar barra ABAJO
+      console.log(`${DIVIDER}\n`);
     }
   );
 
-  // Error hook
   fastify.addHook(
     'onError',
     async (
@@ -158,17 +133,20 @@ async function loggerPlugin(
     ): Promise<void> => {
       const statusCode = (error as any).statusCode || 500;
       const errorEmoji = getErrorEmoji(statusCode);
-
       const stackTrace = formatStackTrace(error.stack);
 
-      request.log.error(
+      console.log(`\n${DIVIDER}`);
+      fastify.log.error(
         {
-          statusCode: statusCode,
+          statusCode,
+          errorName: error.name,
           message: error.message,
           stack: stackTrace.length > 0 ? stackTrace : undefined,
+          correlationId: request.correlationId,
         },
         `${errorEmoji} ${error.name}: ${error.message}`
       );
+      console.log(`${DIVIDER}\n`);
     }
   );
 }

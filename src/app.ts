@@ -9,7 +9,6 @@ import avjErrors from 'ajv-errors';
 import 'reflect-metadata';
 
 import { applyMiddlewares } from '@common/middlewares/app.middleware';
-
 import { HttpError } from '@common/libs/http-error';
 import { envSchema } from '@common/configs/env-schema.config';
 
@@ -43,18 +42,10 @@ export class App {
   }
 
   private async setRoutes() {
-    // Health check endpoint
+    // ✅ Health check
     this.instance.get(
       '/',
-      async (
-        request: FastifyRequest,
-        _reply: FastifyReply
-      ): Promise<{
-        message: string;
-        status: string;
-        timestamp: string;
-        correlationId: string;
-      }> => {
+      async (request: FastifyRequest, _reply: FastifyReply) => {
         request.log.info('🏥 Health check requested');
         return {
           message: 'Backend API',
@@ -65,30 +56,21 @@ export class App {
       }
     );
 
-    // Test logger endpoint
+    // ✅ Test logger
     this.instance.get(
       '/test-logger',
-      async (
-        request: FastifyRequest,
-        _reply: FastifyReply
-      ): Promise<{
-        message: string;
-        correlationId: string;
-        logLevels: string[];
-        timestamp: string;
-      }> => {
-        const log = request.log;
-        log.info('📝 Testing logger functionality');
-        log.debug('🐛 Debug message with additional context');
-        log.warn('⚠️ Warning message example');
+      async (request: FastifyRequest, _reply: FastifyReply) => {
+        request.log.info('📝 Testing logger functionality');
+        request.log.debug('🐛 Debug message');
+        request.log.warn('⚠️  Warning message');
         return {
           message: 'Logger test completed successfully',
           correlationId: request.correlationId,
-          logLevels: ['trace', 'debug', 'info', 'warn', 'error', 'fatal'],
-          timestamp: new Date().toISOString(),
         };
       }
     );
+
+    // ✅ Registrar routers (DB ya está inicializada)
     await this.instance.register(authRouter, { prefix: '/api/auth' });
     await this.instance.register(courseRouter, { prefix: '/api/course' });
     await this.instance.register(toolRouter, { prefix: '/api/tool' });
@@ -96,8 +78,8 @@ export class App {
     await this.instance.register(seedRouter, { prefix: '/api/seed' });
   }
 
-  private serErrorHandler() {
-    this.instance.setSchemaErrorFormatter((errors, dataVar) => {
+  private setErrorHandler() {
+    this.instance.setSchemaErrorFormatter((errors) => {
       const err = new Error('Validation error') as FastifyError;
       err.statusCode = 400;
       (err as any).error = 'Bad Request';
@@ -144,21 +126,38 @@ export class App {
     return this.instance.log;
   }
 
-  public async prepare() {
+  // ✅ Preparar ANTES de inicializar DB
+  public async prepareConfig() {
+    // 1️⃣ Logger plugin
     await this.instance.register(loggerPlugin);
+
+    // 2️⃣ Environment variables
     await this.instance.register(fastifyEnv, {
       confKey: 'config',
       schema: envSchema,
       dotenv: false,
     });
 
+    // 3️⃣ Actualizar nivel de log
+    const config = this.instance.config;
+    if (config.LOG_LEVEL) {
+      this.instance.log.level = config.LOG_LEVEL.toLowerCase();
+    }
+
+    // 4️⃣ Middlewares
     await this.applyMiddlewares();
 
-    await this.setRoutes();
+    // 5️⃣ Error handlers
+    this.setErrorHandler();
 
-    this.serErrorHandler();
+    // ✅ NO llamar a ready() aquí
+  }
 
+  // ✅ Setup rutas DESPUÉS de DB (antes de listen)
+  public async setupRoutes() {
     const config = this.instance.config;
+
+    // Log de configuración
     this.instance.log.info(
       {
         environment: config.NODE_ENV,
@@ -170,6 +169,10 @@ export class App {
       '⚙️  Application configured'
     );
 
+    // Registrar rutas
+    await this.setRoutes();
+
+    // ✅ Llamar a ready() AQUÍ después de agregar rutas
     await this.instance.ready();
   }
 
