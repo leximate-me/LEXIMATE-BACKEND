@@ -12,7 +12,7 @@ if (process.env.NODE_ENV !== 'production') {
 const BANNER = `
 ╔════════════════════════════════════╗
 ║         🚀 LEXIMATE BACKEND        ║
-║      Esto va ser epico papus       ║
+║       Esto va ser epico papus      ║
 ╚════════════════════════════════════╝
 `;
 
