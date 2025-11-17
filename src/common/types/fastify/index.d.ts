@@ -9,6 +9,7 @@ declare module 'fastify' {
     getEnvs<T = Record<string, unknown>>(): T;
     config: {
       PORT: number;
+      HOST: string;
       DB_PORT: number;
       DB_HOST: string;
       DB_USER: string;

@@ -8,71 +8,35 @@ import {
 } from '@task/dtos';
 
 export class TaskController {
-  private taskService: TaskService = new TaskService();
+  private taskService = new TaskService();
 
   async create(
     request: FastifyRequest<{
-      Body: CreateTaskDto;
       Params: { courseId: string };
+      Body: CreateTaskDto;
     }>,
     reply: FastifyReply
   ) {
     const courseId = request.params.courseId;
-    const taskData = request.body;
-    const userId = (request.user as any)?.id;
-    const fileProps = (request as any).fileProps || null;
+    const userId = request.user.id;
+    const createTaskDto = request.body;
 
-    const newTask = await this.taskService.create(
+    const task = await this.taskService.create(
       courseId,
       userId,
-      taskData,
-      fileProps
+      createTaskDto,
+      (request as any).fileProps
     );
 
-    reply.code(201).send(newTask);
-  }
-
-  async update(
-    request: FastifyRequest<{
-      Body: UpdateTaskDto;
-      Params: { taskId: string };
-    }>,
-    reply: FastifyReply
-  ) {
-    const userId = (request.user as any)?.id;
-    const taskId = request.params.taskId;
-    const taskData = request.body;
-    const fileProps = (request as any).fileProps || null;
-
-    const updatedTask = await this.taskService.update(
-      userId,
-      taskId,
-      taskData,
-      fileProps
-    );
-
-    reply.code(200).send(updatedTask);
-  }
-
-  async delete(
-    request: FastifyRequest<{ Params: { taskId: string; courseId: string } }>,
-    reply: FastifyReply
-  ) {
-    const taskId = request.params.taskId;
-    const courseId = request.params.courseId;
-    const userId = (request.user as any)?.id;
-
-    await this.taskService.delete(taskId, courseId, userId);
-
-    reply.code(204).send();
+    reply.code(201).send(task);
   }
 
   async getAllByCourse(
     request: FastifyRequest<{ Params: { courseId: string } }>,
     reply: FastifyReply
   ) {
-    const courseId = request.params.courseId;
-    const userId = (request.user as any)?.id;
+    const courseId = request.params.courseId; // ✅ Obtén courseId
+    const userId = request.user.id;
 
     const tasks = await this.taskService.getAllByCourse(courseId, userId);
 
@@ -80,97 +44,145 @@ export class TaskController {
   }
 
   async getOne(
-    request: FastifyRequest<{ Params: { taskId: string; courseId: string } }>,
+    request: FastifyRequest<{
+      Params: { courseId: string; taskId: string };
+    }>,
     reply: FastifyReply
   ) {
-    const taskId = request.params.taskId;
-    const courseId = request.params.courseId;
+    const { courseId, taskId } = request.params;
     const userId = (request.user as any)?.id;
 
-    const task = await this.taskService.getOne(taskId, courseId, userId);
+    const task = await this.taskService.getOne(taskId, userId);
 
     reply.code(200).send(task);
   }
 
+  async update(
+    request: FastifyRequest<{
+      Params: { courseId: string; taskId: string };
+      Body: UpdateTaskDto;
+    }>,
+    reply: FastifyReply
+  ) {
+    const { courseId, taskId } = request.params;
+    const userId = request.user.id;
+    const updateTaskDto = request.body;
+
+    await this.taskService.update(
+      courseId,
+      userId,
+      taskId,
+      updateTaskDto,
+      (request as any).fileProps
+    );
+
+    reply.code(200).send({ message: 'Task updated successfully' });
+  }
+
+  async delete(
+    request: FastifyRequest<{
+      Params: { courseId: string; taskId: string };
+    }>,
+    reply: FastifyReply
+  ) {
+    const { courseId, taskId } = request.params;
+    const userId = request.user.id;
+
+    await this.taskService.delete(courseId, taskId, userId);
+
+    reply.code(204).send();
+  }
+
   async createSubmission(
     request: FastifyRequest<{
-      Params: { taskId: string };
+      Params: { courseId: string; taskId: string };
       Body: CreateTaskSubmissionDto;
     }>,
     reply: FastifyReply
   ) {
+    const { courseId, taskId } = request.params;
     const userId = (request.user as any)?.id;
-    const taskId = request.params.taskId;
-    const submissionData = request.body;
-    const fileProps = (request as any).fileProps || null;
+    const submissionDto = request.body;
 
     const submission = await this.taskService.createSubmission(
+      courseId,
       taskId,
       userId,
-      submissionData,
-      fileProps
+      submissionDto,
+      (request as any).fileProps
     );
 
     reply.code(201).send(submission);
   }
 
-  async qualifySubmission(
+  async getSubmissionsByTask(
     request: FastifyRequest<{
-      Params: { taskId: string; studentId: string };
-      Body: UpdateTaskSubmissionDto;
+      Params: { courseId: string; taskId: string };
     }>,
     reply: FastifyReply
   ) {
-    const { taskId, studentId } = request.params;
-    const updateDto: UpdateTaskSubmissionDto = request.body;
+    const { taskId } = request.params;
 
-    const result = await this.taskService.qualifySubmission(
-      taskId,
-      studentId,
-      updateDto
-    );
-    reply.send(result);
-  }
-
-  async getSubmissionsByTask(
-    request: FastifyRequest<{ Params: { taskId: string } }>,
-    reply: FastifyReply
-  ) {
-    const taskId = request.params.taskId;
     const submissions = await this.taskService.getSubmissionsByTask(taskId);
+
     reply.code(200).send(submissions);
   }
 
   async updateSubmission(
     request: FastifyRequest<{
-      Params: { submissionId: string };
+      Params: { courseId: string; taskId: string; submissionId: string };
       Body: UpdateTaskSubmissionDto;
     }>,
     reply: FastifyReply
   ) {
+    const { taskId, submissionId } = request.params;
     const userId = (request.user as any)?.id;
-    const submissionId = request.params.submissionId;
     const updateDto = request.body;
 
     const updated = await this.taskService.updateSubmission(
+      taskId,
       submissionId,
       userId,
       updateDto
     );
+
     reply.code(200).send(updated);
   }
 
   async deleteSubmission(
-    request: FastifyRequest<{ Params: { submissionId: string } }>,
+    request: FastifyRequest<{
+      Params: { courseId: string; taskId: string; submissionId: string };
+    }>,
     reply: FastifyReply
   ) {
+    const { taskId, submissionId } = request.params;
     const userId = (request.user as any)?.id;
-    const submissionId = request.params.submissionId;
 
     const result = await this.taskService.deleteSubmission(
+      taskId,
       submissionId,
       userId
     );
+
     reply.code(200).send(result);
+  }
+
+  async qualifySubmission(
+    request: FastifyRequest<{
+      Params: { courseId: string; taskId: string; studentId: string };
+      Body: UpdateTaskSubmissionDto;
+    }>,
+    reply: FastifyReply
+  ) {
+    const { taskId, studentId } = request.params;
+    const updateDto = request.body;
+
+    const submission = await this.taskService.qualifySubmission(
+      taskId,
+      studentId,
+      updateDto
+    );
+
+    reply.code(200).send(submission);
   }
 }

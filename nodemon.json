@@ -12,13 +12,15 @@
   "env": {
     "NODE_ENV": "development"
   },
-  "delay": 1000,
+  "delay": 2500,
   "legacyWatch": true,
   "polling": true,
   "pollingInterval": 1000,
   "verbose": true,
   "events": {
-    "restart": "echo 'App restarted'",
-    "crash": "echo 'App crashed'"
+    "restart": "echo '═══════════════════════════════════════\n🔄 Server restarting...\n📝 Changes detected in TypeScript files\n⏱️  Recompiling application...\n═══════════════════════════════════════\n'",
+    "crash": "echo '═══════════════════════════════════════\n🔴 CRITICAL ERROR - Application crashed\n❌ Server stopped unexpectedly\n📋 Check the logs above for details\n═══════════════════════════════════════\n'",
+    "quit": "echo '═══════════════════════════════════════\n⏹️  Server stopped gracefully\n👋 LEXIMATE BACKEND - Goodbye\n═══════════════════════════════════════\n'",
+    "exception": "echo '═══════════════════════════════════════\n❌ Unhandled exception detected\n⚠️  Review the error stack trace above\n═══════════════════════════════════════\n'"
   }
 }

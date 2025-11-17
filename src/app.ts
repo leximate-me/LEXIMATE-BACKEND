@@ -150,7 +150,6 @@ export class App {
       confKey: 'config',
       schema: envSchema,
       dotenv: false,
-      data: process.env,
     });
 
     await this.applyMiddlewares();
@@ -159,15 +158,42 @@ export class App {
 
     this.serErrorHandler();
 
+    const config = this.instance.config;
+    this.instance.log.info(
+      {
+        environment: config.NODE_ENV,
+        port: config.PORT,
+        host: config.HOST,
+        database: config.DB_NAME,
+        logLevel: config.LOG_LEVEL,
+      },
+      '⚙️  Application configured'
+    );
+
     await this.instance.ready();
   }
 
   public async listen() {
+    const abortController = new AbortController();
+
+    process.on('SIGTERM', () => {
+      this.instance.log.info('🛑 SIGTERM received, closing gracefully...');
+      abortController.abort();
+    });
+
+    process.on('SIGINT', () => {
+      this.instance.log.info('🛑 SIGINT received, closing gracefully...');
+      abortController.abort();
+    });
+
+    const { PORT, HOST } = this.instance.config;
+
     await this.instance.listen({
-      port: Number(this.instance.config.PORT),
-      host: '0.0.0.0',
+      port: PORT,
+      host: HOST,
+      signal: abortController.signal,
       listenTextResolver(address) {
-        return `🚀 Server is running at ${address}`;
+        return `🚀 Server listening at ${address}`;
       },
     });
   }

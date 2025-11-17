@@ -2,6 +2,7 @@ export const envSchema = {
   type: 'object',
   required: [
     'PORT',
+    'HOST',
     'DB_PORT',
     'DB_HOST',
     'DB_USER',
@@ -23,6 +24,7 @@ export const envSchema = {
   ],
   properties: {
     PORT: { type: 'number', default: 3000 },
+    HOST: { type: 'string', default: 'localhost' },
     DB_PORT: { type: 'number' },
     DB_HOST: { type: 'string' },
     DB_USER: { type: 'string' },
@@ -42,4 +44,4 @@ export const envSchema = {
     N8N_RAG_PROD_URL: { type: 'string' },
     N8N_RAG_TEST_URL: { type: 'string' },
   },
-};
+} as const;

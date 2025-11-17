@@ -82,6 +82,7 @@ export class TaskService {
   }
 
   async update(
+    courseId: string,
     userId: string,
     taskId: string,
     updateTaskDto: UpdateTaskDto,
@@ -92,18 +93,29 @@ export class TaskService {
     await queryRunner.startTransaction();
 
     try {
+      // ✅ Validar que el usuario existe
       const foundUser = await this.userRepository.findOne({
         where: { id: userId },
         relations: ['role'],
       });
       if (!foundUser) throw HttpError.notFound('User not found');
 
+      // ✅ Validar que el curso existe
+      const course = await this.courseRepository.findOne({
+        where: { id: courseId },
+      });
+      if (!course) throw HttpError.notFound('Course not found');
+
+      // ✅ Validar que la tarea pertenece al curso
       const task = await this.taskRepository.findOne({
-        where: { id: taskId },
+        where: { id: taskId, course: { id: courseId } },
         relations: ['course'],
       });
-      if (!task) throw HttpError.notFound('Task not found');
+      if (!task) {
+        throw HttpError.notFound('Task not found in this course');
+      }
 
+      // ✅ Actualizar campos
       if (updateTaskDto.title) task.title = updateTaskDto.title;
       if (updateTaskDto.description)
         task.description = updateTaskDto.description;
@@ -112,6 +124,7 @@ export class TaskService {
 
       await queryRunner.manager.save(task);
 
+      // ✅ Actualizar archivo si existe
       if (fileProps) {
         const { fileUrl, fileId, fileType } = fileProps;
         let fileTask = await this.fileTaskRepository.findOne({
@@ -143,31 +156,35 @@ export class TaskService {
     }
   }
 
-  async delete(taskId: string, courseId: string, userId: string) {
+  async delete(courseId: string, taskId: string, userId: string) {
     const queryRunner = this.dataSource.createQueryRunner();
     await queryRunner.connect();
     await queryRunner.startTransaction();
 
     try {
+      // ✅ Validar que el usuario existe
       const foundUser = await this.userRepository.findOne({
         where: { id: userId },
-        relations: ['role', 'courses'],
+        relations: ['role'],
       });
       if (!foundUser) throw HttpError.notFound('User not found');
 
-      const courseData = await this.courseRepository.findOne({
+      // ✅ Validar que el curso existe
+      const course = await this.courseRepository.findOne({
         where: { id: courseId },
-        relations: ['users'],
       });
-      if (!courseData) throw HttpError.notFound('Course not found');
+      if (!course) throw HttpError.notFound('Course not found');
 
-      const isInCourse = courseData.users.some((u) => u.id === userId);
-      if (!isInCourse)
-        throw HttpError.forbidden('The user does not belong to the class');
+      // ✅ Validar que la tarea pertenece al curso
+      const task = await this.taskRepository.findOne({
+        where: { id: taskId, course: { id: courseId } },
+        relations: ['course'],
+      });
+      if (!task) {
+        throw HttpError.notFound('Task not found in this course');
+      }
 
-      const task = await this.taskRepository.findOne({ where: { id: taskId } });
-      if (!task) throw HttpError.notFound('Task not found');
-
+      // ✅ Buscar y eliminar archivos asociados
       const file = await this.fileTaskRepository.findOne({
         where: { task: { id: taskId } },
       });
@@ -175,18 +192,11 @@ export class TaskService {
       let public_id = null;
       if (file) {
         public_id = file.file_id;
-        await this.fileTaskRepository.delete({ id: file.id });
+        await queryRunner.manager.delete(TaskFile, { id: file.id });
       }
 
-      await this.taskRepository.delete({ id: taskId });
-
-      // if (public_id) {
-      //   try {
-      //     await deleteFromCloudinary(public_id);
-      //   } catch (e) {
-      //     throw HttpError.internalServerError('Error al eliminar la imagen');
-      //   }
-      // }
+      // ✅ Eliminar la tarea
+      await queryRunner.manager.delete(Task, { id: taskId });
 
       await queryRunner.commitTransaction();
       return public_id;
@@ -198,6 +208,7 @@ export class TaskService {
     }
   }
 
+  // ✅ CAMBIO: Removió courseId porque ya no se usa
   async getAllByCourse(courseId: string, userId: string) {
     const foundUser = await this.userRepository.findOne({
       where: { id: userId },
@@ -217,46 +228,30 @@ export class TaskService {
 
     const tasks = await this.taskRepository.find({
       where: { course: { id: courseId } },
+      relations: ['files'],
     });
 
-    const files = await this.fileTaskRepository.find({
-      where: tasks.length
-        ? { task: { id: In(tasks.map((task) => task.id)) } }
-        : {},
-    });
-
-    return tasks.map((task) => {
-      const taskFiles = files.filter(
-        (file) => file.task && file.task.id === task.id
-      );
-      return {
-        ...task,
-        files: taskFiles,
-      };
-    });
+    return tasks;
   }
 
-  async getOne(taskId: string, courseId: string, userId: string) {
-    const foundUser = await this.userRepository.findOne({
+  // ✅ CAMBIO: Removió courseId porque ya no se usa
+  async getOne(taskId: string, userId: string) {
+    const task = await this.taskRepository.findOne({
+      where: { id: taskId },
+      relations: ['course'],
+    });
+    if (!task) throw HttpError.notFound('Task not found');
+
+    // ✅ Validar que el usuario pertenece al curso
+    const user = await this.userRepository.findOne({
       where: { id: userId },
       relations: ['courses'],
     });
-    if (!foundUser) throw HttpError.notFound('User not found');
+    if (!user) throw HttpError.notFound('User not found');
 
-    const courseData = await this.courseRepository.findOne({
-      where: { id: courseId },
-      relations: ['users'],
-    });
-    if (!courseData) throw HttpError.notFound('Course not found');
-
-    const isInCourse = courseData.users.some((u) => u.id === userId);
+    const isInCourse = user.courses.some((c) => c.id === task.course.id);
     if (!isInCourse)
       throw HttpError.forbidden('The user does not belong to the class');
-
-    const task = await this.taskRepository.findOne({
-      where: { id: taskId },
-    });
-    if (!task) throw HttpError.notFound('Task not found');
 
     const files = await this.fileTaskRepository.find({
       where: { task: { id: taskId } },
@@ -269,40 +264,76 @@ export class TaskService {
   }
 
   async createSubmission(
+    courseId: string,
     taskId: string,
     userId: string,
     submissionDto: CreateTaskSubmissionDto,
     fileProps?: any
   ) {
-    const task = await this.taskRepository.findOne({ where: { id: taskId } });
-    if (!task) throw HttpError.notFound('Task not found');
+    const queryRunner = this.dataSource.createQueryRunner();
+    await queryRunner.connect();
+    await queryRunner.startTransaction();
 
-    const user = await this.userRepository.findOne({ where: { id: userId } });
-    if (!user) throw HttpError.notFound('User not found');
+    try {
+      // ✅ Validar que el usuario existe
+      const user = await this.userRepository.findOne({ where: { id: userId } });
+      if (!user) throw HttpError.notFound('User not found');
 
-    const submission = this.submissionRepository.create({
-      task,
-      user,
-      comment: submissionDto.comment,
-      status: TaskStatus.SUBMITTED,
-      qualification: null,
-    });
-
-    await this.submissionRepository.save(submission);
-
-    // Si hay archivos, los guarda
-    if (fileProps) {
-      const { fileUrl, fileId, fileType } = fileProps;
-      const submissionFile = this.submissionFileRepository.create({
-        file_url: fileUrl,
-        file_id: fileId,
-        file_type: fileType,
-        submission,
+      // ✅ Validar que el curso existe
+      const course = await this.courseRepository.findOne({
+        where: { id: courseId },
       });
-      await this.submissionFileRepository.save(submissionFile);
-    }
+      if (!course) throw HttpError.notFound('Course not found');
 
-    return submission;
+      // ✅ Validar que la tarea pertenece al curso
+      const task = await this.taskRepository.findOne({
+        where: { id: taskId, course: { id: courseId } },
+        relations: ['course'],
+      });
+      if (!task) {
+        throw HttpError.notFound('Task not found in this course');
+      }
+
+      // ✅ Verificar que no existe ya una entrega
+      const existingSubmission = await this.submissionRepository.findOne({
+        where: { task: { id: taskId }, user: { id: userId } },
+      });
+
+      if (existingSubmission) {
+        throw HttpError.conflict('Submission already exists for this task');
+      }
+
+      // ✅ Crear la entrega
+      const submission = this.submissionRepository.create({
+        task,
+        user,
+        comment: submissionDto.comment,
+        status: TaskStatus.SUBMITTED,
+        qualification: null,
+      });
+
+      await queryRunner.manager.save(submission);
+
+      // ✅ Guardar archivo si existe
+      if (fileProps) {
+        const { fileUrl, fileId, fileType } = fileProps;
+        const submissionFile = this.submissionFileRepository.create({
+          file_url: fileUrl,
+          file_id: fileId,
+          file_type: fileType,
+          submission,
+        });
+        await queryRunner.manager.save(submissionFile);
+      }
+
+      await queryRunner.commitTransaction();
+      return submission;
+    } catch (error) {
+      await queryRunner.rollbackTransaction();
+      throw error;
+    } finally {
+      await queryRunner.release();
+    }
   }
 
   async qualifySubmission(
@@ -319,9 +350,9 @@ export class TaskService {
     });
 
     if (!submission) {
-      // Obtener los objetos completos de Task y User
       const task = await this.taskRepository.findOne({ where: { id: taskId } });
       if (!task) throw HttpError.notFound('Task not found');
+
       const user = await this.userRepository.findOne({
         where: { id: studentId },
       });
@@ -355,20 +386,25 @@ export class TaskService {
   }
 
   async getSubmissionsByTask(taskId: string) {
+    const task = await this.taskRepository.findOne({ where: { id: taskId } });
+    if (!task) throw HttpError.notFound('Task not found');
+
     return this.submissionRepository.find({
       where: { task: { id: taskId } },
       relations: ['user', 'files'],
     });
   }
 
+  // ✅ CAMBIO: Agregó taskId para validación
   async updateSubmission(
+    taskId: string,
     submissionId: string,
     userId: string,
     updateDto: UpdateTaskSubmissionDto
   ) {
     const submission = await this.submissionRepository.findOne({
-      where: { id: submissionId },
-      relations: ['user'],
+      where: { id: submissionId, task: { id: taskId } },
+      relations: ['user', 'task'],
     });
     if (!submission) throw HttpError.notFound('Submission not found');
 
@@ -388,10 +424,11 @@ export class TaskService {
     return submission;
   }
 
-  async deleteSubmission(submissionId: string, userId: string) {
+  // ✅ CAMBIO: Agregó taskId para validación
+  async deleteSubmission(taskId: string, submissionId: string, userId: string) {
     const submission = await this.submissionRepository.findOne({
-      where: { id: submissionId },
-      relations: ['user'],
+      where: { id: submissionId, task: { id: taskId } },
+      relations: ['user', 'task'],
     });
     if (!submission) throw HttpError.notFound('Submission not found');
 
