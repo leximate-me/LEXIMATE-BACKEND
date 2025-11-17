@@ -1,0 +1,481 @@
+{
+  "info": {
+    "_postman_id": "51b2d12f-53cd-4dfd-bfe0-03d36e827251",
+    "name": "LEXIMATE Backend API",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Health",
+      "item": [
+        {
+          "name": "GET /",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/",
+              "host": ["{{baseUrl}}"],
+              "path": [""]
+            }
+          }
+        },
+        {
+          "name": "GET /test-logger",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/test-logger",
+              "host": ["{{baseUrl}}"],
+              "path": ["test-logger"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Auth (/api/auth)",
+      "item": [
+        {
+          "name": "POST /register",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"user@example.com\",\n  \"password\": \"Passw0rd!\",\n  \"first_name\": \"John\",\n  \"last_name\": \"Doe\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/auth/register",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "auth", "register"]
+            }
+          }
+        },
+        {
+          "name": "POST /login",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"user@example.com\",\n  \"password\": \"Passw0rd!\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/auth/login",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "auth", "login"]
+            }
+          }
+        },
+        {
+          "name": "GET /verify-token",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/auth/verify-token",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "auth", "verify-token"]
+            }
+          }
+        },
+        {
+          "name": "POST /logout",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/auth/logout",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "auth", "logout"]
+            }
+          }
+        },
+        {
+          "name": "GET /profile",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/auth/profile",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "auth", "profile"]
+            }
+          }
+        },
+        {
+          "name": "DELETE /delete",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/auth/delete",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "auth", "delete"]
+            }
+          }
+        },
+        {
+          "name": "POST /send-email-verification",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/auth/send-email-verification",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "auth", "send-email-verification"]
+            }
+          }
+        },
+        {
+          "name": "GET /verify-email",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/auth/verify-email?token={{emailToken}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "auth", "verify-email"],
+              "query": [
+                {
+                  "key": "token",
+                  "value": "{{emailToken}}"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "PUT /update-profile",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "user_name",
+                  "value": "john_doe",
+                  "type": "text"
+                },
+                {
+                  "key": "email",
+                  "value": "newemail@example.com",
+                  "type": "text"
+                },
+                {
+                  "key": "avatar",
+                  "type": "file"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/auth/update-profile",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "auth", "update-profile"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Course (/api/course)",
+      "item": [
+        {
+          "name": "POST /",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Course name\",\n  \"description\": \"Optional\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/course",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "course"]
+            }
+          }
+        },
+        {
+          "name": "POST /join",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"classCode\": \"ABC123\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/course/join",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "course", "join"]
+            }
+          }
+        },
+        {
+          "name": "GET /user",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/course/user",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "course", "user"]
+            }
+          }
+        },
+        {
+          "name": "POST /:courseId/leave",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/course/:courseId/leave",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "course", ":courseId", "leave"],
+              "variable": [
+                {
+                  "key": "courseId"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "GET /:courseId/user",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/course/:courseId/user",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "course", ":courseId", "user"],
+              "variable": [
+                {
+                  "key": "courseId"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "PUT /:courseId",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Updated name\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/course/:courseId",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "course", ":courseId"],
+              "variable": [
+                {
+                  "key": "courseId"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "DELETE /:courseId",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/course/:courseId",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "course", ":courseId"],
+              "variable": [
+                {
+                  "key": "courseId"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Tool",
+      "item": [
+        {
+          "name": "GET /tool/extract-text-from-local-url",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/tool/extract-text-from-local-url?localUrl=C:/path/to/file.pdf",
+              "host": ["{{baseUrl}}"],
+              "path": ["tool", "extract-text-from-local-url"],
+              "query": [
+                {
+                  "key": "localUrl",
+                  "value": "C:/path/to/file.pdf"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "POST /tool/chat-bot-response",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"message\": \"Hola\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/tool/chat-bot-response",
+              "host": ["{{baseUrl}}"],
+              "path": ["tool", "chat-bot-response"]
+            }
+          }
+        },
+        {
+          "name": "GET /tool/markdown-url",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/tool/markdown-url?url=https://example.com",
+              "host": ["{{baseUrl}}"],
+              "path": ["tool", "markdown-url"],
+              "query": [
+                {
+                  "key": "url",
+                  "value": "https://example.com"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    }
+  ],
+  "variable": [
+    {
+      "key": "protocol",
+      "value": "http"
+    },
+    {
+      "key": "host",
+      "value": "127.0.0.1"
+    },
+    {
+      "key": "port",
+      "value": "8080"
+    },
+    {
+      "key": "baseUrl",
+      "value": "{{protocol}}://{{host}}:{{port}}"
+    },
+    {
+      "key": "token",
+      "value": ""
+    },
+    {
+      "key": "emailToken",
+      "value": ""
+    }
+  ]
+}

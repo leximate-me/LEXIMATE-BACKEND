@@ -1,0 +1,17 @@
+{
+  "workspace": {
+    "id": "96d7fcb9-733b-472d-80a7-23e6289795b1"
+  },
+  "entities": {
+    "collections": [
+7│      "..\\postman\\collections\\leximate.postman_collection.json",
+      "..\\postman\\collections\\LEXIMATE Backend API.postman_collection.json"
+8│    ],
+    "environments": [
+      "..\\postman\\environments\\Local.postman_environment.json"
+    ],
+    "specs": [],
+    "flows": [],
+    "globals": []
+  }
+}
