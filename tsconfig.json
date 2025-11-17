@@ -122,7 +122,8 @@
       "@task/*": ["src/modules/task/*"],
       "@tool/*": ["src/modules/tool/*"],
       "@notification/*": ["src/modules/notification/*"],
-      "@seed/*": ["src/modules/seed/*"]
+      "@seed/*": ["src/modules/seed/*"],
+      "@decorators/*": ["src/common/decorators*"]
     }
   },
   "include": ["src/**/*.ts"],
