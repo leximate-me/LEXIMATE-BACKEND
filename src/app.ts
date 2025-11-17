@@ -5,6 +5,7 @@ import Fastify, {
   FastifyRequest,
 } from 'fastify';
 import fastifyEnv from '@fastify/env';
+import fastifyRedis from '@fastify/redis';
 import avjErrors from 'ajv-errors';
 import 'reflect-metadata';
 
@@ -19,6 +20,8 @@ import { postRouter } from '@modules/post/routes/post.route';
 import { seedRouter } from '@modules/seed/routes/seed.route';
 import { logger } from '@common/configs/logger/logger.config';
 import loggerPlugin from '@common/configs/logger/logger.plugin';
+import { NotificationService } from '@common/services/notification.service';
+import { setupWebSocket } from '@common/configs/websocket.plugin';
 
 export class App {
   private instance: FastifyInstance;
@@ -154,6 +157,12 @@ export class App {
       dotenv: false,
     });
 
+    await this.instance.register(fastifyRedis, {
+      host: process.env.REDIS_HOST || 'localhost',
+      port: parseInt(process.env.REDIS_PORT || '6379', 10),
+      closeClient: true, // <-- Cierra la conexión al apagar Fastify
+    });
+
     const config = this.instance.config;
     if (config.LOG_LEVEL) {
       this.instance.log.level = config.LOG_LEVEL.toLowerCase();
@@ -177,6 +186,19 @@ export class App {
       },
       '⚙️  Application configured'
     );
+
+    try {
+      const notificationService = NotificationService.getInstance(
+        this.instance.redis
+      );
+      console.log('✅ NotificationService inicializado correctamente');
+
+      // Configura WebSocket
+      await setupWebSocket(this.instance, notificationService);
+    } catch (error) {
+      console.error('❌ Error inicializando NotificationService:', error);
+      throw error;
+    }
 
     await this.setRoutes();
 

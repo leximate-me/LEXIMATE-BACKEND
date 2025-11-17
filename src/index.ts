@@ -18,24 +18,17 @@ const BANNER = `
 
 async function main() {
   try {
-    // 1️⃣ Mostrar banner
     console.log(BANNER);
 
-    // 2️⃣ Crear app
     const app = new App();
 
-    // 3️⃣ Preparar config (sin rutas)
     await app.prepareConfig();
     const logger = app.getLogger();
 
-    // 4️⃣ Inicializar base de datos
     await AppDataSource.initialize(logger);
-    logger.info('🔧 Database connection established successfully');
 
-    // 5️⃣ Setup rutas (DESPUÉS de DB)
     await app.setupRoutes();
 
-    // 6️⃣ Iniciar servidor
     await app.listen();
   } catch (error) {
     console.error('💥 Unhandled error in main:', error);
