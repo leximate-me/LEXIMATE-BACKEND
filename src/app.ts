@@ -42,7 +42,6 @@ export class App {
   }
 
   private async setRoutes() {
-    // ✅ Health check
     this.instance.get(
       '/',
       async (request: FastifyRequest, _reply: FastifyReply) => {
@@ -56,7 +55,6 @@ export class App {
       }
     );
 
-    // ✅ Test logger
     this.instance.get(
       '/test-logger',
       async (request: FastifyRequest, _reply: FastifyReply) => {
@@ -70,7 +68,6 @@ export class App {
       }
     );
 
-    // ✅ Registrar routers (DB ya está inicializada)
     await this.instance.register(authRouter, { prefix: '/api/auth' });
     await this.instance.register(courseRouter, { prefix: '/api/course' });
     await this.instance.register(toolRouter, { prefix: '/api/tool' });
@@ -79,13 +76,11 @@ export class App {
   }
 
   private setErrorHandler() {
-    // ✅ Formatter de errores de schema PRIMERO
     this.instance.setSchemaErrorFormatter((errors, dataType) => {
       const err = new Error('Validation error') as FastifyError;
       err.statusCode = 400;
       (err as any).error = 'Bad Request';
 
-      // ✅ Extraer correctamente el field del instancePath
       (err as any).validation = errors.map((e) => {
         let field: string = 'unknown';
 
@@ -95,7 +90,7 @@ export class App {
         }
 
         return {
-          field, // ✅ Esto será enviado correctamente
+          field,
           message: e.message,
         };
       });
@@ -103,11 +98,9 @@ export class App {
       return err;
     });
 
-    // ✅ Error handler
     this.instance.setErrorHandler((error, request, reply) => {
       const err = error as any;
 
-      // ✅ Manejo de errores de validación
       if (err.validation && Array.isArray(err.validation)) {
         const isTransformed = err.validation[0]?.field !== undefined;
 
