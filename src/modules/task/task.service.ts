@@ -279,7 +279,6 @@ export class TaskService {
         throw HttpError.notFound('Task not found in this course');
       }
 
-      // ✅ Verificar que no existe ya una entrega
       const existingSubmission = await this.submissionRepository.findOne({
         where: { task: { id: taskId }, user: { id: userId } },
       });
@@ -374,7 +373,7 @@ export class TaskService {
 
     return this.submissionRepository.find({
       where: { task: { id: taskId } },
-      relations: ['user', 'files'],
+      relations: ['user', 'submissionFiles'],
     });
   }
 
@@ -383,7 +382,7 @@ export class TaskService {
     if (!task) throw HttpError.notFound('Task not found');
     const submission = await this.submissionRepository.findOne({
       where: { id: submissionId, task: { id: taskId } },
-      relations: ['user', 'files'],
+      relations: ['user', 'submissionFiles'],
     });
     if (!submission) throw HttpError.notFound('Submission not found');
     return submission;
