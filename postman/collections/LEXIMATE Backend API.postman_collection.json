@@ -289,14 +289,491 @@
       "name": "Course (/api/course)",
       "item": [
         {
+          "name": "Task",
+          "item": [
+            {
+              "name": "POST /:courseId/task",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"title\": \"Homework 1\",\n  \"description\": \"Solve problems 1-10\",\n  \"dueDate\": \"2025-12-31T23:59:59.000Z\"\n}"
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/api/course/:courseId/task",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "course",
+                    ":courseId",
+                    "task"
+                  ],
+                  "variable": [
+                    {
+                      "key": "courseId"
+                    }
+                  ]
+                }
+              }
+            },
+            {
+              "name": "GET /:courseId/task",
+              "request": {
+                "method": "GET",
+                "url": {
+                  "raw": "{{baseUrl}}/api/course/:courseId/task",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "course",
+                    ":courseId",
+                    "task"
+                  ],
+                  "variable": [
+                    {
+                      "key": "courseId"
+                    }
+                  ]
+                }
+              }
+            },
+            {
+              "name": "GET /:courseId/task/:taskId",
+              "request": {
+                "method": "GET",
+                "url": {
+                  "raw": "{{baseUrl}}/api/course/:courseId/task/:taskId",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "course",
+                    ":courseId",
+                    "task",
+                    ":taskId"
+                  ],
+                  "variable": [
+                    {
+                      "key": "courseId"
+                    },
+                    {
+                      "key": "taskId"
+                    }
+                  ]
+                }
+              }
+            },
+            {
+              "name": "PATCH /:courseId/task/:taskId",
+              "request": {
+                "method": "PATCH",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"title\": \"Homework 1 - Revised\",\n  \"description\": \"Solve problems 1-8\",\n  \"dueDate\": \"2026-01-15T23:59:59.000Z\"\n}"
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/api/course/:courseId/task/:taskId",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "course",
+                    ":courseId",
+                    "task",
+                    ":taskId"
+                  ],
+                  "variable": [
+                    {
+                      "key": "courseId"
+                    },
+                    {
+                      "key": "taskId"
+                    }
+                  ]
+                }
+              }
+            },
+            {
+              "name": "DELETE /:courseId/task/:taskId",
+              "request": {
+                "method": "DELETE",
+                "url": {
+                  "raw": "{{baseUrl}}/api/course/:courseId/task/:taskId",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "course",
+                    ":courseId",
+                    "task",
+                    ":taskId"
+                  ],
+                  "variable": [
+                    {
+                      "key": "courseId"
+                    },
+                    {
+                      "key": "taskId"
+                    }
+                  ]
+                }
+              }
+            }
+          ]
+        },
+        {
+          "name": "Post",
+          "item": [
+            {
+              "name": "Comment",
+              "item": [
+                {
+                  "name": "POST /:courseId/post/:postId/comment",
+                  "request": {
+                    "method": "POST",
+                    "header": [
+                      {
+                        "key": "Content-Type",
+                        "value": "application/json"
+                      }
+                    ],
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{\n  \"content\": \"Great post!\"\n}"
+                    },
+                    "url": {
+                      "raw": "{{baseUrl}}/api/course/:courseId/post/:postId/comment",
+                      "host": [
+                        "{{baseUrl}}"
+                      ],
+                      "path": [
+                        "api",
+                        "course",
+                        ":courseId",
+                        "post",
+                        ":postId",
+                        "comment"
+                      ],
+                      "variable": [
+                        {
+                          "key": "courseId"
+                        },
+                        {
+                          "key": "postId"
+                        }
+                      ]
+                    }
+                  }
+                },
+                {
+                  "name": "GET /:courseId/post/:postId/comment",
+                  "request": {
+                    "method": "GET",
+                    "url": {
+                      "raw": "{{baseUrl}}/api/course/:courseId/post/:postId/comment",
+                      "host": [
+                        "{{baseUrl}}"
+                      ],
+                      "path": [
+                        "api",
+                        "course",
+                        ":courseId",
+                        "post",
+                        ":postId",
+                        "comment"
+                      ],
+                      "variable": [
+                        {
+                          "key": "courseId"
+                        },
+                        {
+                          "key": "postId"
+                        }
+                      ]
+                    }
+                  }
+                },
+                {
+                  "name": "GET /:courseId/post/:postId/comment/:commentId",
+                  "request": {
+                    "method": "GET",
+                    "url": {
+                      "raw": "{{baseUrl}}/api/course/:courseId/post/:postId/comment/:commentId",
+                      "host": [
+                        "{{baseUrl}}"
+                      ],
+                      "path": [
+                        "api",
+                        "course",
+                        ":courseId",
+                        "post",
+                        ":postId",
+                        "comment",
+                        ":commentId"
+                      ],
+                      "variable": [
+                        {
+                          "key": "courseId"
+                        },
+                        {
+                          "key": "postId"
+                        },
+                        {
+                          "key": "commentId"
+                        }
+                      ]
+                    }
+                  }
+                },
+                {
+                  "name": "PATCH /:courseId/post/:postId/comment/:commentId",
+                  "request": {
+                    "method": "PATCH",
+                    "header": [
+                      {
+                        "key": "Content-Type",
+                        "value": "application/json"
+                      }
+                    ],
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{\n  \"content\": \"Edited comment\"\n}"
+                    },
+                    "url": {
+                      "raw": "{{baseUrl}}/api/course/:courseId/post/:postId/comment/:commentId",
+                      "host": [
+                        "{{baseUrl}}"
+                      ],
+                      "path": [
+                        "api",
+                        "course",
+                        ":courseId",
+                        "post",
+                        ":postId",
+                        "comment",
+                        ":commentId"
+                      ],
+                      "variable": [
+                        {
+                          "key": "courseId"
+                        },
+                        {
+                          "key": "postId"
+                        },
+                        {
+                          "key": "commentId"
+                        }
+                      ]
+                    }
+                  }
+                },
+                {
+                  "name": "DELETE /:courseId/post/:postId/comment/:commentId",
+                  "request": {
+                    "method": "DELETE",
+                    "url": {
+                      "raw": "{{baseUrl}}/api/course/:courseId/post/:postId/comment/:commentId",
+                      "host": [
+                        "{{baseUrl}}"
+                      ],
+                      "path": [
+                        "api",
+                        "course",
+                        ":courseId",
+                        "post",
+                        ":postId",
+                        "comment",
+                        ":commentId"
+                      ],
+                      "variable": [
+                        {
+                          "key": "courseId"
+                        },
+                        {
+                          "key": "postId"
+                        },
+                        {
+                          "key": "commentId"
+                        }
+                      ]
+                    }
+                  }
+                }
+              ]
+            },
+            {
+              "name": "POST /:courseId/post",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"title\": \"Welcome to the course\",\n  \"content\": \"Introduce yourself here\"\n}"
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/api/course/:courseId/post",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "course",
+                    ":courseId",
+                    "post"
+                  ],
+                  "variable": [
+                    {
+                      "key": "courseId"
+                    }
+                  ]
+                }
+              }
+            },
+            {
+              "name": "GET /:courseId/post",
+              "request": {
+                "method": "GET",
+                "url": {
+                  "raw": "{{baseUrl}}/api/course/:courseId/post",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "course",
+                    ":courseId",
+                    "post"
+                  ],
+                  "variable": [
+                    {
+                      "key": "courseId"
+                    }
+                  ]
+                }
+              }
+            },
+            {
+              "name": "GET /:courseId/post/:postId",
+              "request": {
+                "method": "GET",
+                "url": {
+                  "raw": "{{baseUrl}}/api/course/:courseId/post/:postId",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "course",
+                    ":courseId",
+                    "post",
+                    ":postId"
+                  ],
+                  "variable": [
+                    {
+                      "key": "courseId"
+                    },
+                    {
+                      "key": "postId"
+                    }
+                  ]
+                }
+              }
+            },
+            {
+              "name": "PATCH /:courseId/post/:postId",
+              "request": {
+                "method": "PATCH",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"title\": \"Welcome - Updated\",\n  \"content\": \"Update your introductions\"\n}"
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/api/course/:courseId/post/:postId",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "course",
+                    ":courseId",
+                    "post",
+                    ":postId"
+                  ],
+                  "variable": [
+                    {
+                      "key": "courseId"
+                    },
+                    {
+                      "key": "postId"
+                    }
+                  ]
+                }
+              }
+            },
+            {
+              "name": "DELETE /:courseId/post/:postId",
+              "request": {
+                "method": "DELETE",
+                "url": {
+                  "raw": "{{baseUrl}}/api/course/:courseId/post/:postId",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "course",
+                    ":courseId",
+                    "post",
+                    ":postId"
+                  ],
+                  "variable": [
+                    {
+                      "key": "courseId"
+                    },
+                    {
+                      "key": "postId"
+                    }
+                  ]
+                }
+              }
+            }
+          ]
+        },
+        {
           "name": "POST /",
           "request": {
             "method": "POST",
             "header": [
-              {
-                "key": "Authorization",
-                "value": "Bearer {{token}}"
-              },
               {
                 "key": "Content-Type",
                 "value": "application/json"
@@ -324,10 +801,6 @@
             "method": "POST",
             "header": [
               {
-                "key": "Authorization",
-                "value": "Bearer {{token}}"
-              },
-              {
                 "key": "Content-Type",
                 "value": "application/json"
               }
@@ -353,12 +826,6 @@
           "name": "GET /user",
           "request": {
             "method": "GET",
-            "header": [
-              {
-                "key": "Authorization",
-                "value": "Bearer {{token}}"
-              }
-            ],
             "url": {
               "raw": "{{baseUrl}}/api/course/user",
               "host": [
@@ -376,12 +843,6 @@
           "name": "POST /:courseId/leave",
           "request": {
             "method": "POST",
-            "header": [
-              {
-                "key": "Authorization",
-                "value": "Bearer {{token}}"
-              }
-            ],
             "url": {
               "raw": "{{baseUrl}}/api/course/:courseId/leave",
               "host": [
@@ -405,12 +866,6 @@
           "name": "GET /:courseId/user",
           "request": {
             "method": "GET",
-            "header": [
-              {
-                "key": "Authorization",
-                "value": "Bearer {{token}}"
-              }
-            ],
             "url": {
               "raw": "{{baseUrl}}/api/course/:courseId/user",
               "host": [
@@ -435,10 +890,6 @@
           "request": {
             "method": "PUT",
             "header": [
-              {
-                "key": "Authorization",
-                "value": "Bearer {{token}}"
-              },
               {
                 "key": "Content-Type",
                 "value": "application/json"
@@ -470,12 +921,6 @@
           "name": "DELETE /:courseId",
           "request": {
             "method": "DELETE",
-            "header": [
-              {
-                "key": "Authorization",
-                "value": "Bearer {{token}}"
-              }
-            ],
             "url": {
               "raw": "{{baseUrl}}/api/course/:courseId",
               "host": [

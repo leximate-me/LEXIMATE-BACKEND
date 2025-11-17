@@ -3,12 +3,16 @@
 This document provides an overview of the available API endpoints, base URL configuration, authentication requirements, and example request payloads. Use it as a quick reference while developing and testing with Postman.
 
 ## Overview
-- Base URL: `http://localhost:3000`
+- Base URL: `http://localhost:8080`
 - Most endpoints under `/api` require a Bearer token in the `Authorization` header.
 - Path parameters are denoted by `:paramName` (e.g., `:courseId`).
 
 ## Base URL and Variables
-- Postman variable suggestion: set an environment or collection variable `baseUrl = http://localhost:3000`.
+- Postman variables:
+  - `protocol`: `http`
+  - `host`: `localhost`
+  - `port`: `8080`
+  - `baseUrl`: `{{protocol}}://{{host}}:{{port}}`
 - Compose requests as: `{{baseUrl}}/api/...`
 
 ## Authentication
@@ -19,7 +23,7 @@ This document provides an overview of the available API endpoints, base URL conf
   2. Login: `POST {{baseUrl}}/api/auth/login` → returns access token
   3. Use the token in subsequent requests requiring auth
 - Token management:
-  - Refresh: `POST {{baseUrl}}/api/auth/refresh`
+  - Verify token: `GET {{baseUrl}}/api/auth/verify-token`
   - Logout (invalidate session): `POST {{baseUrl}}/api/auth/logout`
 
 ## Modules and Endpoints
@@ -28,14 +32,15 @@ This document provides an overview of the available API endpoints, base URL conf
 - GET `/` — Health check
 - GET `/test-logger` — Logger test endpoint
 
-### Auth
+### Auth (/api/auth)
 - POST `/api/auth/register` — Register a new user
   - Sample body:
     ```json
     {
       "email": "user@example.com",
       "password": "Passw0rd!",
-      "name": "John Doe"
+      "first_name": "John",
+      "last_name": "Doe"
     }
     ```
 - POST `/api/auth/login` — Authenticate and obtain access token
@@ -46,35 +51,51 @@ This document provides an overview of the available API endpoints, base URL conf
       "password": "Passw0rd!"
     }
     ```
-- GET `/api/auth/me` — Get current user profile (requires Bearer token)
-- POST `/api/auth/refresh` — Refresh access token
-- POST `/api/auth/logout` — Invalidate current session
+- GET `/api/auth/verify-token` — Verify Bearer token (requires Bearer token)
+- POST `/api/auth/logout` — Invalidate current session (requires Bearer token)
+- GET `/api/auth/profile` — Get current user profile (requires Bearer token)
+- DELETE `/api/auth/delete` — Delete user account (requires Bearer token)
+- POST `/api/auth/send-email-verification` — Send email verification (requires Bearer token)
+- GET `/api/auth/verify-email?token={{emailToken}}` — Verify email with token (requires Bearer token)
+- PUT `/api/auth/update-profile` — Update user profile (requires Bearer token)
+  - Sample body (form-data):
+    ```
+    user_name: john_doe
+    email: newemail@example.com
+    avatar: <file>
+    ```
 
-### Course
-- GET `/api/course` — List courses
-- POST `/api/course` — Create a course (requires Bearer token)
+### Course (/api/course)
+- POST `/api/course` — Create a course (cookie auth)
   - Sample body:
     ```json
     {
-      "title": "Algebra 101",
-      "description": "Introductory algebra course"
+      "name": "Course name",
+      "description": "Optional"
     }
     ```
-- GET `/api/course/:courseId` — Get course by ID
-- PATCH `/api/course/:courseId` — Update course (requires Bearer token)
+- POST `/api/course/join` — Join a course (cookie auth)
   - Sample body:
     ```json
     {
-      "title": "Algebra 101 - Updated",
-      "description": "Updated description"
+      "classCode": "ABC123"
     }
     ```
-- DELETE `/api/course/:courseId` — Delete course (requires Bearer token)
+- GET `/api/course/user` — List courses for current user (cookie auth)
+- POST `/api/course/:courseId/leave` — Leave a course (cookie auth)
+- GET `/api/course/:courseId/user` — Get users in a course (cookie auth)
+- PUT `/api/course/:courseId` — Update course (cookie auth)
+  - Sample body:
+    ```json
+    {
+      "name": "Updated name"
+    }
+    ```
+- DELETE `/api/course/:courseId` — Delete course (cookie auth)
 
 ### Task (under Course)
-- GET `/api/course/:courseId/task` — List tasks for a course
-- POST `/api/course/:courseId/task` — Create a task in a course (requires Bearer token)
-  - Sample body:
+- POST `/api/course/:courseId/task` — Create a task (cookie auth)
+  - Body:
     ```json
     {
       "title": "Homework 1",
@@ -82,9 +103,10 @@ This document provides an overview of the available API endpoints, base URL conf
       "dueDate": "2025-12-31T23:59:59.000Z"
     }
     ```
-- GET `/api/course/:courseId/task/:taskId` — Get task by ID
-- PATCH `/api/course/:courseId/task/:taskId` — Update task (requires Bearer token)
-  - Sample body:
+- GET `/api/course/:courseId/task` — List tasks (cookie auth)
+- GET `/api/course/:courseId/task/:taskId` — Get task by ID (cookie auth)
+- PATCH `/api/course/:courseId/task/:taskId` — Update task (cookie auth)
+  - Body:
     ```json
     {
       "title": "Homework 1 - Revised",
@@ -92,47 +114,58 @@ This document provides an overview of the available API endpoints, base URL conf
       "dueDate": "2026-01-15T23:59:59.000Z"
     }
     ```
-- DELETE `/api/course/:courseId/task/:taskId` — Delete task (requires Bearer token)
+- DELETE `/api/course/:courseId/task/:taskId` — Delete task (cookie auth)
 
 ### Post (under Course)
-- GET `/api/course/:courseId/post` — List posts for a course
-- POST `/api/course/:courseId/post` — Create a post in a course (requires Bearer token)
-  - Sample body:
+- POST `/api/course/:courseId/post` — Create post (cookie auth)
+  - Body:
     ```json
     {
       "title": "Welcome to the course",
       "content": "Introduce yourself here"
     }
     ```
-- GET `/api/course/:courseId/post/:postId` — Get post by ID
-- PATCH `/api/course/:courseId/post/:postId` — Update post (requires Bearer token)
-  - Sample body:
+- GET `/api/course/:courseId/post` — List posts (cookie auth)
+- GET `/api/course/:courseId/post/:postId` — Get post by ID (cookie auth)
+- PATCH `/api/course/:courseId/post/:postId` — Update post (cookie auth)
+  - Body:
     ```json
     {
       "title": "Welcome - Updated",
       "content": "Update your introductions"
     }
     ```
-- DELETE `/api/course/:courseId/post/:postId` — Delete post (requires Bearer token)
+- DELETE `/api/course/:courseId/post/:postId` — Delete post (cookie auth)
 
 ### Comment (under Post)
-- GET `/api/course/:courseId/post/:postId/comment` — List comments for a post
-- POST `/api/course/:courseId/post/:postId/comment` — Create a comment (requires Bearer token)
-  - Sample body:
+- POST `/api/course/:courseId/post/:postId/comment` — Create comment (cookie auth)
+  - Body:
     ```json
     {
       "content": "Great post!"
     }
     ```
-- GET `/api/course/:courseId/post/:postId/comment/:commentId` — Get comment by ID
-- PATCH `/api/course/:courseId/post/:postId/comment/:commentId` — Update comment (requires Bearer token)
-  - Sample body:
+- GET `/api/course/:courseId/post/:postId/comment` — List comments (cookie auth)
+- GET `/api/course/:courseId/post/:postId/comment/:commentId` — Get comment by ID (cookie auth)
+- PATCH `/api/course/:courseId/post/:postId/comment/:commentId` — Update comment (cookie auth)
+  - Body:
     ```json
     {
       "content": "Edited comment"
     }
     ```
-- DELETE `/api/course/:courseId/post/:postId/comment/:commentId` — Delete comment (requires Bearer token)
+- DELETE `/api/course/:courseId/post/:postId/comment/:commentId` — Delete comment (cookie auth)
+
+### Tool (/tool)
+- GET `/tool/extract-text-from-local-url?localUrl=C:/path/to/file.pdf` — Extract text from local file
+- POST `/tool/chat-bot-response` — Get chatbot response
+  - Sample body:
+    ```json
+    {
+      "message": "Hola"
+    }
+    ```
+- GET `/tool/markdown-url?url=https://example.com` — Convert URL content to markdown
 
 ## Quickstart (Register → Login → Use Token → CRUD)
 1. Register
