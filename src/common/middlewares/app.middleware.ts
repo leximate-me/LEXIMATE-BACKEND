@@ -8,7 +8,7 @@ import multipart from '@fastify/multipart';
 export async function applyMiddlewares(app: FastifyInstance) {
   await app.register(cors, {
     origin: true,
-    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'PATCH'],
     credentials: true,
   });
   await app.register(cookie);
