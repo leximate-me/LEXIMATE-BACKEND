@@ -53,6 +53,11 @@ export async function taskRouter(fastify: FastifyInstance) {
     handler: taskController.getSubmissionsByTask.bind(taskController),
   });
 
+  fastify.get('/:taskId/submissions/:submissionId', {
+    preHandler: [requireRole(['teacher', 'student', 'admin'])],
+    handler: taskController.getSubmissionByTask.bind(taskController),
+  });
+
   fastify.put('/:taskId/submissions/:submissionId', {
     schema: updateTaskSubmissionSchema,
     preValidation: [uploadToStorage],

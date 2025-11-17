@@ -395,6 +395,17 @@ export class TaskService {
     });
   }
 
+  async getSubmissionByTask(taskId: string, submissionId: string) {
+    const task = await this.taskRepository.findOne({ where: { id: taskId } });
+    if (!task) throw HttpError.notFound('Task not found');
+    const submission = await this.submissionRepository.findOne({
+      where: { id: submissionId, task: { id: taskId } },
+      relations: ['user', 'files'],
+    });
+    if (!submission) throw HttpError.notFound('Submission not found');
+    return submission;
+  }
+
   // ✅ CAMBIO: Agregó taskId para validación
   async updateSubmission(
     taskId: string,

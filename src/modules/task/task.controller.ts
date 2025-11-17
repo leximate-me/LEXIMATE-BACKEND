@@ -128,6 +128,21 @@ export class TaskController {
     reply.code(200).send(submissions);
   }
 
+  async getSubmissionByTask(
+    request: FastifyRequest<{
+      Params: { courseId: string; taskId: string; submissionId: string };
+    }>,
+    reply: FastifyReply
+  ) {
+    const { taskId, submissionId } = request.params;
+
+    const submission = await this.taskService.getSubmissionByTask(
+      taskId,
+      submissionId
+    );
+    reply.code(200).send(submission);
+  }
+
   async updateSubmission(
     request: FastifyRequest<{
       Params: { courseId: string; taskId: string; submissionId: string };
