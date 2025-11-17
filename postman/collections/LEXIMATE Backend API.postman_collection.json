@@ -14,8 +14,12 @@
             "method": "GET",
             "url": {
               "raw": "{{baseUrl}}/",
-              "host": ["{{baseUrl}}"],
-              "path": [""]
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                ""
+              ]
             }
           }
         },
@@ -25,8 +29,12 @@
             "method": "GET",
             "url": {
               "raw": "{{baseUrl}}/test-logger",
-              "host": ["{{baseUrl}}"],
-              "path": ["test-logger"]
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "test-logger"
+              ]
             }
           }
         }
@@ -51,8 +59,14 @@
             },
             "url": {
               "raw": "{{baseUrl}}/api/auth/register",
-              "host": ["{{baseUrl}}"],
-              "path": ["api", "auth", "register"]
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "auth",
+                "register"
+              ]
             }
           }
         },
@@ -72,8 +86,14 @@
             },
             "url": {
               "raw": "{{baseUrl}}/api/auth/login",
-              "host": ["{{baseUrl}}"],
-              "path": ["api", "auth", "login"]
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "auth",
+                "login"
+              ]
             }
           }
         },
@@ -89,8 +109,14 @@
             ],
             "url": {
               "raw": "{{baseUrl}}/api/auth/verify-token",
-              "host": ["{{baseUrl}}"],
-              "path": ["api", "auth", "verify-token"]
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "auth",
+                "verify-token"
+              ]
             }
           }
         },
@@ -106,8 +132,14 @@
             ],
             "url": {
               "raw": "{{baseUrl}}/api/auth/logout",
-              "host": ["{{baseUrl}}"],
-              "path": ["api", "auth", "logout"]
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "auth",
+                "logout"
+              ]
             }
           }
         },
@@ -123,8 +155,14 @@
             ],
             "url": {
               "raw": "{{baseUrl}}/api/auth/profile",
-              "host": ["{{baseUrl}}"],
-              "path": ["api", "auth", "profile"]
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "auth",
+                "profile"
+              ]
             }
           }
         },
@@ -140,8 +178,14 @@
             ],
             "url": {
               "raw": "{{baseUrl}}/api/auth/delete",
-              "host": ["{{baseUrl}}"],
-              "path": ["api", "auth", "delete"]
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "auth",
+                "delete"
+              ]
             }
           }
         },
@@ -157,8 +201,14 @@
             ],
             "url": {
               "raw": "{{baseUrl}}/api/auth/send-email-verification",
-              "host": ["{{baseUrl}}"],
-              "path": ["api", "auth", "send-email-verification"]
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "auth",
+                "send-email-verification"
+              ]
             }
           }
         },
@@ -174,8 +224,14 @@
             ],
             "url": {
               "raw": "{{baseUrl}}/api/auth/verify-email?token={{emailToken}}",
-              "host": ["{{baseUrl}}"],
-              "path": ["api", "auth", "verify-email"],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "auth",
+                "verify-email"
+              ],
               "query": [
                 {
                   "key": "token",
@@ -216,8 +272,14 @@
             },
             "url": {
               "raw": "{{baseUrl}}/api/auth/update-profile",
-              "host": ["{{baseUrl}}"],
-              "path": ["api", "auth", "update-profile"]
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "auth",
+                "update-profile"
+              ]
             }
           }
         }
@@ -246,8 +308,13 @@
             },
             "url": {
               "raw": "{{baseUrl}}/api/course",
-              "host": ["{{baseUrl}}"],
-              "path": ["api", "course"]
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "course"
+              ]
             }
           }
         },
@@ -271,8 +338,14 @@
             },
             "url": {
               "raw": "{{baseUrl}}/api/course/join",
-              "host": ["{{baseUrl}}"],
-              "path": ["api", "course", "join"]
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "course",
+                "join"
+              ]
             }
           }
         },
@@ -288,8 +361,14 @@
             ],
             "url": {
               "raw": "{{baseUrl}}/api/course/user",
-              "host": ["{{baseUrl}}"],
-              "path": ["api", "course", "user"]
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "course",
+                "user"
+              ]
             }
           }
         },
@@ -305,8 +384,15 @@
             ],
             "url": {
               "raw": "{{baseUrl}}/api/course/:courseId/leave",
-              "host": ["{{baseUrl}}"],
-              "path": ["api", "course", ":courseId", "leave"],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "course",
+                ":courseId",
+                "leave"
+              ],
               "variable": [
                 {
                   "key": "courseId"
@@ -327,8 +413,15 @@
             ],
             "url": {
               "raw": "{{baseUrl}}/api/course/:courseId/user",
-              "host": ["{{baseUrl}}"],
-              "path": ["api", "course", ":courseId", "user"],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "course",
+                ":courseId",
+                "user"
+              ],
               "variable": [
                 {
                   "key": "courseId"
@@ -357,8 +450,14 @@
             },
             "url": {
               "raw": "{{baseUrl}}/api/course/:courseId",
-              "host": ["{{baseUrl}}"],
-              "path": ["api", "course", ":courseId"],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "course",
+                ":courseId"
+              ],
               "variable": [
                 {
                   "key": "courseId"
@@ -379,8 +478,14 @@
             ],
             "url": {
               "raw": "{{baseUrl}}/api/course/:courseId",
-              "host": ["{{baseUrl}}"],
-              "path": ["api", "course", ":courseId"],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "course",
+                ":courseId"
+              ],
               "variable": [
                 {
                   "key": "courseId"
@@ -400,8 +505,13 @@
             "method": "GET",
             "url": {
               "raw": "{{baseUrl}}/tool/extract-text-from-local-url?localUrl=C:/path/to/file.pdf",
-              "host": ["{{baseUrl}}"],
-              "path": ["tool", "extract-text-from-local-url"],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "tool",
+                "extract-text-from-local-url"
+              ],
               "query": [
                 {
                   "key": "localUrl",
@@ -427,8 +537,13 @@
             },
             "url": {
               "raw": "{{baseUrl}}/tool/chat-bot-response",
-              "host": ["{{baseUrl}}"],
-              "path": ["tool", "chat-bot-response"]
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "tool",
+                "chat-bot-response"
+              ]
             }
           }
         },
@@ -438,8 +553,13 @@
             "method": "GET",
             "url": {
               "raw": "{{baseUrl}}/tool/markdown-url?url=https://example.com",
-              "host": ["{{baseUrl}}"],
-              "path": ["tool", "markdown-url"],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "tool",
+                "markdown-url"
+              ],
               "query": [
                 {
                   "key": "url",
@@ -471,7 +591,7 @@
     },
     {
       "key": "token",
-      "value": ""
+      "value": "DEwAYlvtoCYOA7wjTKn374esb"
     },
     {
       "key": "emailToken",
