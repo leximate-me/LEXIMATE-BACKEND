@@ -124,7 +124,7 @@ async function loggerPlugin(
         if (isDevelopment) {
           const userAgent = request.headers['user-agent'];
           fastify.log.debug(
-            `  IP: ${request.ip} | Agent: ${userAgent} | ID: ${request.correlationId}`
+            `🗣️  IP: ${request.ip} | Agent: ${userAgent} | ID: ${request.correlationId}`
           );
         }
 
@@ -167,7 +167,7 @@ async function loggerPlugin(
       if (isDevelopment) {
         const userAgent = request.headers['user-agent'];
         fastify.log.debug(
-          `  IP: ${request.ip} | Agent: ${userAgent} | ID: ${request.correlationId}`
+          `🗣️  IP: ${request.ip} | Agent: ${userAgent} | ID: ${request.correlationId}`
         );
       }
 
