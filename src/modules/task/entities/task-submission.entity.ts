@@ -41,7 +41,7 @@ export class TaskSubmission {
     onDelete: 'CASCADE',
     cascade: true,
   })
-  files: SubmissionFile[];
+  submissionFiles: SubmissionFile[];
 
   @Column({ type: 'text', nullable: true })
   comment: string;

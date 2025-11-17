@@ -93,20 +93,17 @@ export class TaskService {
     await queryRunner.startTransaction();
 
     try {
-      // ✅ Validar que el usuario existe
       const foundUser = await this.userRepository.findOne({
         where: { id: userId },
         relations: ['role'],
       });
       if (!foundUser) throw HttpError.notFound('User not found');
 
-      // ✅ Validar que el curso existe
       const course = await this.courseRepository.findOne({
         where: { id: courseId },
       });
       if (!course) throw HttpError.notFound('Course not found');
 
-      // ✅ Validar que la tarea pertenece al curso
       const task = await this.taskRepository.findOne({
         where: { id: taskId, course: { id: courseId } },
         relations: ['course'],
@@ -115,7 +112,6 @@ export class TaskService {
         throw HttpError.notFound('Task not found in this course');
       }
 
-      // ✅ Actualizar campos
       if (updateTaskDto.title) task.title = updateTaskDto.title;
       if (updateTaskDto.description)
         task.description = updateTaskDto.description;
@@ -124,7 +120,6 @@ export class TaskService {
 
       await queryRunner.manager.save(task);
 
-      // ✅ Actualizar archivo si existe
       if (fileProps) {
         const { fileUrl, fileId, fileType } = fileProps;
         let fileTask = await this.fileTaskRepository.findOne({
@@ -162,20 +157,17 @@ export class TaskService {
     await queryRunner.startTransaction();
 
     try {
-      // ✅ Validar que el usuario existe
       const foundUser = await this.userRepository.findOne({
         where: { id: userId },
         relations: ['role'],
       });
       if (!foundUser) throw HttpError.notFound('User not found');
 
-      // ✅ Validar que el curso existe
       const course = await this.courseRepository.findOne({
         where: { id: courseId },
       });
       if (!course) throw HttpError.notFound('Course not found');
 
-      // ✅ Validar que la tarea pertenece al curso
       const task = await this.taskRepository.findOne({
         where: { id: taskId, course: { id: courseId } },
         relations: ['course'],
@@ -184,7 +176,6 @@ export class TaskService {
         throw HttpError.notFound('Task not found in this course');
       }
 
-      // ✅ Buscar y eliminar archivos asociados
       const file = await this.fileTaskRepository.findOne({
         where: { task: { id: taskId } },
       });
@@ -195,7 +186,6 @@ export class TaskService {
         await queryRunner.manager.delete(TaskFile, { id: file.id });
       }
 
-      // ✅ Eliminar la tarea
       await queryRunner.manager.delete(Task, { id: taskId });
 
       await queryRunner.commitTransaction();
@@ -208,7 +198,6 @@ export class TaskService {
     }
   }
 
-  // ✅ CAMBIO: Removió courseId porque ya no se usa
   async getAllByCourse(courseId: string, userId: string) {
     const foundUser = await this.userRepository.findOne({
       where: { id: userId },
@@ -228,7 +217,7 @@ export class TaskService {
 
     const tasks = await this.taskRepository.find({
       where: { course: { id: courseId } },
-      relations: ['files'],
+      relations: ['taskFiles'],
     });
 
     return tasks;
@@ -242,7 +231,6 @@ export class TaskService {
     });
     if (!task) throw HttpError.notFound('Task not found');
 
-    // ✅ Validar que el usuario pertenece al curso
     const user = await this.userRepository.findOne({
       where: { id: userId },
       relations: ['courses'],
@@ -275,17 +263,14 @@ export class TaskService {
     await queryRunner.startTransaction();
 
     try {
-      // ✅ Validar que el usuario existe
       const user = await this.userRepository.findOne({ where: { id: userId } });
       if (!user) throw HttpError.notFound('User not found');
 
-      // ✅ Validar que el curso existe
       const course = await this.courseRepository.findOne({
         where: { id: courseId },
       });
       if (!course) throw HttpError.notFound('Course not found');
 
-      // ✅ Validar que la tarea pertenece al curso
       const task = await this.taskRepository.findOne({
         where: { id: taskId, course: { id: courseId } },
         relations: ['course'],
@@ -303,7 +288,6 @@ export class TaskService {
         throw HttpError.conflict('Submission already exists for this task');
       }
 
-      // ✅ Crear la entrega
       const submission = this.submissionRepository.create({
         task,
         user,
@@ -314,7 +298,6 @@ export class TaskService {
 
       await queryRunner.manager.save(submission);
 
-      // ✅ Guardar archivo si existe
       if (fileProps) {
         const { fileUrl, fileId, fileType } = fileProps;
         const submissionFile = this.submissionFileRepository.create({
@@ -346,7 +329,7 @@ export class TaskService {
 
     let submission = await this.submissionRepository.findOne({
       where: { task: { id: taskId }, user: { id: studentId } },
-      relations: ['task', 'user', 'files'],
+      relations: ['task', 'user', 'submissionFiles'],
     });
 
     if (!submission) {
@@ -381,7 +364,7 @@ export class TaskService {
 
     return await this.submissionRepository.findOne({
       where: { id: submission.id },
-      relations: ['task', 'user', 'files'],
+      relations: ['task', 'user', 'submissionFiles'],
     });
   }
 
@@ -406,7 +389,6 @@ export class TaskService {
     return submission;
   }
 
-  // ✅ CAMBIO: Agregó taskId para validación
   async updateSubmission(
     taskId: string,
     submissionId: string,
@@ -419,7 +401,6 @@ export class TaskService {
     });
     if (!submission) throw HttpError.notFound('Submission not found');
 
-    // Solo el dueño puede actualizar
     if (submission.user.id !== userId) {
       throw HttpError.forbidden(
         'You do not have permission to update this submission'
@@ -435,7 +416,6 @@ export class TaskService {
     return submission;
   }
 
-  // ✅ CAMBIO: Agregó taskId para validación
   async deleteSubmission(taskId: string, submissionId: string, userId: string) {
     const submission = await this.submissionRepository.findOne({
       where: { id: submissionId, task: { id: taskId } },
@@ -443,7 +423,6 @@ export class TaskService {
     });
     if (!submission) throw HttpError.notFound('Submission not found');
 
-    // Solo el dueño puede eliminar
     if (submission.user.id !== userId) {
       throw HttpError.forbidden(
         'You do not have permission to delete this submission'
