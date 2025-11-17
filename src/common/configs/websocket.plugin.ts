@@ -1,16 +1,16 @@
 import { FastifyInstance, FastifyRequest } from 'fastify';
 import fastifyWebsocket from '@fastify/websocket';
-import { NotificationService } from '../services/notification.service';
+import { RedisNotificationService } from '@common/services/redis-notification.service';
 import { authRequired } from '@common/middlewares/token.middleware';
 
 export async function setupWebSocket(
   fastify: FastifyInstance,
-  notificationService: NotificationService
+  redisNotificationService: RedisNotificationService
 ) {
   await fastify.register(fastifyWebsocket);
 
   fastify.get(
-    '/api/notifications',
+    '/api/notifications/ws',
     {
       websocket: true,
       preHandler: [authRequired],
@@ -24,12 +24,13 @@ export async function setupWebSocket(
         return;
       }
 
-      notificationService.registerUserConnection(userId, socket);
+      redisNotificationService.registerUserConnection(userId, socket);
 
       socket.send(
         JSON.stringify({
           type: 'connected',
           userId,
+          timestamp: new Date().toISOString(),
         })
       );
 
@@ -39,17 +40,21 @@ export async function setupWebSocket(
 
           switch (data.type) {
             case 'get_notifications':
-              const notifications = await notificationService.getNotifications(
-                userId,
-                data.limit || 50
-              );
+              const notifications =
+                await redisNotificationService.getNotifications(
+                  userId,
+                  data.limit || 50
+                );
               socket.send(
                 JSON.stringify({ type: 'notifications', data: notifications })
               );
               break;
 
             case 'mark_as_read':
-              await notificationService.markAsRead(userId, data.notificationId);
+              await redisNotificationService.markAsRead(
+                userId,
+                data.notificationId
+              );
               socket.send(
                 JSON.stringify({
                   type: 'marked_as_read',
@@ -59,7 +64,7 @@ export async function setupWebSocket(
               break;
 
             case 'get_unread_count':
-              const unreadCount = await notificationService.getUnreadCount(
+              const unreadCount = await redisNotificationService.getUnreadCount(
                 userId
               );
               socket.send(
@@ -70,6 +75,14 @@ export async function setupWebSocket(
             case 'ping':
               socket.send(JSON.stringify({ type: 'pong' }));
               break;
+
+            default:
+              socket.send(
+                JSON.stringify({
+                  type: 'error',
+                  message: 'Unknown message type',
+                })
+              );
           }
         } catch (error) {
           socket.send(
@@ -79,11 +92,11 @@ export async function setupWebSocket(
       });
 
       socket.on('close', () => {
-        notificationService.unregisterUserConnection(userId, socket);
+        redisNotificationService.unregisterUserConnection(userId, socket);
       });
 
       socket.on('error', () => {
-        notificationService.unregisterUserConnection(userId, socket);
+        redisNotificationService.unregisterUserConnection(userId, socket);
       });
     }
   );

@@ -18,9 +18,10 @@ import { courseRouter } from '@modules/course/routes/course.route';
 import { toolRouter } from '@modules/tool/routes/tool.route';
 import { postRouter } from '@modules/post/routes/post.route';
 import { seedRouter } from '@modules/seed/routes/seed.route';
+import { notificationRouter } from '@modules/notification/routes/notification.route';
 import { logger } from '@common/configs/logger/logger.config';
 import loggerPlugin from '@common/configs/logger/logger.plugin';
-import { NotificationService } from '@common/services/notification.service';
+import { RedisNotificationService } from '@common/services/redis-notification.service';
 import { setupWebSocket } from '@common/configs/websocket.plugin';
 
 export class App {
@@ -76,6 +77,9 @@ export class App {
     await this.instance.register(toolRouter, { prefix: '/api/tool' });
     await this.instance.register(postRouter, { prefix: '/api/post' });
     await this.instance.register(seedRouter, { prefix: '/api/seed' });
+    await this.instance.register(notificationRouter, {
+      prefix: '/api/notifications',
+    });
   }
 
   private setErrorHandler() {
@@ -188,15 +192,23 @@ export class App {
     );
 
     try {
-      const notificationService = NotificationService.getInstance(
+      // ✅ Inicializa RedisNotificationService
+      const redisNotificationService = RedisNotificationService.getInstance(
         this.instance.redis
       );
-      console.log('✅ NotificationService inicializado correctamente');
+      this.instance.log.info(
+        '✅ RedisNotificationService inicializado correctamente'
+      );
 
-      // Configura WebSocket
-      await setupWebSocket(this.instance, notificationService);
+      // ✅ Configura WebSocket para notificaciones en tiempo real
+      await setupWebSocket(this.instance, redisNotificationService);
+      this.instance.log.info('✅ WebSocket configurado para notificaciones');
     } catch (error) {
-      console.error('❌ Error inicializando NotificationService:', error);
+      // ✅ CORREGIDO: Loguear el error correctamente
+      this.instance.log.error(
+        { error },
+        '❌ Error inicializando RedisNotificationService'
+      );
       throw error;
     }
 

@@ -1,4 +1,4 @@
-export interface Notification {
+export interface RedisNotification {
   id?: string;
   userId: string;
   type: 'task' | 'post' | 'comment' | 'submission' | 'grade' | 'general';
@@ -9,8 +9,8 @@ export interface Notification {
   createdAt?: Date;
 }
 
-export class NotificationService {
-  private static instance: NotificationService | null = null;
+export class RedisNotificationService {
+  private static instance: RedisNotificationService | null = null;
   private redisClient: any;
   private connectedUsers: Map<string, Set<any>> = new Map();
   private readonly MAX_NOTIFICATIONS = 100;
@@ -20,20 +20,22 @@ export class NotificationService {
     this.redisClient = redisClient;
   }
 
-  public static getInstance(redisClient?: any): NotificationService {
-    if (!NotificationService.instance) {
+  public static getInstance(redisClient?: any): RedisNotificationService {
+    if (!RedisNotificationService.instance) {
       if (!redisClient) {
         throw new Error(
-          'redisClient requerido para inicializar NotificationService'
+          'redisClient requerido para inicializar RedisNotificationService'
         );
       }
-      NotificationService.instance = new NotificationService(redisClient);
+      RedisNotificationService.instance = new RedisNotificationService(
+        redisClient
+      );
     }
-    return NotificationService.instance;
+    return RedisNotificationService.instance;
   }
 
   public static reset(): void {
-    NotificationService.instance = null;
+    RedisNotificationService.instance = null;
   }
 
   registerUserConnection(userId: string, socket: any) {
@@ -55,7 +57,7 @@ export class NotificationService {
     }
   }
 
-  async notifyUser(notification: Notification) {
+  async notifyUser(notification: RedisNotification) {
     const key = `notifications:${notification.userId}`;
     const notificationWithId = {
       ...notification,
@@ -110,7 +112,7 @@ export class NotificationService {
 
   async notifyUsers(
     userIds: string[],
-    notification: Omit<Notification, 'userId'>
+    notification: Omit<RedisNotification, 'userId'>
   ) {
     const promises = userIds.map((userId) =>
       this.notifyUser({
