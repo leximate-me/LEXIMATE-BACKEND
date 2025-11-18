@@ -19,21 +19,6 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
-  redis:
-    image: redis:7-alpine
-    container_name: leximate-redis
-    restart: always
-    ports:
-      - '6379:6379'
-    volumes:
-      - redis_data:/data
-    networks:
-      - leximate-network
-    healthcheck:
-      test: ['CMD', 'redis-cli', 'ping']
-      interval: 10s
-      timeout: 5s
-      retries: 5
 
   backend:
     build: .
@@ -77,7 +62,6 @@ services:
 
 volumes:
   postgres_data:
-  redis_data:
   n8n_data:
 
 networks:

@@ -1,4 +1,3 @@
-import { In } from 'typeorm';
 import { AppDataSource } from '@database/db';
 import { HttpError } from '@common/libs/http-error';
 import { FileProps } from '@common/interfaces/file-props';
@@ -8,12 +7,12 @@ import { Course } from '@course/entities/course.entity';
 import { User } from '@user/entities';
 import { Task, SubmissionFile, TaskFile, TaskSubmission } from '@task/entities';
 
-import { CreateTaskDto } from '@task/dtos/create-task.dto';
-import { UpdateTaskDto } from '@task/dtos/update-task.dto';
-import { CreateTaskSubmissionDto } from '@task/dtos/create-task-submission.dto';
-import { UpdateTaskSubmissionDto } from '@task/dtos/update-task-submission.dto';
-import { NotificationService } from '@modules/notification/notification.service';
-
+import {
+  CreateTaskSubmissionDto,
+  UpdateTaskSubmissionDto,
+  CreateTaskDto,
+  UpdateTaskDto,
+} from '@task/dtos';
 export class TaskService {
   private readonly userRepository = AppDataSource.getRepository(User);
   private readonly courseRepository = AppDataSource.getRepository(Course);
@@ -24,7 +23,6 @@ export class TaskService {
   private readonly submissionFileRepository =
     AppDataSource.getRepository(SubmissionFile);
   private dataSource = AppDataSource.getDataSource();
-  private notificationService = new NotificationService();
 
   async create(
     courseId: string,
@@ -74,42 +72,6 @@ export class TaskService {
       }
 
       await queryRunner.commitTransaction();
-
-      // Notify students
-      const studentIds = courseData.users
-        .filter((user) => user.role?.name === 'student')
-        .map((user) => user.id);
-
-      if (studentIds.length > 0) {
-        for (const studentId of studentIds) {
-          await this.notificationService.createNotification(
-            studentId,
-            'task',
-            `New task: ${newTask.title}`,
-            `A new task has been created in the course ${courseData.name}`,
-            {
-              taskId: newTask.id,
-              courseId: courseData.id,
-              title: newTask.title,
-              dueDate: newTask.due_date,
-            }
-          );
-        }
-      }
-
-      // Notify teacher
-      await this.notificationService.createNotification(
-        userId,
-        'task',
-        `Task created: ${newTask.title}`,
-        `You have created the task "${newTask.title}" in the course ${courseData.name}`,
-        {
-          taskId: newTask.id,
-          courseId: courseData.id,
-          title: newTask.title,
-          dueDate: newTask.due_date,
-        }
-      );
 
       return newTask;
     } catch (error) {
@@ -183,27 +145,6 @@ export class TaskService {
 
       await queryRunner.commitTransaction();
 
-      // Notify students about changes
-      const studentIds = course.users
-        .filter((user) => user.role?.name === 'student')
-        .map((user) => user.id);
-
-      if (studentIds.length > 0) {
-        for (const studentId of studentIds) {
-          await this.notificationService.createNotification(
-            studentId,
-            'task',
-            `Task updated: ${task.title}`,
-            `The task "${task.title}" has been updated`,
-            {
-              taskId: task.id,
-              courseId: course.id,
-              title: task.title,
-            }
-          );
-        }
-      }
-
       return { message: 'Task updated successfully' };
     } catch (error) {
       await queryRunner.rollbackTransaction();
@@ -247,27 +188,6 @@ export class TaskService {
 
       await queryRunner.manager.remove(task);
       await queryRunner.commitTransaction();
-
-      // Notify students about deletion
-      const studentIds = course.users
-        .filter((user) => user.role?.name === 'student')
-        .map((user) => user.id);
-
-      if (studentIds.length > 0) {
-        for (const studentId of studentIds) {
-          await this.notificationService.createNotification(
-            studentId,
-            'task',
-            `Task deleted: ${task.title}`,
-            `The task "${task.title}" has been deleted`,
-            {
-              taskId: task.id,
-              courseId: course.id,
-              title: task.title,
-            }
-          );
-        }
-      }
 
       return public_id;
     } catch (error) {
@@ -390,40 +310,6 @@ export class TaskService {
 
       await queryRunner.commitTransaction();
 
-      // Notify teachers
-      const teacherIds = course.users
-        .filter((u) => u.role?.name === 'teacher')
-        .map((u) => u.id);
-
-      for (const teacherId of teacherIds) {
-        await this.notificationService.createNotification(
-          teacherId,
-          'submission',
-          `New submission for ${task.title}`,
-          `A student has submitted the task "${task.title}"`,
-          {
-            submissionId: submission.id,
-            taskId: task.id,
-            courseId: course.id,
-            userId,
-            taskTitle: task.title,
-          }
-        );
-      }
-
-      // Notify student
-      await this.notificationService.createNotification(
-        userId,
-        'submission',
-        `Submission registered: ${task.title}`,
-        `Your submission for the task "${task.title}" has been registered`,
-        {
-          submissionId: submission.id,
-          taskId: task.id,
-          taskTitle: task.title,
-        }
-      );
-
       return submission;
     } catch (error) {
       await queryRunner.rollbackTransaction();
@@ -480,24 +366,6 @@ export class TaskService {
       where: { id: submission.id },
       relations: ['task', 'user', 'submissionFiles'],
     });
-
-    // Notify student about grade
-    if (updateDto.qualification !== undefined) {
-      await this.notificationService.createNotification(
-        studentId,
-        'grade',
-        `Grade received: ${submission.task.title}`,
-        `Your task has been graded with ${updateDto.qualification}${
-          updateDto.comment ? ' - ' + updateDto.comment : ''
-        }`,
-        {
-          submissionId: submission.id,
-          taskId: submission.task.id,
-          grade: updateDto.qualification,
-          taskTitle: submission.task.title,
-        }
-      );
-    }
 
     return updatedSubmission;
   }
