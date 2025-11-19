@@ -1793,7 +1793,7 @@
 					"response": []
 				},
 				{
-					"name": "PATCH //mark-all-read",
+					"name": "PATCH /mark-all-read",
 					"id": "37487995-d23b4117-1407-49c4-8d43-8cb1b78d804b",
 					"protocolProfileBehavior": {
 						"disableBodyPruning": true
