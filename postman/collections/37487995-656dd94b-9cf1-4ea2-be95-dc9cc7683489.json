@@ -1,0 +1,1761 @@
+{
+	"info": {
+		"_postman_id": "37487995-656dd94b-9cf1-4ea2-be95-dc9cc7683489",
+		"name": "LEXIMATE Backend API",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Health",
+			"item": [
+				{
+					"name": "GET /",
+					"id": "37487995-4e828370-54ad-41bf-bc36-f9b94ca5f4b6",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "GET /test-logger",
+					"id": "37487995-131d351d-c22f-4dc0-baa8-ba4234dc0743",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/test-logger",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"test-logger"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "POST /seed/all",
+					"id": "37487995-bd77b9e0-22cc-4bd1-9c00-15ad60a50ccf",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"userIds\": [\"651343e1-37b2-47fb-b82a-635b0fbfa713\"]\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/seed/all",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"seed",
+								"all"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"id": "37487995-bf8b0e4a-d152-44c1-bebf-81f314c98fb1"
+		},
+		{
+			"name": "Auth",
+			"item": [
+				{
+					"name": "POST /register",
+					"id": "37487995-291818de-de76-49d8-8920-a6a167390a27",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"email\": \"user@example.com\",\n  \"password\": \"Passw0rd!\",\n  \"first_name\": \"John\",\n  \"last_name\": \"Doe\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/auth/register",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"auth",
+								"register"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "POST /login",
+					"id": "37487995-598d4ecf-fa6b-4820-8f13-e9134080815a",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"email\": \"teacher@example.com\",\n  \"password\": \"Teacher_123\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/auth/login",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"auth",
+								"login"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "GET /verify-token",
+					"id": "37487995-bc4aa556-f793-4985-9c91-16b0d0321591",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/api/auth/verify-token",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"auth",
+								"verify-token"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "POST /logout",
+					"id": "37487995-6b5a218e-a7f6-4b3c-b886-2edf6fb9900e",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/api/auth/logout",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"auth",
+								"logout"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "GET /profile",
+					"id": "37487995-5d4dd784-7377-4ab6-804a-d768a8461470",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/api/auth/profile",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"auth",
+								"profile"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "DELETE /delete",
+					"id": "37487995-d2ca3e65-0ae3-40bc-8d68-1f0bbacb7d94",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/api/auth/delete",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"auth",
+								"delete"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "POST /send-email-verification",
+					"id": "37487995-f26ac91d-646e-49f3-9a7a-867de26ba122",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/api/auth/send-email-verification",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"auth",
+								"send-email-verification"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "GET /verify-email",
+					"id": "37487995-94df0158-5286-4e7d-9a5e-8ac5d0c65d9e",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/api/auth/verify-email?token={{emailToken}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"auth",
+								"verify-email"
+							],
+							"query": [
+								{
+									"key": "token",
+									"value": "{{emailToken}}"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "PUT /update-profile",
+					"id": "37487995-bbbaad31-457c-4d05-8909-5f243744bc8d",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "user_name",
+									"value": "john_doe",
+									"type": "text"
+								},
+								{
+									"key": "email",
+									"value": "newemail@example.com",
+									"type": "text"
+								},
+								{
+									"key": "avatar",
+									"type": "file",
+									"value": null
+								}
+							]
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/auth/update-profile",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"auth",
+								"update-profile"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"id": "37487995-33f0240e-fd69-4085-9898-526014da94f2"
+		},
+		{
+			"name": "Course",
+			"item": [
+				{
+					"name": "Task",
+					"item": [
+						{
+							"name": "POST /:courseId/task",
+							"id": "37487995-8bf683a8-7c4c-402e-b2d0-9f8521334aef",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"title\": \"Homework 1\",\n  \"description\": \"Solve problems 1-10\",\n  \"dueDate\": \"2025-12-31T23:59:59.000Z\"\n}"
+								},
+								"url": {
+									"raw": "{{baseUrl}}/api/course/:courseId/task",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"api",
+										"course",
+										":courseId",
+										"task"
+									],
+									"variable": [
+										{
+											"id": "8dcbf001-7ade-43bb-b444-2f3551cfa633",
+											"key": "courseId"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "GET /:courseId/task",
+							"id": "37487995-34bfb3b9-771b-40da-bdd6-e1d35db0e42d",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{baseUrl}}/api/course/:courseId/task",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"api",
+										"course",
+										":courseId",
+										"task"
+									],
+									"variable": [
+										{
+											"id": "711a56b4-aa77-4edf-bab1-c125e1555cd4",
+											"key": "courseId"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "GET /:courseId/task/:taskId",
+							"id": "37487995-a2f3ce91-4b7f-4994-ba86-186a7c90d1b2",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{baseUrl}}/api/course/:courseId/task/:taskId",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"api",
+										"course",
+										":courseId",
+										"task",
+										":taskId"
+									],
+									"variable": [
+										{
+											"id": "afdb2e72-93ff-4e4a-b053-38f46ad8db0f",
+											"key": "courseId"
+										},
+										{
+											"id": "c174898a-2e2f-430d-bdac-733803377799",
+											"key": "taskId"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "PATCH /:courseId/task/:taskId",
+							"id": "37487995-7590434d-3a77-41c8-9ade-d8219b9352e4",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "PATCH",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"title\": \"Homework 1 - Revised\",\n  \"description\": \"Solve problems 1-8\",\n  \"dueDate\": \"2026-01-15T23:59:59.000Z\"\n}"
+								},
+								"url": {
+									"raw": "{{baseUrl}}/api/course/:courseId/task/:taskId",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"api",
+										"course",
+										":courseId",
+										"task",
+										":taskId"
+									],
+									"variable": [
+										{
+											"id": "f0ff8c22-afd5-42d1-a3d3-0da665a8dd38",
+											"key": "courseId"
+										},
+										{
+											"id": "c13d7876-b749-48a9-8209-f6f982085b34",
+											"key": "taskId"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "DELETE /:courseId/task/:taskId",
+							"id": "37487995-2ae5cc7d-8dd6-4978-a9b6-080b33a661aa",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "DELETE",
+								"header": [],
+								"url": {
+									"raw": "{{baseUrl}}/api/course/:courseId/task/:taskId",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"api",
+										"course",
+										":courseId",
+										"task",
+										":taskId"
+									],
+									"variable": [
+										{
+											"id": "66f83273-cb0e-46e2-bd01-936a15740d71",
+											"key": "courseId"
+										},
+										{
+											"id": "bcbbb6d1-3560-44d8-954d-2428ce59a029",
+											"key": "taskId"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "POST /:courseId/task/:taskId/submission",
+							"id": "37487995-4536a5f2-7d50-47c9-92ce-268d18f6c7a9",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"files\": [\"s3://bucket/file1.pdf\"],\n  \"comment\": \"Mi entrega\"\n}"
+								},
+								"url": {
+									"raw": "{{baseUrl}}/api/course/:courseId/task/:taskId/submission",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"api",
+										"course",
+										":courseId",
+										"task",
+										":taskId",
+										"submission"
+									],
+									"variable": [
+										{
+											"id": "21e2264a-f280-404b-97d0-f050903f5547",
+											"key": "courseId"
+										},
+										{
+											"id": "43250cc7-ac74-46e6-ab91-369c7f4040b9",
+											"key": "taskId"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "GET /:courseId/task/:taskId/submission",
+							"id": "37487995-4fe73748-4a15-4da6-8c04-9973bc5616ec",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{baseUrl}}/api/course/:courseId/task/:taskId/submission",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"api",
+										"course",
+										":courseId",
+										"task",
+										":taskId",
+										"submission"
+									],
+									"variable": [
+										{
+											"id": "578d7ae8-5246-45ec-9d63-00a48c1ee500",
+											"key": "courseId"
+										},
+										{
+											"id": "65a2d71f-08ec-481d-a589-f391cfbb8152",
+											"key": "taskId"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "GET /:courseId/task/:taskId/submission/:submissionId",
+							"id": "37487995-3bf7eb85-33f4-4522-95a2-3fe41aaa8c56",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{baseUrl}}/api/course/:courseId/task/:taskId/submission/:submissionId",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"api",
+										"course",
+										":courseId",
+										"task",
+										":taskId",
+										"submission",
+										":submissionId"
+									],
+									"variable": [
+										{
+											"id": "4a1f2550-afd3-47fc-9c4a-63d7843a91b4",
+											"key": "courseId"
+										},
+										{
+											"id": "e30fcdf0-67cd-4d2a-a168-7ff7176c6637",
+											"key": "taskId"
+										},
+										{
+											"id": "037ac778-9d35-4d3f-bc16-523aed5f8433",
+											"key": "submissionId"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "PATCH /:courseId/task/:taskId/submission/:submissionId",
+							"id": "37487995-e47e5270-b930-4f7f-baee-4ad0db517949",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "PATCH",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"files\": [\"s3://bucket/file2.pdf\"],\n  \"comment\": \"Actualizado\"\n}"
+								},
+								"url": {
+									"raw": "{{baseUrl}}/api/course/:courseId/task/:taskId/submission/:submissionId",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"api",
+										"course",
+										":courseId",
+										"task",
+										":taskId",
+										"submission",
+										":submissionId"
+									],
+									"variable": [
+										{
+											"id": "bbfd17b7-f632-4c48-b54f-1d716214d53b",
+											"key": "courseId"
+										},
+										{
+											"id": "b71346b1-6906-4fe3-8a4c-bbdd15358c77",
+											"key": "taskId"
+										},
+										{
+											"id": "02e16e3c-6b05-4f53-902a-bdb8f429559e",
+											"key": "submissionId"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "DELETE /:courseId/task/:taskId/submission/:submissionId",
+							"id": "37487995-8bb71dce-339d-4823-98d4-7965c7b4dcfe",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "DELETE",
+								"header": [],
+								"url": {
+									"raw": "{{baseUrl}}/api/course/:courseId/task/:taskId/submission/:submissionId",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"api",
+										"course",
+										":courseId",
+										"task",
+										":taskId",
+										"submission",
+										":submissionId"
+									],
+									"variable": [
+										{
+											"id": "1354697f-2831-4f47-a3da-746ae50cf643",
+											"key": "courseId"
+										},
+										{
+											"id": "880d6b53-6841-422d-9cd4-1011f65db57c",
+											"key": "taskId"
+										},
+										{
+											"id": "381057e9-7282-47df-bb8a-2ec8c9a3868b",
+											"key": "submissionId"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "POST /:courseId/task/:taskId/submission/:submissionId/grade",
+							"id": "37487995-4fc475cc-92c2-4f5e-9981-0b6663542439",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"score\": 95,\n  \"feedback\": \"Buen trabajo\"\n}"
+								},
+								"url": {
+									"raw": "{{baseUrl}}/api/course/:courseId/task/:taskId/submission/:submissionId/grade",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"api",
+										"course",
+										":courseId",
+										"task",
+										":taskId",
+										"submission",
+										":submissionId",
+										"grade"
+									],
+									"variable": [
+										{
+											"id": "92fb80fb-2f84-43a1-a3c5-85c9ecdd3d81",
+											"key": "courseId"
+										},
+										{
+											"id": "aab0f9c5-56c9-4ff4-b285-7633eea9ae31",
+											"key": "taskId"
+										},
+										{
+											"id": "94535194-6089-4cbb-bcda-6bba36b17859",
+											"key": "submissionId"
+										}
+									]
+								}
+							},
+							"response": []
+						}
+					],
+					"id": "37487995-529ab787-4596-4199-80c1-9e8059082e37"
+				},
+				{
+					"name": "Post",
+					"item": [
+						{
+							"name": "POST /:courseId/post",
+							"id": "37487995-a392f926-cfc4-4ed0-a9a8-b9f7a0b62a94",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"title\": \"Welcome to the course\",\n  \"content\": \"Introduce yourself here\"\n}"
+								},
+								"url": {
+									"raw": "{{baseUrl}}/api/course/:courseId/post",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"api",
+										"course",
+										":courseId",
+										"post"
+									],
+									"variable": [
+										{
+											"id": "0edb942a-e30d-40ff-b5a9-ed867f054d9a",
+											"key": "courseId"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "GET /:courseId/post",
+							"id": "37487995-c0c7c2d0-7d5e-4902-b667-3e9aa7b616ea",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{baseUrl}}/api/course/:courseId/post",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"api",
+										"course",
+										":courseId",
+										"post"
+									],
+									"variable": [
+										{
+											"id": "7f831200-53bf-4f1c-8fe7-b44933a34961",
+											"key": "courseId"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "GET /:courseId/post/:postId",
+							"id": "37487995-2687c481-2f31-4de6-8107-53a6c32d1f23",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{baseUrl}}/api/course/:courseId/post/:postId",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"api",
+										"course",
+										":courseId",
+										"post",
+										":postId"
+									],
+									"variable": [
+										{
+											"id": "4c2145f3-3710-4294-816d-189eeb90c390",
+											"key": "courseId"
+										},
+										{
+											"id": "5aefc622-74b4-4e53-8105-bbeac4af27b4",
+											"key": "postId"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "PATCH /:courseId/post/:postId",
+							"id": "37487995-b8015c3b-7ac0-4f4a-9f88-7db294c7b9c5",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "PATCH",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"title\": \"Welcome - Updated\",\n  \"content\": \"Update your introductions\"\n}"
+								},
+								"url": {
+									"raw": "{{baseUrl}}/api/course/:courseId/post/:postId",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"api",
+										"course",
+										":courseId",
+										"post",
+										":postId"
+									],
+									"variable": [
+										{
+											"id": "d58adb0e-e975-4e20-a45a-ff62afc33f5f",
+											"key": "courseId"
+										},
+										{
+											"id": "71f015ad-6aa4-4ffe-8c84-8453aa29eee9",
+											"key": "postId"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "DELETE /:courseId/post/:postId",
+							"id": "37487995-e2393034-cf86-4ea3-bd16-63aa9749b0eb",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "DELETE",
+								"header": [],
+								"url": {
+									"raw": "{{baseUrl}}/api/course/:courseId/post/:postId",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"api",
+										"course",
+										":courseId",
+										"post",
+										":postId"
+									],
+									"variable": [
+										{
+											"id": "62df5aaa-caac-48cd-a962-966afc93324d",
+											"key": "courseId"
+										},
+										{
+											"id": "5d5815cd-361d-4539-b095-3e2fd8ce6ef5",
+											"key": "postId"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "POST /:courseId/post/:postId/comment",
+							"id": "37487995-18784cc5-603b-49c7-ad31-7be5bc98b5d4",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"content\": \"Great post!\"\n}"
+								},
+								"url": {
+									"raw": "{{baseUrl}}/api/course/:courseId/post/:postId/comment",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"api",
+										"course",
+										":courseId",
+										"post",
+										":postId",
+										"comment"
+									],
+									"variable": [
+										{
+											"id": "4b165809-26a2-477b-82a9-2ce107e0326f",
+											"key": "courseId"
+										},
+										{
+											"id": "91d5952c-6004-46b5-8806-f4e48af83791",
+											"key": "postId"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "GET /:courseId/post/:postId/comment",
+							"id": "37487995-8867f1f3-f861-4581-baee-f35db14ccd6c",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{baseUrl}}/api/course/:courseId/post/:postId/comment",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"api",
+										"course",
+										":courseId",
+										"post",
+										":postId",
+										"comment"
+									],
+									"variable": [
+										{
+											"id": "ed6df491-baec-445a-a405-312dfde08a97",
+											"key": "courseId"
+										},
+										{
+											"id": "792c5d9b-092b-4036-b8ab-2fb8403db9e8",
+											"key": "postId"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "GET /:courseId/post/:postId/comment/:commentId",
+							"id": "37487995-f6ca6bd6-12c7-46b7-bcd6-e01ca2a19a76",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{baseUrl}}/api/course/:courseId/post/:postId/comment/:commentId",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"api",
+										"course",
+										":courseId",
+										"post",
+										":postId",
+										"comment",
+										":commentId"
+									],
+									"variable": [
+										{
+											"id": "5c9f4726-5ae2-4747-b97b-a4534f6adf6c",
+											"key": "courseId"
+										},
+										{
+											"id": "4897c9ac-960c-4041-a9a3-f93ccce4c665",
+											"key": "postId"
+										},
+										{
+											"id": "d5f0849b-8a1c-46b3-be1a-493ba4e20079",
+											"key": "commentId"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "PATCH /:courseId/post/:postId/comment/:commentId",
+							"id": "37487995-db6be348-d9f2-4ae6-b7e1-b85e2002f6ac",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "PATCH",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"content\": \"Edited comment\"\n}"
+								},
+								"url": {
+									"raw": "{{baseUrl}}/api/course/:courseId/post/:postId/comment/:commentId",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"api",
+										"course",
+										":courseId",
+										"post",
+										":postId",
+										"comment",
+										":commentId"
+									],
+									"variable": [
+										{
+											"id": "826b1540-c984-496b-8f42-fe870047a760",
+											"key": "courseId"
+										},
+										{
+											"id": "5299cc0c-6fa1-48fb-877f-b91d989ae5ae",
+											"key": "postId"
+										},
+										{
+											"id": "063d2d08-25a7-4045-9bbe-308b75e88158",
+											"key": "commentId"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "DELETE /:courseId/post/:postId/comment/:commentId",
+							"id": "37487995-8449d6b8-c15f-4a8c-974e-9df8d42c6757",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "DELETE",
+								"header": [],
+								"url": {
+									"raw": "{{baseUrl}}/api/course/:courseId/post/:postId/comment/:commentId",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"api",
+										"course",
+										":courseId",
+										"post",
+										":postId",
+										"comment",
+										":commentId"
+									],
+									"variable": [
+										{
+											"id": "c48dda8c-8009-4f7b-aea1-16012ecdc64d",
+											"key": "courseId"
+										},
+										{
+											"id": "4ffff58c-f746-4409-b80d-0ceb178a5994",
+											"key": "postId"
+										},
+										{
+											"id": "53f2d345-5a4f-46a1-a106-00383ff297c6",
+											"key": "commentId"
+										}
+									]
+								}
+							},
+							"response": []
+						}
+					],
+					"id": "37487995-fe33f67a-a3bb-420e-a11f-847975088a0f"
+				},
+				{
+					"name": "POST /",
+					"id": "37487995-61622049-e47d-4ed2-8e81-c5785d4abaac",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"name\": \"Course name\",\n  \"description\": \"Optional\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/course",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"course"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "POST /join",
+					"id": "37487995-5df7ab79-bf6e-445f-989d-68417044bc87",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"classCode\": \"ABC123\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/course/join",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"course",
+								"join"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "GET /user",
+					"id": "37487995-5912ef59-ee86-49b9-aed8-2a94831e7fb6",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/course/user",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"course",
+								"user"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "POST /:courseId/leave",
+					"id": "37487995-6730c5c4-b72e-443f-984a-1a1f1aa20d44",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/course/:courseId/leave",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"course",
+								":courseId",
+								"leave"
+							],
+							"variable": [
+								{
+									"id": "6e24352c-7c56-4677-941f-8b0f40bb072c",
+									"key": "courseId"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "GET /:courseId/user",
+					"id": "37487995-01f8b971-e0ab-45dd-aeed-ac881a631639",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/course/:courseId/user",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"course",
+								":courseId",
+								"user"
+							],
+							"variable": [
+								{
+									"id": "a969d64c-8132-4c2c-b199-b5496e1da501",
+									"key": "courseId"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "PUT /:courseId",
+					"id": "37487995-a9771c33-ac99-4204-9854-460167bd837a",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"name\": \"Updated name\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/course/:courseId",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"course",
+								":courseId"
+							],
+							"variable": [
+								{
+									"id": "58fe17e7-48d4-4663-9d6f-0b9bb6c2e222",
+									"key": "courseId"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "DELETE /:courseId",
+					"id": "37487995-d681e415-2ba6-4a2d-af89-f8f85c2a2391",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/course/:courseId",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"course",
+								":courseId"
+							],
+							"variable": [
+								{
+									"id": "f2bee616-6c44-4fc5-87f6-cfd18d3d4b23",
+									"key": "courseId"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"id": "37487995-d9711e15-75fe-412a-bda5-34aeab423d0a"
+		},
+		{
+			"name": "Tool",
+			"item": [
+				{
+					"name": "GET /tool/extract-text-from-local-url",
+					"id": "37487995-59594ac5-b599-41a2-8176-4c8b774d08c8",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/tool/extract-text-from-local-url?localUrl=C:/path/to/file.pdf",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"tool",
+								"extract-text-from-local-url"
+							],
+							"query": [
+								{
+									"key": "localUrl",
+									"value": "C:/path/to/file.pdf"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "POST /tool/chat-bot-response",
+					"id": "37487995-bb298bb5-1966-449f-bce6-d5558f903ebc",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"message\": \"Hola\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/tool/chat-bot-response",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"tool",
+								"chat-bot-response"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "GET /tool/markdown-url",
+					"id": "37487995-feb03edc-7fec-4ae6-a744-5742a854fb35",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/tool/markdown-url?url=https://example.com",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"tool",
+								"markdown-url"
+							],
+							"query": [
+								{
+									"key": "url",
+									"value": "https://example.com"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"id": "37487995-92d77bb4-9d67-4e4e-b960-df5539798f0a"
+		},
+		{
+			"name": "Chat",
+			"item": [
+				{
+					"name": "POST /",
+					"id": "37487995-6abbe710-df11-4fe5-a9e9-ac7f86ebb174",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"userIds\": [\"651343e1-37b2-47fb-b82a-635b0fbfa713\"]\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/chat",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"chat"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "GET /",
+					"id": "37487995-52bbedf9-9578-48de-94e8-636a5b4cfa56",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/api/chat",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"chat"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "GET /:chatId",
+					"id": "37487995-073555c3-89bd-4320-b471-a98ad03ab681",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/api/chat/:chatId",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"chat",
+								":chatId"
+							],
+							"variable": [
+								{
+									"id": "da65ae30-e46a-4c05-b456-97823cd3220b",
+									"key": "chatId",
+									"value": ""
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "POST /:chatId/messages",
+					"id": "37487995-10c4a880-c387-485e-91a4-5180adc978a1",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"content\": \"Hello world!\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/chat/:chatId/messages",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"chat",
+								":chatId",
+								"messages"
+							],
+							"variable": [
+								{
+									"id": "3aa90ab7-0a06-4f39-ad2f-ef423f7685e1",
+									"key": "chatId",
+									"value": ""
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "GET /:chatId/messages",
+					"id": "37487995-e8bc1760-4b5d-4c51-88ef-4a32f0ab9741",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/api/chat/:chatId/messages",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"chat",
+								":chatId",
+								"messages"
+							],
+							"variable": [
+								{
+									"id": "52b1f787-fdc4-4ec6-bf06-9c240fe8767d",
+									"key": "chatId",
+									"value": ""
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"id": "37487995-529e9962-21ab-470e-8e8d-df260b92a84e"
+		}
+	],
+	"variable": [
+		{
+			"key": "protocol",
+			"value": "http"
+		},
+		{
+			"key": "host",
+			"value": "127.0.0.1"
+		},
+		{
+			"key": "port",
+			"value": "8080"
+		},
+		{
+			"key": "baseUrl",
+			"value": "{{protocol}}://{{host}}:{{port}}"
+		},
+		{
+			"key": "token",
+			"value": ""
+		},
+		{
+			"key": "emailToken",
+			"value": ""
+		}
+	]
+}
