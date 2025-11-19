@@ -1,5 +1,6 @@
 import { FastifyReply, FastifyRequest } from 'fastify';
 import { ChatService } from '@chat/services/chat.service';
+import { CreateChatDto, SendMessageDto } from '@chat/dtos';
 
 export class ChatController {
   private chatService: ChatService;
@@ -8,15 +9,11 @@ export class ChatController {
     this.chatService = new ChatService();
   }
 
-  async createChat(request: FastifyRequest<{Body: { userIds: string[] } }>, reply: FastifyReply) {
-    const { userIds } = request.body;
-    
+  async createChat(request: FastifyRequest<{ Body: CreateChatDto }>, reply: FastifyReply) {
+    const createChatDto = request.body;
     const currentUserId = request.user.id;
-    if (!userIds.includes(currentUserId)) {
-        userIds.push(currentUserId);
-    }
     
-    const chat = await this.chatService.createChat(userIds);
+    const chat = await this.chatService.createChat(createChatDto, currentUserId);
     return reply.code(201).send(chat);
   }
 
@@ -32,12 +29,12 @@ export class ChatController {
     return reply.send(messages);
   }
 
-  async sendMessage(request: FastifyRequest<{Params: { chatId: string },Body: { content: string } }>, reply: FastifyReply) {
+  async sendMessage(request: FastifyRequest<{ Params: { chatId: string }; Body: SendMessageDto }>, reply: FastifyReply) {
     const { chatId } = request.params;
-    const { content } = request.body;
+    const sendMessageDto = request.body;
     const senderId = request.user.id;
 
-    const message = await this.chatService.sendMessage(chatId, senderId, content);
+    const message = await this.chatService.sendMessage(chatId, senderId, sendMessageDto);
     return reply.code(201).send(message);
   }
 

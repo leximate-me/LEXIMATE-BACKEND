@@ -1,6 +1,7 @@
 import { FastifyInstance } from 'fastify';
 import { ChatController } from '@chat/controllers/chat.controller';
 import { authRequired } from '@common/middlewares/token.middleware';
+import { createChatSchema, sendMessageSchema } from '@chat/schemas';
 
 export async function chatRouter(fastify: FastifyInstance) {
   const controller = new ChatController();
@@ -9,6 +10,7 @@ export async function chatRouter(fastify: FastifyInstance) {
     '/',
     {
       preHandler: [authRequired],
+      schema: createChatSchema,
     },
     controller.createChat.bind(controller)
   );
@@ -33,6 +35,7 @@ export async function chatRouter(fastify: FastifyInstance) {
     '/:chatId/messages',
     {
       preHandler: [authRequired],
+      schema: sendMessageSchema,
     },
     controller.sendMessage.bind(controller)
   );

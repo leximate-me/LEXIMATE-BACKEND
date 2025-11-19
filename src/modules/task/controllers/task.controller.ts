@@ -1,5 +1,5 @@
 import { FastifyRequest, FastifyReply } from 'fastify';
-import { TaskService } from '@modules/task/services/task.service';
+import { TaskService } from '@task/services/task.service';
 import {
   CreateTaskDto,
   CreateTaskSubmissionDto,

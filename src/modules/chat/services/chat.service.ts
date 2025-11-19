@@ -4,6 +4,7 @@ import { Chat, Message } from '@chat/entities';
 import { User } from '@user/entities/user.entity';
 import { HttpError } from '@common/libs/http-error';
 import { chatEventEmitter } from '@common/events/chat.events';
+import { CreateChatDto, SendMessageDto } from '@chat/dtos';
 
 export class ChatService {
   private chatRepository: Repository<Chat>;
@@ -16,8 +17,12 @@ export class ChatService {
     this.userRepository = AppDataSource.getRepository(User);
   }
 
-  async createChat(userIds: string[]): Promise<Chat> {
-    const uniqueUserIds = [...new Set(userIds)];
+  async createChat(createChatDto: CreateChatDto, currentUserId: string): Promise<Chat> {
+    const { userIds } = createChatDto;
+    
+    const allUserIds = userIds.includes(currentUserId) ? userIds : [...userIds, currentUserId];
+    const uniqueUserIds = [...new Set(allUserIds)];
+    
     if (uniqueUserIds.length < 2) {
       throw HttpError.badRequest('A chat must have at least 2 participants');
     }
@@ -60,7 +65,9 @@ export class ChatService {
     });
   }
 
-  async sendMessage(chatId: string, senderId: string, content: string): Promise<Message> {
+  async sendMessage(chatId: string, senderId: string, sendMessageDto: SendMessageDto): Promise<Message> {
+    const { content } = sendMessageDto;
+    
     const chat = await this.chatRepository.findOne({
       where: { id: chatId },
       relations: ['users'],

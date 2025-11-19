@@ -1,5 +1,5 @@
 import { FastifyRequest, FastifyReply } from 'fastify';
-import { ToolService } from '@modules/tool/services/tool.service';
+import { ToolService } from '@tool/services/tool.service';
 
 export class ToolController {
   private toolService: ToolService = new ToolService();
