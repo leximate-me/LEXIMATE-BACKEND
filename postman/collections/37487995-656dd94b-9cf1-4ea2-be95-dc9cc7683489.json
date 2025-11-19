@@ -1732,6 +1732,32 @@
 			"id": "37487995-529e9962-21ab-470e-8e8d-df260b92a84e"
 		}
 	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"id": "5809d97f-6002-45f2-94ca-00fefe0cb51b",
+				"type": "text/javascript",
+				"packages": {},
+				"requests": {},
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"id": "93b8b3a4-f7f9-41f3-834d-262a01fefb6f",
+				"type": "text/javascript",
+				"packages": {},
+				"requests": {},
+				"exec": [
+					""
+				]
+			}
+		}
+	],
 	"variable": [
 		{
 			"key": "protocol",
@@ -1748,14 +1774,6 @@
 		{
 			"key": "baseUrl",
 			"value": "{{protocol}}://{{host}}:{{port}}"
-		},
-		{
-			"key": "token",
-			"value": ""
-		},
-		{
-			"key": "emailToken",
-			"value": ""
 		}
 	]
 }
