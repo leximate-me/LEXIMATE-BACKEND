@@ -334,8 +334,40 @@
                   }
                 ],
                 "body": {
-                  "mode": "raw",
-                  "raw": "{\n  \"title\": \"Homework 1\",\n  \"description\": \"Solve problems 1-10\",\n  \"dueDate\": \"2025-12-31T23:59:59.000Z\"\n}"
+                  "mode": "formdata",
+                  "formdata": [
+                    {
+                      "key": "file",
+                      "type": "file",
+                      "uuid": "5dacb3cf-5eb5-4a1d-8807-31123f3d0870",
+                      "src": [
+                        "/C:/Users/sr-robot/Downloads/p100_la_vuelta_al_mundo_20x28_micro.pdf"
+                      ]
+                    },
+                    {
+                      "key": "title",
+                      "value": "Homework 1",
+                      "type": "text",
+                      "uuid": "2e3253f3-4f03-4e1f-92f6-9710f17df6cf"
+                    },
+                    {
+                      "key": "description",
+                      "value": "Solve problems 1-10",
+                      "type": "text",
+                      "uuid": "0f5668f5-8471-41ef-8dad-9965ff98b99e"
+                    },
+                    {
+                      "key": "due_date",
+                      "value": "2025-12-31",
+                      "type": "text",
+                      "uuid": "d0d56f69-2b17-4952-97b0-59c1c9017af8"
+                    }
+                  ],
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
                 },
                 "url": {
                   "raw": "{{baseUrl}}/api/course/:courseId/task",
@@ -350,7 +382,8 @@
                   ],
                   "variable": [
                     {
-                      "key": "courseId"
+                      "key": "courseId",
+                      "value": "e4e536b0-7535-4e25-ac4d-f94f1ad3f2a3"
                     }
                   ]
                 }
@@ -397,10 +430,12 @@
                   ],
                   "variable": [
                     {
-                      "key": "courseId"
+                      "key": "courseId",
+                      "value": "e4e536b0-7535-4e25-ac4d-f94f1ad3f2a3"
                     },
                     {
-                      "key": "taskId"
+                      "key": "taskId",
+                      "value": "4655fca8-f8cf-46c3-a8af-795c95059dc0"
                     }
                   ]
                 }
@@ -1191,18 +1226,19 @@
           "request": {
             "method": "GET",
             "url": {
-              "raw": "{{baseUrl}}/tool/extract-text-from-local-url?localUrl=public/1763591735451_p301_-_lobo_esta_micro.pdf",
+              "raw": "{{baseUrl}}/api/tool/extract-text-from-local-url?localUrl=public/1763594282092_p100_la_vuelta_al_mundo_20x28_micro.pdf",
               "host": [
                 "{{baseUrl}}"
               ],
               "path": [
+                "api",
                 "tool",
                 "extract-text-from-local-url"
               ],
               "query": [
                 {
                   "key": "localUrl",
-                  "value": "public/1763591735451_p301_-_lobo_esta_micro.pdf",
+                  "value": "public/1763594282092_p100_la_vuelta_al_mundo_20x28_micro.pdf",
                   "uuid": "eb934fc3-fca0-4986-82ac-99f7380a2b12"
                 }
               ]
