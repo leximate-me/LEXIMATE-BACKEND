@@ -1225,6 +1225,160 @@
           }
         }
       ]
+    },
+    {
+      "name": "Chat",
+      "item": [
+        {
+          "name": "POST /",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"userIds\": [\"<USER_ID>\"]\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/chat",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "chat"
+              ]
+            }
+          }
+        },
+        {
+          "name": "GET /",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/chat",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "chat"
+              ]
+            }
+          }
+        },
+        {
+          "name": "GET /:chatId",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/chat/:chatId",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "chat",
+                ":chatId"
+              ],
+              "variable": [
+                {
+                  "key": "chatId",
+                  "value": ""
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "POST /:chatId/messages",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"content\": \"Hello world!\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/chat/:chatId/messages",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "chat",
+                ":chatId",
+                "messages"
+              ],
+              "variable": [
+                {
+                  "key": "chatId",
+                  "value": ""
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "GET /:chatId/messages",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/chat/:chatId/messages",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "chat",
+                ":chatId",
+                "messages"
+              ],
+              "variable": [
+                {
+                  "key": "chatId",
+                  "value": ""
+                }
+              ]
+            }
+          }
+        }
+      ]
     }
   ],
   "variable": [

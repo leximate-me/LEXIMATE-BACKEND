@@ -121,9 +121,8 @@
       "@course/*": ["src/modules/course/*"],
       "@task/*": ["src/modules/task/*"],
       "@tool/*": ["src/modules/tool/*"],
-      "@notification/*": ["src/modules/notification/*"],
       "@seed/*": ["src/modules/seed/*"],
-      "@decorators/*": ["src/common/decorators*"]
+      "@chat/*": ["src/modules/chat/*"]
     }
   },
   "include": ["src/**/*.ts"],

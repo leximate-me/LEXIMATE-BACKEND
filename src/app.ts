@@ -5,7 +5,6 @@ import Fastify, {
   FastifyRequest,
 } from 'fastify';
 import fastifyEnv from '@fastify/env';
-import fastifyRedis from '@fastify/redis';
 import avjErrors from 'ajv-errors';
 import 'reflect-metadata';
 
@@ -18,10 +17,10 @@ import { courseRouter } from '@modules/course/routes/course.route';
 import { toolRouter } from '@modules/tool/routes/tool.route';
 import { postRouter } from '@modules/post/routes/post.route';
 import { seedRouter } from '@modules/seed/routes/seed.route';
-import { notificationRouter } from '@modules/notification/routes/notification.route';
+import { chatRouter } from '@modules/chat/routes/chat.route';
 import { logger } from '@common/configs/logger/logger.config';
 import loggerPlugin from '@common/configs/logger/logger.plugin';
-import { RedisNotificationService } from '@common/services/redis-notification.service';
+import { ChatService } from '@modules/chat/services/chat.service';
 import { setupWebSocket } from '@common/configs/websocket.plugin';
 
 export class App {
@@ -77,9 +76,7 @@ export class App {
     await this.instance.register(toolRouter, { prefix: '/api/tool' });
     await this.instance.register(postRouter, { prefix: '/api/post' });
     await this.instance.register(seedRouter, { prefix: '/api/seed' });
-    await this.instance.register(notificationRouter, {
-      prefix: '/api/notifications',
-    });
+    await this.instance.register(chatRouter, { prefix: '/api/chat' });
   }
 
   private setErrorHandler() {
@@ -161,12 +158,6 @@ export class App {
       dotenv: false,
     });
 
-    await this.instance.register(fastifyRedis, {
-      host: process.env.REDIS_HOST || 'localhost',
-      port: parseInt(process.env.REDIS_PORT || '6379', 10),
-      closeClient: true, // <-- Cierra la conexión al apagar Fastify
-    });
-
     const config = this.instance.config;
     if (config.LOG_LEVEL) {
       this.instance.log.level = config.LOG_LEVEL.toLowerCase();
@@ -192,16 +183,9 @@ export class App {
     );
 
     try {
-      // ✅ Inicializa RedisNotificationService
-      const redisNotificationService = RedisNotificationService.getInstance(
-        this.instance.redis
-      );
-      this.instance.log.info(
-        '🧏‍♂️ RedisNotificationService inicializado correctamente'
-      );
-
-      await setupWebSocket(this.instance, redisNotificationService);
-      this.instance.log.info('🧏‍♂️ WebSocket configurado para notificaciones');
+      const chatService = new ChatService();
+      await setupWebSocket(this.instance, chatService);
+      this.instance.log.info('🧏‍♂️ WebSocket configurado para chat');
     } catch (error) {
       this.instance.log.error(
         { error },

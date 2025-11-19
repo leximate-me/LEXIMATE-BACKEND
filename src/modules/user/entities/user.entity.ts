@@ -16,7 +16,6 @@ import { People } from './people.entity';
 import { Role } from './role.entity';
 import { UserFile } from './user-file.entity';
 import { TaskSubmission } from '../../task/entities/task-submission.entity';
-import { Notification } from '@notification/entities/notification.entity';
 
 @Entity()
 export class User {
@@ -47,9 +46,6 @@ export class User {
   @ManyToMany(() => Course, (course) => course.users)
   @JoinTable()
   courses: Course[];
-
-  @OneToMany(() => Notification, (notification) => notification.user)
-  notifications: Notification[];
 
   @OneToMany(() => TaskSubmission, (submission) => submission.user)
   taskSubmissions: TaskSubmission[];

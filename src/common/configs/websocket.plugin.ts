@@ -1,16 +1,20 @@
 import { FastifyInstance, FastifyRequest } from 'fastify';
-import fastifyWebsocket from '@fastify/websocket';
-import { RedisNotificationService } from '@common/services/redis-notification.service';
+import fastifyWebsocket, { WebSocket } from '@fastify/websocket';
+import { ChatService } from '@modules/chat/services/chat.service';
 import { authRequired } from '@common/middlewares/token.middleware';
+import { chatEventEmitter } from '@common/events/chat.events';
+
+// Simple in-memory connection tracker
+const userConnections = new Map<string, Set<WebSocket>>();
 
 export async function setupWebSocket(
   fastify: FastifyInstance,
-  redisNotificationService: RedisNotificationService
+  chatService: ChatService
 ) {
   await fastify.register(fastifyWebsocket);
 
   fastify.get(
-    '/api/notifications/ws',
+    '/api/chat/ws',
     {
       websocket: true,
       preHandler: [authRequired],
@@ -24,7 +28,11 @@ export async function setupWebSocket(
         return;
       }
 
-      redisNotificationService.registerUserConnection(userId, socket);
+      // Register connection
+      if (!userConnections.has(userId)) {
+        userConnections.set(userId, new Set());
+      }
+      userConnections.get(userId)?.add(socket);
 
       socket.send(
         JSON.stringify({
@@ -36,68 +44,68 @@ export async function setupWebSocket(
 
       socket.on('message', async (message: string) => {
         try {
-          const data = JSON.parse(message);
+          const data = JSON.parse(message.toString());
 
           switch (data.type) {
-            case 'get_notifications':
-              const notifications =
-                await redisNotificationService.getNotifications(
-                  userId,
-                  data.limit || 50
-                );
-              socket.send(
-                JSON.stringify({ type: 'notifications', data: notifications })
-              );
-              break;
-
-            case 'mark_as_read':
-              await redisNotificationService.markAsRead(
-                userId,
-                data.notificationId
-              );
-              socket.send(
-                JSON.stringify({
-                  type: 'marked_as_read',
-                  notificationId: data.notificationId,
-                })
-              );
-              break;
-
-            case 'get_unread_count':
-              const unreadCount = await redisNotificationService.getUnreadCount(
-                userId
-              );
-              socket.send(
-                JSON.stringify({ type: 'unread_count', count: unreadCount })
-              );
-              break;
-
             case 'ping':
               socket.send(JSON.stringify({ type: 'pong' }));
               break;
+            
+            // Optional: Handle sending messages via WebSocket if needed
+            // case 'send_message': ...
 
             default:
-              socket.send(
-                JSON.stringify({
-                  type: 'error',
-                  message: 'Unknown message type',
-                })
-              );
+              // Ignore unknown messages or send error
+              break;
           }
-        } catch (error) {
-          socket.send(
-            JSON.stringify({ type: 'error', message: 'Invalid message' })
-          );
+        } catch (err) {
+          console.error('WebSocket message error:', err);
         }
       });
 
       socket.on('close', () => {
-        redisNotificationService.unregisterUserConnection(userId, socket);
+        if (userConnections.has(userId)) {
+          userConnections.get(userId)?.delete(socket);
+          if (userConnections.get(userId)?.size === 0) {
+            userConnections.delete(userId);
+          }
+        }
       });
 
-      socket.on('error', () => {
-        redisNotificationService.unregisterUserConnection(userId, socket);
+      socket.on('error', (err) => {
+        console.error('WebSocket error:', err);
+        if (userConnections.has(userId)) {
+          userConnections.get(userId)?.delete(socket);
+        }
       });
     }
   );
+
+  chatEventEmitter.removeAllListeners('new_message');
+  
+  chatEventEmitter.on('new_message', async (message: any) => {
+    try {
+      
+      const chat = await chatService.getChatById(message.chatId);
+      if (chat) {
+        chat.users.forEach((u) => {
+          const connections = userConnections.get(u.id);
+          if (connections) {
+            connections.forEach((client) => {
+              if (client.readyState === 1) { // OPEN
+                client.send(
+                  JSON.stringify({
+                    type: 'new_message',
+                    message,
+                  })
+                );
+              }
+            });
+          }
+        });
+      }
+    } catch (error) {
+      console.error('Error broadcasting message:', error);
+    }
+  });
 }
