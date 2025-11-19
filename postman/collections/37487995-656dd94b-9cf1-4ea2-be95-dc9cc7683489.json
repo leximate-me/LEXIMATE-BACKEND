@@ -1741,8 +1741,31 @@
 						"disableBodyPruning": true
 					},
 					"request": {
-						"method": "GET",
-						"header": []
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"userIds\": [\"651343e1-37b2-47fb-b82a-635b0fbfa713\"]\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/notification",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"notification"
+							]
+						}
 					},
 					"response": []
 				}
