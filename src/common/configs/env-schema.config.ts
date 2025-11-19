@@ -31,6 +31,7 @@ export const envSchema = {
     'POSTGRES_DB_USER',
     'POSTGRES_DB_PASSWORD',
     'POSTGRES_DB_SSL',
+    'LLAMA_CLOUD_API_KEY',
   ],
   properties: {
     PORT: { type: 'number', default: 3000 },
@@ -63,5 +64,6 @@ export const envSchema = {
     POSTGRES_DB_USER: { type: 'string' },
     POSTGRES_DB_PASSWORD: { type: 'string' },
     POSTGRES_DB_SSL: { type: 'boolean' },
+    LLAMA_CLOUD_API_KEY: { type: 'string' },
   },
 } as const;

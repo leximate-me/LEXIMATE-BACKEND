@@ -10,7 +10,7 @@ export class ToolController {
     console.log('Extracting text from local URL:', localUrl);
 
     const result = await this.toolService.extractTextFromLocalPath(localUrl);
-    reply.code(200).send({ text: result.text });
+    reply.code(200).send({ text: result.text, pages: (result as any).pages });
   }
 
   async chatBotResponse(request: FastifyRequest, reply: FastifyReply) {

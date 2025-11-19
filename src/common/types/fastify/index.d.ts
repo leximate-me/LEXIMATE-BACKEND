@@ -42,6 +42,7 @@ declare module 'fastify' {
       POSTGRES_DB_USER: string;
       POSTGRES_DB_PASSWORD: string;
       POSTGRES_DB_SSL: boolean;
+      LLAMA_CLOUD_API_KEY: string;
     };
   }
 }

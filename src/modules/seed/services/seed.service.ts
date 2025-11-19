@@ -217,7 +217,9 @@ export class SeedService {
 
       for (const courseData of coursesData) {
         const course = this.courseRepository.create({
-          ...courseData,
+          name: courseData.name,
+          description: courseData.description,
+          class_code: courseData.class_code,
           users: [teacher, student], // Teacher and Student are in the course
         });
         await this.courseRepository.save(course);

@@ -13,8 +13,8 @@ export async function toolRouter(fastify: FastifyInstance) {
   fastify.addHook('preHandler', requireRole(['admin', 'student', 'teacher']));
 
   // Extraer texto de imagen
-  fastify.post(
-    '/extract-text',
+  fastify.get(
+    '/extract-text-from-local-url',
     toolController.extractTextFromLocalUrl.bind(toolController)
   );
 
