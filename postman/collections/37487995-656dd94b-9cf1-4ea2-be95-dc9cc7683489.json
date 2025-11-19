@@ -1741,7 +1741,7 @@
 						"disableBodyPruning": true
 					},
 					"request": {
-						"method": "POST",
+						"method": "GET",
 						"header": [
 							{
 								"key": "Content-Type",
@@ -1766,6 +1766,41 @@
 								"notification"
 							]
 						}
+					},
+					"response": []
+				},
+				{
+					"name": "GET /unread-count",
+					"id": "37487995-084482bb-9738-423d-af58-d6499d119c3d",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/notification/unread-count",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"notification",
+								"unread-count"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "New Request",
+					"id": "37487995-d23b4117-1407-49c4-8d43-8cb1b78d804b",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": []
 					},
 					"response": []
 				}
