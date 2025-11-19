@@ -1619,7 +1619,7 @@
     },
     {
       "key": "port",
-      "value": "8080"
+      "value": "80"
     },
     {
       "key": "baseUrl",
