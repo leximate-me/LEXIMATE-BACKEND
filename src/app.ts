@@ -11,9 +11,9 @@ import 'reflect-metadata';
 import { applyMiddlewares } from '@common/middlewares/app.middleware';
 import { HttpError } from '@common/libs/http-error';
 import { envSchema } from '@common/configs/env-schema.config';
-import { logger } from '@common/configs/logger/logger.config';
-import { setupWebSocket } from '@common/configs/websocket.plugin';
-import loggerPlugin from '@common/configs/logger/logger.plugin';
+import { logger } from '@common/configs/logger.config';
+import { setupWebSocket } from '@common/configs/plugin/websocket.plugin';
+import loggerPlugin from '@common/configs/plugin/logger.plugin';
 
 import { authRouter } from '@auth/routes/auth.route';
 import { courseRouter } from '@course/routes/course.route';
