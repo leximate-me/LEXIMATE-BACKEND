@@ -1799,7 +1799,7 @@
 						"disableBodyPruning": true
 					},
 					"request": {
-						"method": "POST",
+						"method": "PATCH",
 						"header": [
 							{
 								"key": "Content-Type",
@@ -1829,13 +1829,13 @@
 					"response": []
 				},
 				{
-					"name": "New Request",
+					"name": "PATCH /:id/read",
 					"id": "37487995-f40bb659-8c19-404d-82b2-df6ebc732ce9",
 					"protocolProfileBehavior": {
 						"disableBodyPruning": true
 					},
 					"request": {
-						"method": "GET",
+						"method": "PATCH",
 						"header": []
 					},
 					"response": []
