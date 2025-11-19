@@ -9,6 +9,7 @@ import { CreatePostDto, UpdatePostDto } from '@post/dtos';
 
 import { notificationEmitter } from '@common/events/notification.events';
 import { NotificationEnum } from '@common/enums/notification.enum';
+import { postEventEmitter } from '@common/events/post.events';
 
 export class PostService {
   private readonly courseRepository = AppDataSource.getRepository(Course);
@@ -68,6 +69,21 @@ export class PostService {
           },
         });
       }
+    });
+
+    // Emit real-time event for WebSocket broadcast
+    postEventEmitter.emit('post_created', {
+      post: {
+        id: post.id,
+        title: post.title,
+        content: post.content,
+        courseId: existingCourse.id,
+        courseName: existingCourse.name,
+        authorId: foundUser.id,
+        authorName: foundUser.user_name,
+        createdAt: post.created_at,
+      },
+      userIds: existingCourse.users.map((u) => u.id),
     });
 
     return post;
@@ -157,6 +173,27 @@ export class PostService {
 
     await this.postRepository.save(post);
 
+    // Reload post with relations for complete data
+    const updatedPost = await this.postRepository.findOne({
+      where: { id: postId },
+      relations: ['user', 'user.people', 'course'],
+    });
+
+    // Emit real-time event for WebSocket broadcast
+    postEventEmitter.emit('post_updated', {
+      post: {
+        id: updatedPost!.id,
+        title: updatedPost!.title,
+        content: updatedPost!.content,
+        courseId: existingCourse.id,
+        courseName: existingCourse.name,
+        authorId: foundUser.id,
+        authorName: foundUser.user_name,
+        updatedAt: updatedPost!.updated_at,
+      },
+      userIds: existingCourse.users.map((u) => u.id),
+    });
+
     return post;
   }
 
@@ -183,6 +220,13 @@ export class PostService {
     if (!post) throw HttpError.notFound('Post not found');
 
     await this.postRepository.remove(post);
+
+    // Emit real-time event for WebSocket broadcast
+    postEventEmitter.emit('post_deleted', {
+      postId,
+      courseId: existingCourse.id,
+      userIds: existingCourse.users.map((u) => u.id),
+    });
 
     return { message: 'Post successfully removed' };
   }

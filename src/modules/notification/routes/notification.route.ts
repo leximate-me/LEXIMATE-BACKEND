@@ -35,7 +35,7 @@ export async function notificationRouter(fastify: FastifyInstance) {
   );
 
   fastify.patch(
-    '/:id/read',
+    '/:notificationId/read',
     {
       preHandler: [authRequired],
       schema: notificationIdSchema,
@@ -44,7 +44,7 @@ export async function notificationRouter(fastify: FastifyInstance) {
   );
 
   fastify.delete(
-    '/:id',
+    '/:notificationId',
     {
       preHandler: [authRequired],
       schema: notificationIdSchema,

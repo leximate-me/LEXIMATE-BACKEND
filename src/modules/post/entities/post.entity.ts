@@ -3,6 +3,8 @@ import {
   PrimaryGeneratedColumn,
   Column,
   DeleteDateColumn,
+  CreateDateColumn,
+  UpdateDateColumn,
   ManyToOne,
   OneToMany,
 } from 'typeorm';
@@ -32,6 +34,12 @@ export class Post {
 
   @OneToMany(() => Comment, (comment) => comment.post)
   comments: Comment[];
+
+  @CreateDateColumn()
+  created_at: Date;
+
+  @UpdateDateColumn()
+  updated_at: Date;
 
   @DeleteDateColumn()
   deletedAt?: Date;

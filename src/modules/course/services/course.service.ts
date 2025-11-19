@@ -9,6 +9,7 @@ import { Task } from '@task/entities/task.entity';
 
 import { CreateCourseDto } from '@course/dtos/create-course.dto';
 import { UpdateCourseDto } from '@course/dtos/update-course.dto';
+import { courseEventEmitter } from '@common/events/course.events';
 
 export class CourseService {
   private readonly userRepository = AppDataSource.getRepository(User);
@@ -35,6 +36,18 @@ export class CourseService {
 
     foundUser.courses = [...(foundUser.courses || []), newCourse];
     await this.userRepository.save(foundUser);
+
+    // Emit real-time event for WebSocket broadcast
+    courseEventEmitter.emit('course_created', {
+      course: {
+        id: newCourse.id,
+        name: newCourse.name,
+        description: newCourse.description,
+        class_code: newCourse.class_code,
+        createdAt: newCourse.created_at,
+      },
+      userIds: [foundUser.id],
+    });
 
     return newCourse;
   }
@@ -121,6 +134,25 @@ export class CourseService {
 
     await this.courseRepository.save(courseFound);
 
+    // Emit real-time event for WebSocket broadcast
+    const updatedCourse = await this.courseRepository.findOne({
+      where: { id: courseId },
+      relations: ['users'],
+    });
+
+    if (updatedCourse) {
+      courseEventEmitter.emit('course_updated', {
+        course: {
+          id: updatedCourse.id,
+          name: updatedCourse.name,
+          description: updatedCourse.description,
+          class_code: updatedCourse.class_code,
+          updatedAt: updatedCourse.updated_at,
+        },
+        userIds: updatedCourse.users.map((u) => u.id),
+      });
+    }
+
     return courseFound;
   }
 
@@ -137,6 +169,7 @@ export class CourseService {
     if (!courseFound) throw HttpError.notFound('Course not found');
 
     // Elimina la relación con los usuarios
+    const userIds = courseFound.users.map((u) => u.id);
     courseFound.users = [];
     await this.courseRepository.save(courseFound);
 
@@ -144,6 +177,12 @@ export class CourseService {
     await this.postRepository.delete({ course: { id: courseId } });
 
     await this.courseRepository.delete({ id: courseId });
+
+    // Emit real-time event for WebSocket broadcast
+    courseEventEmitter.emit('course_deleted', {
+      courseId,
+      userIds,
+    });
 
     return courseFound;
   }

@@ -31,7 +31,6 @@ export class NotificationService {
 
     const savedNotification = await this.notificationRepository.save(notification);
 
-    // Emit event for WebSocket broadcasting
     notificationEmitter.emit('notification_created', savedNotification);
 
     return savedNotification;

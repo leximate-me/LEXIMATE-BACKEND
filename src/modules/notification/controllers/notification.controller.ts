@@ -4,9 +4,13 @@ import { NotificationService } from '@notification/services/notification.service
 export class NotificationController {
   private notificationService: NotificationService = new NotificationService();
 
-  async getUserNotifications(request: FastifyRequest, reply: FastifyReply) {
+  async getUserNotifications(request: FastifyRequest<{
+    Querystring: {
+      unreadOnly: string;
+    }
+  }>, reply: FastifyReply) {
     const userId = request.user.id;
-    const unreadOnly = (request.query as any).unreadOnly === 'true';
+    const unreadOnly = request.query.unreadOnly === 'true';
 
     const notifications = await this.notificationService.getUserNotifications(userId, unreadOnly);
     
@@ -14,11 +18,11 @@ export class NotificationController {
   }
 
   async markAsRead(
-    request: FastifyRequest<{ Params: { id: string } }>,
+    request: FastifyRequest<{ Params: { notificationId: string } }>,
     reply: FastifyReply
   ) {
     const userId = request.user.id;
-    const notificationId = request.params.id;
+    const notificationId = request.params.notificationId;
 
     const notification = await this.notificationService.markAsRead(notificationId, userId);
     
@@ -34,11 +38,11 @@ export class NotificationController {
   }
 
   async deleteNotification(
-    request: FastifyRequest<{ Params: { id: string } }>,
+    request: FastifyRequest<{ Params: { notificationId: string } }>,
     reply: FastifyReply
   ) {
     const userId = request.user.id;
-    const notificationId = request.params.id;
+    const notificationId = request.params.notificationId;
 
     await this.notificationService.deleteNotification(notificationId, userId);
     

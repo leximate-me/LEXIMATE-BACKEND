@@ -9,6 +9,8 @@ import { Task } from '@task/entities/task.entity';
 import { TaskFile } from '@task/entities/task-file.entity';
 import { Comment } from '@comment/entities/comment.entity';
 import { Chat, Message } from '@chat/entities';
+import { Notification } from '@notification/entities';
+import { NotificationEnum } from '@common/enums/notification.enum';
 
 export class SeedService {
   private readonly userRepository = AppDataSource.getRepository(User);
@@ -27,6 +29,7 @@ export class SeedService {
 
   private readonly chatRepository = AppDataSource.getRepository(Chat);
   private readonly messageRepository = AppDataSource.getRepository(Message);
+  private readonly notificationRepository = AppDataSource.getRepository(Notification);
 
   async seedAll() {
     // Clean up database
@@ -34,6 +37,7 @@ export class SeedService {
     await this.dataSource.query('DELETE FROM "role_permissions_permission"');
     await this.dataSource.query('DELETE FROM "chat_users_user"');
 
+    await this.notificationRepository.delete({ id: Not(IsNull()) });
     await this.messageRepository.delete({ id: Not(IsNull()) });
     await this.chatRepository.delete({ id: Not(IsNull()) });
     await this.fileTaskRepository.delete({ id: Not(IsNull()) });
@@ -286,6 +290,37 @@ export class SeedService {
           chat: chat,
         });
         await this.messageRepository.save(message);
+      }
+
+      // 12. Notifications
+      const notificationsData = [
+        {
+          userId: student.id,
+          type: NotificationEnum.TASK_ASSIGNED,
+          title: 'Nueva tarea asignada',
+          message: 'Se ha asignado una nueva tarea: Tarea 1: Investigación',
+          data: { taskId: 'task-id', courseName: 'Matemáticas Avanzadas' },
+        },
+        {
+          userId: teacher.id,
+          type: NotificationEnum.COMMENT_ADDED,
+          title: 'Nuevo comentario en tu post',
+          message: 'student comentó en tu post: "Bienvenida a Matemáticas Avanzadas"',
+          data: { postId: 'post-id', commenterName: 'student' },
+        },
+        {
+          userId: student.id,
+          type: NotificationEnum.POST_CREATED,
+          title: 'Nuevo post en el curso',
+          message: 'teacher publicó: "Material de estudio - Historia Universal" en Historia Universal',
+          data: { postId: 'post-id', courseName: 'Historia Universal' },
+          read: true,
+        },
+      ];
+
+      for (const notifData of notificationsData) {
+        const notification = this.notificationRepository.create(notifData);
+        await this.notificationRepository.save(notification);
       }
     }
 

@@ -16,6 +16,7 @@ import {
 
 import { notificationEmitter } from '@common/events/notification.events';
 import { NotificationEnum } from '@common/enums/notification.enum';
+import { taskEventEmitter } from '@common/events/task.events';
 
 export class TaskService {
   private readonly userRepository = AppDataSource.getRepository(User);
@@ -94,6 +95,20 @@ export class TaskService {
         }
       });
 
+      // Emit real-time event for WebSocket broadcast
+      taskEventEmitter.emit('task_created', {
+        task: {
+          id: newTask.id,
+          title: newTask.title,
+          description: newTask.description,
+          due_date: newTask.due_date,
+          courseId: courseData.id,
+          courseName: courseData.name,
+          createdAt: newTask.created_at,
+        },
+        userIds: courseData.users.map((u) => u.id),
+      });
+
       return newTask;
     } catch (error) {
       await queryRunner.rollbackTransaction();
@@ -166,6 +181,27 @@ export class TaskService {
 
       await queryRunner.commitTransaction();
 
+      // Emit real-time event for WebSocket broadcast
+      const updatedTask = await this.taskRepository.findOne({
+        where: { id: taskId },
+        relations: ['course', 'course.users'],
+      });
+
+      if (updatedTask) {
+        taskEventEmitter.emit('task_updated', {
+          task: {
+            id: updatedTask.id,
+            title: updatedTask.title,
+            description: updatedTask.description,
+            due_date: updatedTask.due_date,
+            courseId: updatedTask.course.id,
+            courseName: updatedTask.course.name,
+            updatedAt: updatedTask.updated_at,
+          },
+          userIds: updatedTask.course.users.map((u) => u.id),
+        });
+      }
+
       return { message: 'Task updated successfully' };
     } catch (error) {
       await queryRunner.rollbackTransaction();
@@ -209,6 +245,13 @@ export class TaskService {
 
       await queryRunner.manager.remove(task);
       await queryRunner.commitTransaction();
+
+      // Emit real-time event for WebSocket broadcast
+      taskEventEmitter.emit('task_deleted', {
+        taskId,
+        courseId,
+        userIds: course.users.map((u) => u.id),
+      });
 
       return public_id;
     } catch (error) {
@@ -348,6 +391,20 @@ export class TaskService {
         });
       }
 
+      // Emit real-time event for WebSocket broadcast
+      taskEventEmitter.emit('task_submitted', {
+        submission: {
+          id: submission.id,
+          taskId: task.id,
+          taskTitle: task.title,
+          studentId: user.id,
+          studentName: user.user_name,
+          comment: submission.comment,
+          status: submission.status,
+        },
+        userIds: course.users.map((u) => u.id),
+      });
+
       return submission;
     } catch (error) {
       await queryRunner.rollbackTransaction();
@@ -402,8 +459,25 @@ export class TaskService {
 
     const updatedSubmission = await this.submissionRepository.findOne({
       where: { id: submission.id },
-      relations: ['task', 'user', 'submissionFiles'],
+      relations: ['task', 'user', 'submissionFiles', 'task.course', 'task.course.users'],
     });
+
+    // Emit real-time event for WebSocket broadcast
+    if (updatedSubmission) {
+      taskEventEmitter.emit('submission_qualified', {
+        submission: {
+          id: updatedSubmission.id,
+          taskId: updatedSubmission.task.id,
+          taskTitle: updatedSubmission.task.title,
+          studentId: updatedSubmission.user.id,
+          studentName: updatedSubmission.user.user_name,
+          qualification: updatedSubmission.qualification,
+          status: updatedSubmission.status,
+          comment: updatedSubmission.comment,
+        },
+        userIds: updatedSubmission.task.course.users.map((u) => u.id),
+      });
+    }
 
     return updatedSubmission;
   }
@@ -437,7 +511,7 @@ export class TaskService {
   ) {
     const submission = await this.submissionRepository.findOne({
       where: { id: submissionId, task: { id: taskId } },
-      relations: ['user', 'task'],
+      relations: ['user', 'task', 'task.course', 'task.course.users'],
     });
     if (!submission) throw HttpError.notFound('Submission not found');
 
@@ -453,13 +527,29 @@ export class TaskService {
       submission.qualification = updateDto.qualification;
 
     await this.submissionRepository.save(submission);
+
+    // Emit real-time event for WebSocket broadcast
+    taskEventEmitter.emit('submission_updated', {
+      submission: {
+        id: submission.id,
+        taskId: submission.task.id,
+        taskTitle: submission.task.title,
+        studentId: submission.user.id,
+        studentName: submission.user.user_name,
+        comment: submission.comment,
+        status: submission.status,
+        qualification: submission.qualification,
+      },
+      userIds: submission.task.course.users.map((u) => u.id),
+    });
+
     return submission;
   }
 
   async deleteSubmission(taskId: string, submissionId: string, userId: string) {
     const submission = await this.submissionRepository.findOne({
       where: { id: submissionId, task: { id: taskId } },
-      relations: ['user', 'task'],
+      relations: ['user', 'task', 'task.course', 'task.course.users'],
     });
     if (!submission) throw HttpError.notFound('Submission not found');
 
@@ -469,7 +559,17 @@ export class TaskService {
       );
     }
 
+    const userIds = submission.task.course.users.map((u) => u.id);
+
     await this.submissionRepository.delete({ id: submissionId });
+
+    // Emit real-time event for WebSocket broadcast
+    taskEventEmitter.emit('submission_deleted', {
+      submissionId,
+      taskId,
+      userIds,
+    });
+
     return { message: 'Submission successfully deleted' };
   }
 }

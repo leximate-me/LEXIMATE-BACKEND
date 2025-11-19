@@ -3,6 +3,8 @@ import {
   PrimaryGeneratedColumn,
   Column,
   ManyToOne,
+  CreateDateColumn,
+  UpdateDateColumn,
   DeleteDateColumn,
 } from 'typeorm';
 import { Post } from '../../post/entities/post.entity';
@@ -24,6 +26,12 @@ export class Comment {
 
   @ManyToOne(() => User, (user) => user.comments)
   user: User;
+
+  @CreateDateColumn()
+  created_at: Date;
+
+  @UpdateDateColumn()
+  updated_at: Date;
 
   @DeleteDateColumn()
   deletedAt?: Date;

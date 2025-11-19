@@ -3,6 +3,8 @@ import {
   PrimaryGeneratedColumn,
   Column,
   DeleteDateColumn,
+  CreateDateColumn,
+  UpdateDateColumn,
   OneToMany,
   ManyToMany,
 } from 'typeorm';
@@ -23,6 +25,12 @@ export class Course {
 
   @Column({ type: 'varchar', length: 10 })
   class_code: string;
+
+  @CreateDateColumn()
+  created_at: Date;
+
+  @UpdateDateColumn()
+  updated_at: Date;
 
   @DeleteDateColumn()
   deletedAt?: Date;

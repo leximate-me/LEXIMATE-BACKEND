@@ -3,6 +3,8 @@ import {
   PrimaryGeneratedColumn,
   Column,
   DeleteDateColumn,
+  CreateDateColumn,
+  UpdateDateColumn,
   ManyToOne,
   OneToMany,
   ManyToMany,
@@ -43,6 +45,12 @@ export class Task {
     onDelete: 'CASCADE',
   })
   submissions: TaskSubmission[];
+
+  @CreateDateColumn()
+  created_at: Date;
+
+  @UpdateDateColumn()
+  updated_at: Date;
 
   @DeleteDateColumn()
   deletedAt?: Date;
