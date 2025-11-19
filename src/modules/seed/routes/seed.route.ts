@@ -1,5 +1,5 @@
 import { FastifyInstance } from 'fastify';
-import { SeedController } from '../seed.controller';
+import { SeedController } from '../controllers/seed.controller';
 
 export async function seedRouter(fastify: FastifyInstance) {
   const seedController = new SeedController();

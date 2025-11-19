@@ -11,7 +11,7 @@ import { User, UserFile } from '@user/entities';
 import { RegisterAuthDto, LoginAuthDto } from '@auth/dtos';
 import { UpdateUserDto } from '@user/dtos/update-user.dto';
 
-import { UserService } from '@user/user.service';
+import { UserService } from '@modules/user/services/user.service';
 
 export class AuthService {
   private readonly userService: UserService = new UserService();

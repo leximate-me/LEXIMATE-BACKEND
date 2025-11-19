@@ -5,7 +5,7 @@ import {
   verifyUserRequired,
 } from '@common/middlewares';
 import { createCommentSchema, updateCommentSchema } from '@comment/schemas';
-import { CommentController } from '@comment/comment.controller';
+import { CommentController } from '@modules/comment/controllers/comment.controller';
 
 export async function commentRouter(fastify: FastifyInstance) {
   const commentController = new CommentController();

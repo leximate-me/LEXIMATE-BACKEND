@@ -8,6 +8,7 @@ import { Post } from '@post/entities/post.entity';
 import { Task } from '@task/entities/task.entity';
 import { TaskFile } from '@task/entities/task-file.entity';
 import { Comment } from '@comment/entities/comment.entity';
+import { Chat, Message } from '@chat/entities';
 
 export class SeedService {
   private readonly userRepository = AppDataSource.getRepository(User);
@@ -24,10 +25,17 @@ export class SeedService {
   private readonly bcryptAdapter = new BcryptAdapter();
   private dataSource = AppDataSource.getDataSource();
 
+  private readonly chatRepository = AppDataSource.getRepository(Chat);
+  private readonly messageRepository = AppDataSource.getRepository(Message);
+
   async seedAll() {
+    // Clean up database
     await this.dataSource.query('DELETE FROM "user_courses_course"');
     await this.dataSource.query('DELETE FROM "role_permissions_permission"');
+    await this.dataSource.query('DELETE FROM "chat_users_user"');
 
+    await this.messageRepository.delete({ id: Not(IsNull()) });
+    await this.chatRepository.delete({ id: Not(IsNull()) });
     await this.fileTaskRepository.delete({ id: Not(IsNull()) });
     await this.fileUserRepository.delete({ id: Not(IsNull()) });
     await this.commentRepository.delete({ id: Not(IsNull()) });
@@ -38,6 +46,7 @@ export class SeedService {
     await this.peopleRepository.delete({ id: Not(IsNull()) });
     await this.roleRepository.delete({ id: Not(IsNull()) });
     await this.permissionRepository.delete({ id: Not(IsNull()) });
+
     // 1. Permisos
     const permissionsData = [
       { name: 'manage_users', description: 'Gestionar usuarios' },
@@ -146,6 +155,8 @@ export class SeedService {
       },
     ];
 
+    const createdUsers: User[] = [];
+
     for (const userData of usersData) {
       let person = await this.peopleRepository.findOne({
         where: { dni: userData.dni },
@@ -176,8 +187,108 @@ export class SeedService {
         });
         await this.userRepository.save(user);
       }
+      createdUsers.push(user);
+
+      // 4. User Files (Profile Images)
+      const userFile = this.fileUserRepository.create({
+        file_id: `profile_${user.user_name}`,
+        file_url: `https://ui-avatars.com/api/?name=${userData.first_name}+${userData.last_name}&background=random`,
+        file_type: 'image/png',
+        user: user,
+      });
+      await this.fileUserRepository.save(userFile);
     }
 
-    return { message: 'Seed completado' };
+    const teacher = createdUsers.find(u => u.user_name === 'teacher');
+    const student = createdUsers.find(u => u.user_name === 'student');
+
+    if (teacher && student) {
+      // 5. Courses
+      const coursesData = [
+        { name: 'Matemáticas Avanzadas', description: 'Curso de cálculo y álgebra', class_code: 'MATH101' },
+        { name: 'Historia Universal', description: 'Historia del mundo desde 1900', class_code: 'HIST202' },
+        { name: 'Física Cuántica', description: 'Introducción a la mecánica cuántica', class_code: 'PHYS303' },
+        { name: 'Literatura Clásica', description: 'Análisis de obras maestras', class_code: 'LIT404' },
+      ];
+
+      for (const courseData of coursesData) {
+        const course = this.courseRepository.create({
+          ...courseData,
+          users: [teacher, student], // Teacher and Student are in the course
+        });
+        await this.courseRepository.save(course);
+
+        // 6. Posts & Comments
+        const postsData = [
+          {
+            title: `Bienvenida a ${course.name}`,
+            content: 'Bienvenidos a este nuevo ciclo escolar. Espero que aprendan mucho.',
+          },
+          {
+            title: `Material de estudio - ${course.name}`,
+            content: 'Recuerden revisar el sílabo y los materiales adjuntos en la sección de archivos.',
+          }
+        ];
+
+        for (const postData of postsData) {
+          const post = this.postRepository.create({
+            title: postData.title,
+            content: postData.content,
+            course: course,
+            user: teacher,
+          });
+          await this.postRepository.save(post);
+
+          // 7. Comments
+          const comment = this.commentRepository.create({
+            content: '¡Gracias profesor! Estoy emocionado por comenzar.',
+            post: post,
+            user: student,
+          });
+          await this.commentRepository.save(comment);
+        }
+
+        // 8. Tasks
+        const task = this.taskRepository.create({
+          title: 'Tarea 1: Investigación',
+          description: 'Investigar sobre el tema introductorio.',
+          due_date: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // 1 week from now
+          course: course,
+        });
+        await this.taskRepository.save(task);
+
+        // 9. Task Files
+        const taskFile = this.fileTaskRepository.create({
+          file_id: `task_${task.id}_file`,
+          file_url: 'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf',
+          file_type: 'application/pdf',
+          task: task,
+        });
+        await this.fileTaskRepository.save(taskFile);
+      }
+
+      // 10. Chats
+      const chat = this.chatRepository.create({
+        users: [teacher, student],
+      });
+      await this.chatRepository.save(chat);
+
+      // 11. Messages
+      const messagesData = [
+        { content: 'Hola profesor, tengo una duda sobre la tarea.', sender: student },
+        { content: 'Hola, dime, ¿en qué puedo ayudarte?', sender: teacher },
+      ];
+
+      for (const msgData of messagesData) {
+        const message = this.messageRepository.create({
+          content: msgData.content,
+          sender: msgData.sender,
+          chat: chat,
+        });
+        await this.messageRepository.save(message);
+      }
+    }
+
+    return { message: 'Seed completed successfully' };
   }
 }

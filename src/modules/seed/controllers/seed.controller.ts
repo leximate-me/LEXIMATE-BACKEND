@@ -1,5 +1,5 @@
 import { FastifyRequest, FastifyReply } from 'fastify';
-import { SeedService } from '@seed/seed.service';
+import { SeedService } from '@modules/seed/services/seed.service';
 
 export class SeedController {
   private readonly seedService = new SeedService();

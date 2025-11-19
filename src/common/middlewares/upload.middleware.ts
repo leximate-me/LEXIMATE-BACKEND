@@ -2,7 +2,7 @@ import { uploadImage, deleteImage } from '../libs/cloudinary';
 import { uploadPdfToLocal } from '../libs/local-storage'; // 👈 Usa el nuevo adapter
 import { UploadApiResponse } from 'cloudinary';
 
-import { ToolService } from '../../modules/tool/tool.service';
+import { ToolService } from '../../modules/tool/services/tool.service';
 import { FastifyRequest, FastifyReply } from 'fastify';
 import { HttpError } from '../libs/http-error';
 

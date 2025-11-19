@@ -1,6 +1,6 @@
 import { FastifyRequest, FastifyReply } from 'fastify';
 import { CreateCommentDto, UpdateCommentDto } from '@comment/dtos';
-import { CommentService } from '@comment/comment.service';
+import { CommentService } from '@modules/comment/services/comment.service';
 
 export class CommentController {
   private commentService: CommentService = new CommentService();

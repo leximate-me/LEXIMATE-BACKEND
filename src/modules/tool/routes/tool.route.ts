@@ -1,7 +1,7 @@
 import { FastifyInstance } from 'fastify';
 import { verifyUserRequired } from '../../../common/middlewares/user.middleware';
 import { authRequired } from '../../../common/middlewares/token.middleware';
-import { ToolController } from '../tool.controller';
+import { ToolController } from '../controllers/tool.controller';
 import { requireRole } from '../../../common/middlewares/auth.middleware';
 
 export async function toolRouter(fastify: FastifyInstance) {

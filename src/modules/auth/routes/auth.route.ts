@@ -1,5 +1,5 @@
 import { FastifyInstance } from 'fastify';
-import { AuthController } from '@auth/auth.controller';
+import { AuthController } from '@auth/controllers/auth.controller';
 import { authRequired } from '@common/middlewares/token.middleware';
 import { verifyUserRequired } from '@common/middlewares/user.middleware';
 import { uploadToStorage } from '@common/middlewares/upload.middleware';

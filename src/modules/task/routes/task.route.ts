@@ -2,7 +2,7 @@ import { FastifyInstance } from 'fastify';
 import { verifyUserRequired } from '../../../common/middlewares/user.middleware';
 import { authRequired } from '../../../common/middlewares/token.middleware';
 import { uploadToStorage } from '../../../common/middlewares/upload.middleware';
-import { TaskController } from '../task.controller';
+import { TaskController } from '../controllers/task.controller';
 import { requireRole } from '../../../common/middlewares/auth.middleware';
 
 import { createTaskSchema } from '../schemas/create-task.schema';

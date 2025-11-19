@@ -10,7 +10,7 @@ import { taskRouter } from '@task/routes/task.route';
 
 import { createCourseSchema, updateCourseSchema } from '@course/schemas';
 
-import { CourseController } from '@course/course.controller';
+import { CourseController } from '@modules/course/controllers/course.controller';
 
 export async function courseRouter(fastify: FastifyInstance) {
   const courseController = new CourseController();

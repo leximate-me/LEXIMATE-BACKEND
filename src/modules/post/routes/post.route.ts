@@ -2,7 +2,7 @@ import { FastifyInstance } from 'fastify';
 import { authRequired } from '../../../common/middlewares/token.middleware';
 import { verifyUserRequired } from '../../../common/middlewares/user.middleware';
 import { commentRouter } from '../../comment/routes/comment.route';
-import { PostController } from '../post.controller';
+import { PostController } from '../controllers/post.controller';
 import { requireRole } from '../../../common/middlewares/auth.middleware';
 import { CreatePostDto } from '../dtos/create-post.dto';
 import { UpdatePostDto } from '../dtos/update-post.dto';

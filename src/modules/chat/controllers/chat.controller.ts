@@ -1,5 +1,5 @@
 import { FastifyReply, FastifyRequest } from 'fastify';
-import { ChatService } from '../services/chat.service';
+import { ChatService } from '@chat/services/chat.service';
 
 export class ChatController {
   private chatService: ChatService;
