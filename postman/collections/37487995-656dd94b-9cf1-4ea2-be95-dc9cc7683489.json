@@ -1735,7 +1735,7 @@
 			"name": "Notification",
 			"item": [
 				{
-					"name": "New Request",
+					"name": "GET /",
 					"id": "37487995-c7e83c48-351f-4a6c-95e3-f3c8b5284d2a",
 					"protocolProfileBehavior": {
 						"disableBodyPruning": true
