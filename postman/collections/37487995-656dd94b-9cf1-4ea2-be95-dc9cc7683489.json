@@ -1829,7 +1829,7 @@
 					"response": []
 				},
 				{
-					"name": "PATCH /:id/read",
+					"name": "PATCH /:notificationId/read",
 					"id": "37487995-f40bb659-8c19-404d-82b2-df6ebc732ce9",
 					"protocolProfileBehavior": {
 						"disableBodyPruning": true
