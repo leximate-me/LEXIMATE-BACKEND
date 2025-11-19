@@ -7,6 +7,9 @@ import { Post } from '@post/entities/post.entity';
 
 import { CreatePostDto, UpdatePostDto } from '@post/dtos';
 
+import { notificationEmitter } from '@common/events/notification.events';
+import { NotificationEnum } from '@common/enums/notification.enum';
+
 export class PostService {
   private readonly courseRepository = AppDataSource.getRepository(Course);
   private readonly userRepository = AppDataSource.getRepository(User);
@@ -48,6 +51,24 @@ export class PostService {
       user: foundUser,
     });
     await this.postRepository.save(post);
+
+    // Notify all users in the course about new post
+    existingCourse.users.forEach((user) => {
+      if (user.id !== userId) {
+        notificationEmitter.emit('create_notification', {
+          userId: user.id,
+          type: NotificationEnum.POST_CREATED,
+          title: 'Nuevo post en el curso',
+          message: `${foundUser.user_name} publicó: "${post.title}" en ${existingCourse.name}`,
+          data: {
+            postId: post.id,
+            courseId: existingCourse.id,
+            courseName: existingCourse.name,
+            authorName: foundUser.user_name,
+          },
+        });
+      }
+    });
 
     return post;
   }

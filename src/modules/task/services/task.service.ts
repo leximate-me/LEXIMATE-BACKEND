@@ -1,7 +1,7 @@
 import { AppDataSource } from '@database/db';
 import { HttpError } from '@common/libs/http-error';
 import { FileProps } from '@common/interfaces/file-props';
-import { TaskStatus } from '@common/enums/task-status';
+import { TaskStatus } from '@common/enums/task-status.enum';
 
 import { Course } from '@course/entities/course.entity';
 import { User } from '@user/entities';
@@ -13,6 +13,10 @@ import {
   CreateTaskDto,
   UpdateTaskDto,
 } from '@task/dtos';
+
+import { notificationEmitter } from '@common/events/notification.events';
+import { NotificationEnum } from '@common/enums/notification.enum';
+
 export class TaskService {
   private readonly userRepository = AppDataSource.getRepository(User);
   private readonly courseRepository = AppDataSource.getRepository(Course);
@@ -72,6 +76,23 @@ export class TaskService {
       }
 
       await queryRunner.commitTransaction();
+
+      // Notify all students in the course about new task
+      courseData.users.forEach((user) => {
+        if (user.id !== userId) {
+          notificationEmitter.emit('create_notification', {
+            userId: user.id,
+            type: NotificationEnum.TASK_ASSIGNED,
+            title: 'Nueva tarea asignada',
+            message: `Se ha asignado una nueva tarea: ${newTask.title}`,
+            data: {
+              taskId: newTask.id,
+              courseId: courseData.id,
+              courseName: courseData.name,
+            },
+          });
+        }
+      });
 
       return newTask;
     } catch (error) {
@@ -309,6 +330,23 @@ export class TaskService {
       }
 
       await queryRunner.commitTransaction();
+
+      // Notify teacher about new submission
+      const teacher = course.users.find(u => u.role?.name === 'teacher');
+      if (teacher) {
+        notificationEmitter.emit('create_notification', {
+          userId: teacher.id,
+          type: NotificationEnum.TASK_SUBMITTED,
+          title: 'Nueva entrega de tarea',
+          message: `${user.user_name} ha enviado la tarea: ${task.title}`,
+          data: {
+            taskId: task.id,
+            submissionId: submission.id,
+            studentId: user.id,
+            studentName: user.user_name,
+          },
+        });
+      }
 
       return submission;
     } catch (error) {

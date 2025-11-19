@@ -1,4 +1,4 @@
-import { TaskStatus } from '../../../common/enums/task-status';
+import { TaskStatus } from '../../../common/enums/task-status.enum';
 
 export const createTaskSubmissionSchema = {
   body: {

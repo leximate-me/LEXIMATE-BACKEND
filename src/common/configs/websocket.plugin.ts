@@ -3,8 +3,8 @@ import fastifyWebsocket, { WebSocket } from '@fastify/websocket';
 import { ChatService } from '@modules/chat/services/chat.service';
 import { authRequired } from '@common/middlewares/token.middleware';
 import { chatEventEmitter } from '@common/events/chat.events';
+import { notificationEmitter } from '@common/events/notification.events';
 
-// Simple in-memory connection tracker
 const userConnections = new Map<string, Set<WebSocket>>();
 
 export async function setupWebSocket(
@@ -14,7 +14,7 @@ export async function setupWebSocket(
   await fastify.register(fastifyWebsocket);
 
   fastify.get(
-    '/api/chat/ws',
+    '/api/ws',
     {
       websocket: true,
       preHandler: [authRequired],
@@ -28,7 +28,6 @@ export async function setupWebSocket(
         return;
       }
 
-      // Register connection
       if (!userConnections.has(userId)) {
         userConnections.set(userId, new Set());
       }
@@ -51,11 +50,8 @@ export async function setupWebSocket(
               socket.send(JSON.stringify({ type: 'pong' }));
               break;
             
-            // Optional: Handle sending messages via WebSocket if needed
-            // case 'send_message': ...
-
             default:
-              // Ignore unknown messages or send error
+              
               break;
           }
         } catch (err) {
@@ -85,7 +81,6 @@ export async function setupWebSocket(
   
   chatEventEmitter.on('new_message', async (message: any) => {
     try {
-      
       const chat = await chatService.getChatById(message.chatId);
       if (chat) {
         chat.users.forEach((u) => {
@@ -95,8 +90,8 @@ export async function setupWebSocket(
               if (client.readyState === 1) { // OPEN
                 client.send(
                   JSON.stringify({
-                    type: 'new_message',
-                    message,
+                    type: 'chat_message',
+                    data: message,
                   })
                 );
               }
@@ -105,7 +100,29 @@ export async function setupWebSocket(
         });
       }
     } catch (error) {
-      console.error('Error broadcasting message:', error);
+      console.error('Error broadcasting chat message:', error);
+    }
+  });
+
+  notificationEmitter.removeAllListeners('notification_created');
+  
+  notificationEmitter.on('notification_created', (notification: any) => {
+    try {
+      const connections = userConnections.get(notification.userId);
+      if (connections) {
+        connections.forEach((client) => {
+          if (client.readyState === 1) { // OPEN
+            client.send(
+              JSON.stringify({
+                type: 'notification',
+                data: notification,
+              })
+            );
+          }
+        });
+      }
+    } catch (error) {
+      console.error('Error broadcasting notification:', error);
     }
   });
 }

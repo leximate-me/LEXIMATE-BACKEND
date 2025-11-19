@@ -11,7 +11,7 @@ import {
 import { Task } from './task.entity';
 import { User } from '../../user/entities/user.entity';
 import { SubmissionFile } from './submission-file.entity';
-import { TaskStatus } from '../../../common/enums/task-status';
+import { TaskStatus } from '../../../common/enums/task-status.enum';
 TaskStatus;
 @Entity()
 export class TaskSubmission {

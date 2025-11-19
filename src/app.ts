@@ -11,17 +11,18 @@ import 'reflect-metadata';
 import { applyMiddlewares } from '@common/middlewares/app.middleware';
 import { HttpError } from '@common/libs/http-error';
 import { envSchema } from '@common/configs/env-schema.config';
-
-import { authRouter } from '@modules/auth/routes/auth.route';
-import { courseRouter } from '@modules/course/routes/course.route';
-import { toolRouter } from '@modules/tool/routes/tool.route';
-import { postRouter } from '@modules/post/routes/post.route';
-import { seedRouter } from '@modules/seed/routes/seed.route';
-import { chatRouter } from '@modules/chat/routes/chat.route';
 import { logger } from '@common/configs/logger/logger.config';
-import loggerPlugin from '@common/configs/logger/logger.plugin';
-import { ChatService } from '@modules/chat/services/chat.service';
 import { setupWebSocket } from '@common/configs/websocket.plugin';
+import loggerPlugin from '@common/configs/logger/logger.plugin';
+
+import { authRouter } from '@auth/routes/auth.route';
+import { courseRouter } from '@course/routes/course.route';
+import { toolRouter } from '@tool/routes/tool.route';
+import { postRouter } from '@post/routes/post.route';
+import { seedRouter } from '@seed/routes/seed.route';
+import { chatRouter } from '@chat/routes/chat.route';
+import { notificationRouter } from '@notification/routes/notification.route';
+import { ChatService } from '@chat/services/chat.service';
 
 export class App {
   private instance: FastifyInstance;
@@ -77,6 +78,7 @@ export class App {
     await this.instance.register(postRouter, { prefix: '/api/post' });
     await this.instance.register(seedRouter, { prefix: '/api/seed' });
     await this.instance.register(chatRouter, { prefix: '/api/chat' });
+    await this.instance.register(notificationRouter, { prefix: '/api/notification' });
   }
 
   private setErrorHandler() {

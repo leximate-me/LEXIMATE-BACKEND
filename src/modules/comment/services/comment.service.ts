@@ -7,6 +7,9 @@ import { User } from '@user/entities';
 
 import { UpdateCommentDto, CreateCommentDto } from '@comment/dtos';
 
+import { notificationEmitter } from '@common/events/notification.events';
+import { NotificationType } from '@notification/entities/notification.entity';
+
 export class CommentService {
   private readonly commentRepository = AppDataSource.getRepository(Comment);
   private readonly postRepository = AppDataSource.getRepository(Post);
@@ -41,6 +44,26 @@ export class CommentService {
       user: foundUser,
     });
     await this.commentRepository.save(comment);
+
+    // Notify post author about new comment
+    const postWithAuthor = await this.postRepository.findOne({
+      where: { id: postId },
+      relations: ['user'],
+    });
+    
+    if (postWithAuthor && postWithAuthor.user.id !== userId) {
+      notificationEmitter.emit('create_notification', {
+        userId: postWithAuthor.user.id,
+        type: NotificationType.COMMENT_ADDED,
+        title: 'Nuevo comentario en tu post',
+        message: `${foundUser.user_name} comentó en tu post: "${postWithAuthor.title}"`,
+        data: {
+          postId: postWithAuthor.id,
+          commentId: comment.id,
+          commenterName: foundUser.user_name,
+        },
+      });
+    }
 
     return comment;
   }
