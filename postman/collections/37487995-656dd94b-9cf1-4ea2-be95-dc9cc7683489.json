@@ -1872,13 +1872,13 @@
 					"response": []
 				},
 				{
-					"name": "New Request",
+					"name": "DELETE /:notificationId",
 					"id": "37487995-c26ebbfc-d894-4fc1-932e-45d2a534e516",
 					"protocolProfileBehavior": {
 						"disableBodyPruning": true
 					},
 					"request": {
-						"method": "GET",
+						"method": "DELETE",
 						"header": [
 							{
 								"key": "Content-Type",
