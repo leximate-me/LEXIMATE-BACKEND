@@ -1733,7 +1733,20 @@
 		},
 		{
 			"name": "Notification",
-			"item": [],
+			"item": [
+				{
+					"name": "New Request",
+					"id": "37487995-c7e83c48-351f-4a6c-95e3-f3c8b5284d2a",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": []
+					},
+					"response": []
+				}
+			],
 			"id": "37487995-0bfa8891-2deb-4b90-bcf2-93907e72ea74"
 		}
 	],
