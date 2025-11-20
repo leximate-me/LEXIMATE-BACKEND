@@ -1529,11 +1529,12 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{baseUrl}}/tool/markdown-url?url=https://example.com",
+							"raw": "{{baseUrl}}/api/tool/markdown-url?url=https://example.com",
 							"host": [
 								"{{baseUrl}}"
 							],
 							"path": [
+								"api",
 								"tool",
 								"markdown-url"
 							],
