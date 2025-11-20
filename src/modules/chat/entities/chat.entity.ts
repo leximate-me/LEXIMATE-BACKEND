@@ -15,7 +15,7 @@ export class Chat {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @ManyToMany(() => User)
+  @ManyToMany(() => User, { eager: true })
   @JoinTable()
   users: User[];
 

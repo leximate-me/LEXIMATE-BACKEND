@@ -1,4 +1,4 @@
-import { Repository } from 'typeorm';
+import { Repository, In } from 'typeorm';
 import { AppDataSource } from '@database/db';
 import { Chat, Message } from '@chat/entities';
 import { User } from '@user/entities/user.entity';
@@ -19,15 +19,39 @@ export class ChatService {
 
   async createChat(createChatDto: CreateChatDto, currentUserId: string): Promise<Chat> {
     const { userIds } = createChatDto;
-    
+        
     const allUserIds = userIds.includes(currentUserId) ? userIds : [...userIds, currentUserId];
     const uniqueUserIds = [...new Set(allUserIds)];
-    
+        
     if (uniqueUserIds.length < 2) {
       throw HttpError.badRequest('A chat must have at least 2 participants');
     }
 
-    const users = await this.userRepository.findByIds(uniqueUserIds);
+    if (uniqueUserIds.length === 2) {
+      const existingChats = await this.chatRepository
+        .createQueryBuilder('chat')
+        .innerJoin('chat.users', 'user')
+        .where('user.id IN (:...userIds)', { userIds: uniqueUserIds })
+        .groupBy('chat.id')
+        .having('COUNT(DISTINCT user.id) = :count', { count: uniqueUserIds.length })
+        .getMany();
+
+      for (const chat of existingChats) {
+        const chatUserIds = chat.users.map(u => u.id).sort();
+        const requestUserIds = uniqueUserIds.sort();
+        
+        if (chatUserIds.length === requestUserIds.length && 
+            chatUserIds.every((id, index) => id === requestUserIds[index])) {
+          return chat;
+        }
+      }
+    }
+    const users = await this.userRepository.find({
+      where: {
+        id: In(uniqueUserIds)
+      }
+    });
+    
     if (users.length !== uniqueUserIds.length) {
       throw HttpError.notFound('One or more users not found');
     }
@@ -36,7 +60,9 @@ export class ChatService {
       users,
     });
 
-    return await this.chatRepository.save(chat);
+    const savedChat = await this.chatRepository.save(chat);
+    
+    return savedChat;
   }
 
   async getUserChats(userId: string): Promise<Chat[]> {

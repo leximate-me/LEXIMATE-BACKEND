@@ -6,7 +6,7 @@ export const createChatSchema = {
       userIds: {
         type: 'array',
         items: { type: 'string' },
-        minItems: 3,
+        minItems: 1,
       },
     },
   },
