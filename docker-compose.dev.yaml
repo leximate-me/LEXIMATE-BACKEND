@@ -26,8 +26,8 @@ services:
     build: .
     container_name: leximate-backend
     restart: no
-    ports:
-      - '${PORT}:8080'
+    expose:
+      - '8080'
     env_file:
       - .env
     volumes:
@@ -38,29 +38,36 @@ services:
         condition: service_healthy
     networks:
       - leximate-network
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:8080"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+      start_period: 5s
     command: npm run start:dev
     stdin_open: true
     tty: true
 
-  # frontend:
-  #   build:
-  #     context: ../LEXIMATE-FRONTEND
-  #     dockerfile: Dockerfile.dev
-  #   container_name: leximate-frontend-dev
-  #   restart: no
-  #   ports:
-  #     - '5173:5173'
-  #   volumes:
-  #     - ../LEXIMATE-FRONTEND:/app
-  #     - /app/node_modules
-  #   networks:
-  #     - leximate-network
-  #   depends_on:
-  #     - backend
-  #   environment:
-  #     - NODE_ENV=development
-  #   stdin_open: true
-  #   tty: true
+  frontend:
+    build:
+      context: ../LEXIMATE-FRONTEND
+      dockerfile: Dockerfile.dev
+    container_name: leximate-frontend-dev
+    restart: no
+    ports:
+      - '5173:5173'
+    volumes:
+      - ../LEXIMATE-FRONTEND:/app
+      - /app/node_modules
+    networks:
+      - leximate-network
+    depends_on:
+      backend:
+        condition: service_healthy
+    environment:
+      - NODE_ENV=development
+    stdin_open: true
+    tty: true
 
   n8n:
     image: n8nio/n8n:latest
