@@ -385,6 +385,408 @@
 			"name": "Course",
 			"item": [
 				{
+					"name": "Post",
+					"item": [
+						{
+							"name": "POST /:courseId/post",
+							"id": "37487995-a392f926-cfc4-4ed0-a9a8-b9f7a0b62a94",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"title\": \"Welcome to the course\",\n  \"content\": \"Introduce yourself here\"\n}"
+								},
+								"url": {
+									"raw": "{{baseUrl}}/api/course/:courseId/post",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"api",
+										"course",
+										":courseId",
+										"post"
+									],
+									"variable": [
+										{
+											"id": "0edb942a-e30d-40ff-b5a9-ed867f054d9a",
+											"key": "courseId"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "GET /:courseId/post",
+							"id": "37487995-c0c7c2d0-7d5e-4902-b667-3e9aa7b616ea",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{baseUrl}}/api/course/:courseId/post",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"api",
+										"course",
+										":courseId",
+										"post"
+									],
+									"variable": [
+										{
+											"id": "7f831200-53bf-4f1c-8fe7-b44933a34961",
+											"key": "courseId"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "GET /:courseId/post/:postId",
+							"id": "37487995-2687c481-2f31-4de6-8107-53a6c32d1f23",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{baseUrl}}/api/course/:courseId/post/:postId",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"api",
+										"course",
+										":courseId",
+										"post",
+										":postId"
+									],
+									"variable": [
+										{
+											"id": "4c2145f3-3710-4294-816d-189eeb90c390",
+											"key": "courseId"
+										},
+										{
+											"id": "5aefc622-74b4-4e53-8105-bbeac4af27b4",
+											"key": "postId"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "PATCH /:courseId/post/:postId",
+							"id": "37487995-b8015c3b-7ac0-4f4a-9f88-7db294c7b9c5",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "PATCH",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"title\": \"Welcome - Updated\",\n  \"content\": \"Update your introductions\"\n}"
+								},
+								"url": {
+									"raw": "{{baseUrl}}/api/course/:courseId/post/:postId",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"api",
+										"course",
+										":courseId",
+										"post",
+										":postId"
+									],
+									"variable": [
+										{
+											"id": "d58adb0e-e975-4e20-a45a-ff62afc33f5f",
+											"key": "courseId"
+										},
+										{
+											"id": "71f015ad-6aa4-4ffe-8c84-8453aa29eee9",
+											"key": "postId"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "DELETE /:courseId/post/:postId",
+							"id": "37487995-e2393034-cf86-4ea3-bd16-63aa9749b0eb",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "DELETE",
+								"header": [],
+								"url": {
+									"raw": "{{baseUrl}}/api/course/:courseId/post/:postId",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"api",
+										"course",
+										":courseId",
+										"post",
+										":postId"
+									],
+									"variable": [
+										{
+											"id": "62df5aaa-caac-48cd-a962-966afc93324d",
+											"key": "courseId"
+										},
+										{
+											"id": "5d5815cd-361d-4539-b095-3e2fd8ce6ef5",
+											"key": "postId"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "POST /:courseId/post/:postId/comment",
+							"id": "37487995-18784cc5-603b-49c7-ad31-7be5bc98b5d4",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"content\": \"Great post!\"\n}"
+								},
+								"url": {
+									"raw": "{{baseUrl}}/api/course/:courseId/post/:postId/comment",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"api",
+										"course",
+										":courseId",
+										"post",
+										":postId",
+										"comment"
+									],
+									"variable": [
+										{
+											"id": "4b165809-26a2-477b-82a9-2ce107e0326f",
+											"key": "courseId"
+										},
+										{
+											"id": "91d5952c-6004-46b5-8806-f4e48af83791",
+											"key": "postId"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "GET /:courseId/post/:postId/comment",
+							"id": "37487995-8867f1f3-f861-4581-baee-f35db14ccd6c",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{baseUrl}}/api/course/:courseId/post/:postId/comment",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"api",
+										"course",
+										":courseId",
+										"post",
+										":postId",
+										"comment"
+									],
+									"variable": [
+										{
+											"id": "ed6df491-baec-445a-a405-312dfde08a97",
+											"key": "courseId"
+										},
+										{
+											"id": "792c5d9b-092b-4036-b8ab-2fb8403db9e8",
+											"key": "postId"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "GET /:courseId/post/:postId/comment/:commentId",
+							"id": "37487995-f6ca6bd6-12c7-46b7-bcd6-e01ca2a19a76",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{baseUrl}}/api/course/:courseId/post/:postId/comment/:commentId",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"api",
+										"course",
+										":courseId",
+										"post",
+										":postId",
+										"comment",
+										":commentId"
+									],
+									"variable": [
+										{
+											"id": "5c9f4726-5ae2-4747-b97b-a4534f6adf6c",
+											"key": "courseId"
+										},
+										{
+											"id": "4897c9ac-960c-4041-a9a3-f93ccce4c665",
+											"key": "postId"
+										},
+										{
+											"id": "d5f0849b-8a1c-46b3-be1a-493ba4e20079",
+											"key": "commentId"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "PATCH /:courseId/post/:postId/comment/:commentId",
+							"id": "37487995-db6be348-d9f2-4ae6-b7e1-b85e2002f6ac",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "PATCH",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"content\": \"Edited comment\"\n}"
+								},
+								"url": {
+									"raw": "{{baseUrl}}/api/course/:courseId/post/:postId/comment/:commentId",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"api",
+										"course",
+										":courseId",
+										"post",
+										":postId",
+										"comment",
+										":commentId"
+									],
+									"variable": [
+										{
+											"id": "826b1540-c984-496b-8f42-fe870047a760",
+											"key": "courseId"
+										},
+										{
+											"id": "5299cc0c-6fa1-48fb-877f-b91d989ae5ae",
+											"key": "postId"
+										},
+										{
+											"id": "063d2d08-25a7-4045-9bbe-308b75e88158",
+											"key": "commentId"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "DELETE /:courseId/post/:postId/comment/:commentId",
+							"id": "37487995-8449d6b8-c15f-4a8c-974e-9df8d42c6757",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "DELETE",
+								"header": [],
+								"url": {
+									"raw": "{{baseUrl}}/api/course/:courseId/post/:postId/comment/:commentId",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"api",
+										"course",
+										":courseId",
+										"post",
+										":postId",
+										"comment",
+										":commentId"
+									],
+									"variable": [
+										{
+											"id": "c48dda8c-8009-4f7b-aea1-16012ecdc64d",
+											"key": "courseId"
+										},
+										{
+											"id": "4ffff58c-f746-4409-b80d-0ceb178a5994",
+											"key": "postId"
+										},
+										{
+											"id": "53f2d345-5a4f-46a1-a106-00383ff297c6",
+											"key": "commentId"
+										}
+									]
+								}
+							},
+							"response": []
+						}
+					],
+					"id": "37487995-fe33f67a-a3bb-420e-a11f-847975088a0f"
+				},
+				{
 					"name": "Task",
 					"item": [
 						{
@@ -836,408 +1238,6 @@
 						}
 					],
 					"id": "37487995-529ab787-4596-4199-80c1-9e8059082e37"
-				},
-				{
-					"name": "Post",
-					"item": [
-						{
-							"name": "POST /:courseId/post",
-							"id": "37487995-a392f926-cfc4-4ed0-a9a8-b9f7a0b62a94",
-							"protocolProfileBehavior": {
-								"disableBodyPruning": true
-							},
-							"request": {
-								"method": "POST",
-								"header": [
-									{
-										"key": "Content-Type",
-										"value": "application/json"
-									}
-								],
-								"body": {
-									"mode": "raw",
-									"raw": "{\n  \"title\": \"Welcome to the course\",\n  \"content\": \"Introduce yourself here\"\n}"
-								},
-								"url": {
-									"raw": "{{baseUrl}}/api/course/:courseId/post",
-									"host": [
-										"{{baseUrl}}"
-									],
-									"path": [
-										"api",
-										"course",
-										":courseId",
-										"post"
-									],
-									"variable": [
-										{
-											"id": "0edb942a-e30d-40ff-b5a9-ed867f054d9a",
-											"key": "courseId"
-										}
-									]
-								}
-							},
-							"response": []
-						},
-						{
-							"name": "GET /:courseId/post",
-							"id": "37487995-c0c7c2d0-7d5e-4902-b667-3e9aa7b616ea",
-							"protocolProfileBehavior": {
-								"disableBodyPruning": true
-							},
-							"request": {
-								"method": "GET",
-								"header": [],
-								"url": {
-									"raw": "{{baseUrl}}/api/course/:courseId/post",
-									"host": [
-										"{{baseUrl}}"
-									],
-									"path": [
-										"api",
-										"course",
-										":courseId",
-										"post"
-									],
-									"variable": [
-										{
-											"id": "7f831200-53bf-4f1c-8fe7-b44933a34961",
-											"key": "courseId"
-										}
-									]
-								}
-							},
-							"response": []
-						},
-						{
-							"name": "GET /:courseId/post/:postId",
-							"id": "37487995-2687c481-2f31-4de6-8107-53a6c32d1f23",
-							"protocolProfileBehavior": {
-								"disableBodyPruning": true
-							},
-							"request": {
-								"method": "GET",
-								"header": [],
-								"url": {
-									"raw": "{{baseUrl}}/api/course/:courseId/post/:postId",
-									"host": [
-										"{{baseUrl}}"
-									],
-									"path": [
-										"api",
-										"course",
-										":courseId",
-										"post",
-										":postId"
-									],
-									"variable": [
-										{
-											"id": "4c2145f3-3710-4294-816d-189eeb90c390",
-											"key": "courseId"
-										},
-										{
-											"id": "5aefc622-74b4-4e53-8105-bbeac4af27b4",
-											"key": "postId"
-										}
-									]
-								}
-							},
-							"response": []
-						},
-						{
-							"name": "PATCH /:courseId/post/:postId",
-							"id": "37487995-b8015c3b-7ac0-4f4a-9f88-7db294c7b9c5",
-							"protocolProfileBehavior": {
-								"disableBodyPruning": true
-							},
-							"request": {
-								"method": "PATCH",
-								"header": [
-									{
-										"key": "Content-Type",
-										"value": "application/json"
-									}
-								],
-								"body": {
-									"mode": "raw",
-									"raw": "{\n  \"title\": \"Welcome - Updated\",\n  \"content\": \"Update your introductions\"\n}"
-								},
-								"url": {
-									"raw": "{{baseUrl}}/api/course/:courseId/post/:postId",
-									"host": [
-										"{{baseUrl}}"
-									],
-									"path": [
-										"api",
-										"course",
-										":courseId",
-										"post",
-										":postId"
-									],
-									"variable": [
-										{
-											"id": "d58adb0e-e975-4e20-a45a-ff62afc33f5f",
-											"key": "courseId"
-										},
-										{
-											"id": "71f015ad-6aa4-4ffe-8c84-8453aa29eee9",
-											"key": "postId"
-										}
-									]
-								}
-							},
-							"response": []
-						},
-						{
-							"name": "DELETE /:courseId/post/:postId",
-							"id": "37487995-e2393034-cf86-4ea3-bd16-63aa9749b0eb",
-							"protocolProfileBehavior": {
-								"disableBodyPruning": true
-							},
-							"request": {
-								"method": "DELETE",
-								"header": [],
-								"url": {
-									"raw": "{{baseUrl}}/api/course/:courseId/post/:postId",
-									"host": [
-										"{{baseUrl}}"
-									],
-									"path": [
-										"api",
-										"course",
-										":courseId",
-										"post",
-										":postId"
-									],
-									"variable": [
-										{
-											"id": "62df5aaa-caac-48cd-a962-966afc93324d",
-											"key": "courseId"
-										},
-										{
-											"id": "5d5815cd-361d-4539-b095-3e2fd8ce6ef5",
-											"key": "postId"
-										}
-									]
-								}
-							},
-							"response": []
-						},
-						{
-							"name": "POST /:courseId/post/:postId/comment",
-							"id": "37487995-18784cc5-603b-49c7-ad31-7be5bc98b5d4",
-							"protocolProfileBehavior": {
-								"disableBodyPruning": true
-							},
-							"request": {
-								"method": "POST",
-								"header": [
-									{
-										"key": "Content-Type",
-										"value": "application/json"
-									}
-								],
-								"body": {
-									"mode": "raw",
-									"raw": "{\n  \"content\": \"Great post!\"\n}"
-								},
-								"url": {
-									"raw": "{{baseUrl}}/api/course/:courseId/post/:postId/comment",
-									"host": [
-										"{{baseUrl}}"
-									],
-									"path": [
-										"api",
-										"course",
-										":courseId",
-										"post",
-										":postId",
-										"comment"
-									],
-									"variable": [
-										{
-											"id": "4b165809-26a2-477b-82a9-2ce107e0326f",
-											"key": "courseId"
-										},
-										{
-											"id": "91d5952c-6004-46b5-8806-f4e48af83791",
-											"key": "postId"
-										}
-									]
-								}
-							},
-							"response": []
-						},
-						{
-							"name": "GET /:courseId/post/:postId/comment",
-							"id": "37487995-8867f1f3-f861-4581-baee-f35db14ccd6c",
-							"protocolProfileBehavior": {
-								"disableBodyPruning": true
-							},
-							"request": {
-								"method": "GET",
-								"header": [],
-								"url": {
-									"raw": "{{baseUrl}}/api/course/:courseId/post/:postId/comment",
-									"host": [
-										"{{baseUrl}}"
-									],
-									"path": [
-										"api",
-										"course",
-										":courseId",
-										"post",
-										":postId",
-										"comment"
-									],
-									"variable": [
-										{
-											"id": "ed6df491-baec-445a-a405-312dfde08a97",
-											"key": "courseId"
-										},
-										{
-											"id": "792c5d9b-092b-4036-b8ab-2fb8403db9e8",
-											"key": "postId"
-										}
-									]
-								}
-							},
-							"response": []
-						},
-						{
-							"name": "GET /:courseId/post/:postId/comment/:commentId",
-							"id": "37487995-f6ca6bd6-12c7-46b7-bcd6-e01ca2a19a76",
-							"protocolProfileBehavior": {
-								"disableBodyPruning": true
-							},
-							"request": {
-								"method": "GET",
-								"header": [],
-								"url": {
-									"raw": "{{baseUrl}}/api/course/:courseId/post/:postId/comment/:commentId",
-									"host": [
-										"{{baseUrl}}"
-									],
-									"path": [
-										"api",
-										"course",
-										":courseId",
-										"post",
-										":postId",
-										"comment",
-										":commentId"
-									],
-									"variable": [
-										{
-											"id": "5c9f4726-5ae2-4747-b97b-a4534f6adf6c",
-											"key": "courseId"
-										},
-										{
-											"id": "4897c9ac-960c-4041-a9a3-f93ccce4c665",
-											"key": "postId"
-										},
-										{
-											"id": "d5f0849b-8a1c-46b3-be1a-493ba4e20079",
-											"key": "commentId"
-										}
-									]
-								}
-							},
-							"response": []
-						},
-						{
-							"name": "PATCH /:courseId/post/:postId/comment/:commentId",
-							"id": "37487995-db6be348-d9f2-4ae6-b7e1-b85e2002f6ac",
-							"protocolProfileBehavior": {
-								"disableBodyPruning": true
-							},
-							"request": {
-								"method": "PATCH",
-								"header": [
-									{
-										"key": "Content-Type",
-										"value": "application/json"
-									}
-								],
-								"body": {
-									"mode": "raw",
-									"raw": "{\n  \"content\": \"Edited comment\"\n}"
-								},
-								"url": {
-									"raw": "{{baseUrl}}/api/course/:courseId/post/:postId/comment/:commentId",
-									"host": [
-										"{{baseUrl}}"
-									],
-									"path": [
-										"api",
-										"course",
-										":courseId",
-										"post",
-										":postId",
-										"comment",
-										":commentId"
-									],
-									"variable": [
-										{
-											"id": "826b1540-c984-496b-8f42-fe870047a760",
-											"key": "courseId"
-										},
-										{
-											"id": "5299cc0c-6fa1-48fb-877f-b91d989ae5ae",
-											"key": "postId"
-										},
-										{
-											"id": "063d2d08-25a7-4045-9bbe-308b75e88158",
-											"key": "commentId"
-										}
-									]
-								}
-							},
-							"response": []
-						},
-						{
-							"name": "DELETE /:courseId/post/:postId/comment/:commentId",
-							"id": "37487995-8449d6b8-c15f-4a8c-974e-9df8d42c6757",
-							"protocolProfileBehavior": {
-								"disableBodyPruning": true
-							},
-							"request": {
-								"method": "DELETE",
-								"header": [],
-								"url": {
-									"raw": "{{baseUrl}}/api/course/:courseId/post/:postId/comment/:commentId",
-									"host": [
-										"{{baseUrl}}"
-									],
-									"path": [
-										"api",
-										"course",
-										":courseId",
-										"post",
-										":postId",
-										"comment",
-										":commentId"
-									],
-									"variable": [
-										{
-											"id": "c48dda8c-8009-4f7b-aea1-16012ecdc64d",
-											"key": "courseId"
-										},
-										{
-											"id": "4ffff58c-f746-4409-b80d-0ceb178a5994",
-											"key": "postId"
-										},
-										{
-											"id": "53f2d345-5a4f-46a1-a106-00383ff297c6",
-											"key": "commentId"
-										}
-									]
-								}
-							},
-							"response": []
-						}
-					],
-					"id": "37487995-fe33f67a-a3bb-420e-a11f-847975088a0f"
 				},
 				{
 					"name": "POST /",
