@@ -1610,13 +1610,14 @@
 							}
 						],
 						"url": {
-							"raw": "{{baseUrl}}/api/chat",
+							"raw": "{{baseUrl}}/api/chat/user-chats",
 							"host": [
 								"{{baseUrl}}"
 							],
 							"path": [
 								"api",
-								"chat"
+								"chat",
+								"user-chats"
 							]
 						}
 					},
