@@ -18,7 +18,7 @@ export async function setupWebSocket(
   await fastify.register(fastifyWebsocket);
 
   fastify.get(
-    '/api/ws',
+    '/ws',
     {
       websocket: true,
       preHandler: [authRequired],
