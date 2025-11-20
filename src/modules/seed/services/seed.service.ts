@@ -196,8 +196,8 @@ export class SeedService {
       // 4. User Files (Profile Images)
       const userFile = this.fileUserRepository.create({
         file_id: `profile_${user.user_name}`,
-        file_url: `https://ui-avatars.com/api/?name=${userData.first_name}+${userData.last_name}&background=random`,
-        file_type: 'image/png',
+        file_url: `https://api.dicebear.com/9.x/notionists/svg?seed=${user.id}&gestureProbability=50&beardProbability=30`,
+        file_type: 'image/svg+xml',
         user: user,
       });
       await this.fileUserRepository.save(userFile);

@@ -47,7 +47,7 @@ export class AuthService {
       const response = await fetch(
         `https://api.dicebear.com/9.x/notionists/svg?seed=${newUser.id},gestureProbability=50, beardProbability=30`
       );
-      if (!response.ok) throw new Error('Error al generar el avatar');
+      if (!response.ok) throw HttpError.internalServerError('Error generating avatar');
 
       const avatarSvg = await response.text();
       const buffer = Buffer.from(avatarSvg, 'utf8');
