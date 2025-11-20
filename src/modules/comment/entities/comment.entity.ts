@@ -20,7 +20,6 @@ export class Comment {
 
   @ManyToOne(() => Post, (post) => post.comments, {
     nullable: false,
-    eager: true,
   })
   post: Post;
 

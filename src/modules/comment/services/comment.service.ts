@@ -1,9 +1,10 @@
 import { AppDataSource } from '@database/db';
 import { HttpError } from '@common/libs/http-error';
 
+import { User } from '@user/entities';
+import { Course } from '@course/entities/course.entity';
 import { Post } from '@post/entities/post.entity';
 import { Comment } from '@comment/entities/comment.entity';
-import { User } from '@user/entities';
 
 import { UpdateCommentDto, CreateCommentDto } from '@comment/dtos';
 
@@ -15,6 +16,7 @@ export class CommentService {
   private readonly commentRepository = AppDataSource.getRepository(Comment);
   private readonly postRepository = AppDataSource.getRepository(Post);
   private readonly userRepository = AppDataSource.getRepository(User);
+  private readonly courseRepository = AppDataSource.getRepository(Course);
 
   async create(
     createCommentDto: CreateCommentDto,
@@ -51,7 +53,7 @@ export class CommentService {
       where: { id: postId },
       relations: ['user'],
     });
-    
+
     if (postWithAuthor && postWithAuthor.user.id !== userId) {
       notificationEmitter.emit('create_notification', {
         userId: postWithAuthor.user.id,
@@ -69,21 +71,30 @@ export class CommentService {
     // Emit real-time event for WebSocket broadcast
     const courseWithUsers = await this.postRepository.findOne({
       where: { id: postId },
-      relations: ['course', 'course.users'],
+      relations: ['course'],
     });
 
-    if (courseWithUsers) {
-      commentEventEmitter.emit('comment_created', {
-        comment: {
-          id: comment.id,
-          content: comment.content,
-          postId: existingPost.id,
-          authorId: foundUser.id,
-          authorName: foundUser.user_name,
-          createdAt: comment.created_at,
-        },
-        userIds: courseWithUsers.course.users.map((u) => u.id),
+    console.log(courseWithUsers);
+    if (courseWithUsers?.course) {
+      // Cargar usuarios del curso por separado
+      const courseWithUsersLoaded = await this.courseRepository.findOne({
+        where: { id: courseWithUsers.course.id },
+        relations: ['users'],
       });
+
+      if (courseWithUsersLoaded?.users) {
+        commentEventEmitter.emit('comment_created', {
+          comment: {
+            id: comment.id,
+            content: comment.content,
+            postId: existingPost.id,
+            authorId: foundUser.id,
+            authorName: foundUser.user_name,
+            createdAt: comment.created_at,
+          },
+          userIds: courseWithUsersLoaded.users.map((u) => u.id),
+        });
+      }
     }
 
     return comment;
@@ -143,21 +154,21 @@ export class CommentService {
     // Emit real-time event for WebSocket broadcast
     const updatedComment = await this.commentRepository.findOne({
       where: { id: commentId },
-      relations: ['post', 'post.course', 'post.course.users', 'user'],
+      relations: ['post', 'post.course', 'user'],
     });
 
-    if (updatedComment) {
-      commentEventEmitter.emit('comment_updated', {
-        comment: {
-          id: updatedComment.id,
-          content: updatedComment.content,
-          postId: updatedComment.post.id,
-          authorId: updatedComment.user.id,
-          authorName: foundUser.user_name,
-          updatedAt: updatedComment.updated_at,
-        },
-        userIds: updatedComment.post.course.users.map((u) => u.id),
+    if (updatedComment?.post?.course) {
+      const courseWithUsers = await this.courseRepository.findOne({
+        where: { id: updatedComment.post.course.id },
+        relations: ['users'],
       });
+
+      if (courseWithUsers?.users) {
+        commentEventEmitter.emit('comment_updated', {
+          comment: updatedComment,
+          userIds: courseWithUsers.users.map((u) => u.id),
+        });
+      }
     }
 
     return existingComment;
@@ -176,10 +187,11 @@ export class CommentService {
     });
     if (!foundUser) throw HttpError.notFound('User not found');
 
-    if (
-      existingComment.user.id !== foundUser.id ||
-      foundUser.role.name !== 'admin'
-    ) {
+    const isAuthor = existingComment.user.id === foundUser.id;
+
+    const isAdmin = foundUser.role.name === 'admin';
+
+    if (!isAuthor && !isAdmin) {
       throw HttpError.forbidden(
         'You do not have permission to delete this comment.'
       );
@@ -191,7 +203,7 @@ export class CommentService {
       relations: ['post', 'post.course', 'post.course.users'],
     });
 
-    await this.commentRepository.remove(existingComment);
+    await this.commentRepository.softDelete(existingComment);
 
     // Emit real-time event for WebSocket broadcast
     if (commentWithCourse) {

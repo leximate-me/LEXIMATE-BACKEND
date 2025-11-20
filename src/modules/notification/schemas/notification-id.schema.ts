@@ -1,9 +1,9 @@
 export const notificationIdSchema = {
   params: {
     type: 'object',
-    required: ['id'],
+    required: ['notificationId'],
     properties: {
-      id: { type: 'string', format: 'uuid' },
+      notificationId: { type: 'string', format: 'uuid' },
     },
   },
 };
