@@ -23,7 +23,6 @@ export class AuthService {
     try {
       const defaultRole = await this.userService.findRoleByName('guest');
 
-      // Crear persona
       const newPerson = await this.userService.createPerson({
         first_name: dto.first_name,
         last_name: dto.last_name,
@@ -33,17 +32,14 @@ export class AuthService {
         birth_date: new Date(dto.birth_date),
       });
 
-      // Hashear contraseña
       const hashedPassword = await this.bcryptAdapter.hash(dto.password);
 
-      // Crear usuario
       const newUser = await this.userService.createUser(
         { ...dto, password: hashedPassword } as any,
         newPerson,
         defaultRole
       );
 
-      // Generar avatar y subirlo
       const response = await fetch(
         `https://api.dicebear.com/9.x/notionists/svg?seed=${newUser.id},gestureProbability=50, beardProbability=30`
       );
