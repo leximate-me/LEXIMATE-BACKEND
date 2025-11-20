@@ -176,8 +176,6 @@ export class App {
     this.instance.log.info(
       {
         environment: config.NODE_ENV,
-        port: config.PORT,
-        host: config.HOST,
         database: config.DB_NAME,
         logLevel: config.LOG_LEVEL,
       },

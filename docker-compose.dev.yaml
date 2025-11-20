@@ -42,25 +42,25 @@ services:
     stdin_open: true
     tty: true
 
-  frontend:
-    build:
-      context: ../LEXIMATE-FRONTEND
-      dockerfile: Dockerfile.dev
-    container_name: leximate-frontend-dev
-    restart: no
-    ports:
-      - '5173:5173'
-    volumes:
-      - ../LEXIMATE-FRONTEND:/app
-      - /app/node_modules
-    networks:
-      - leximate-network
-    depends_on:
-      - backend
-    environment:
-      - NODE_ENV=development
-    stdin_open: true
-    tty: true
+  # frontend:
+  #   build:
+  #     context: ../LEXIMATE-FRONTEND
+  #     dockerfile: Dockerfile.dev
+  #   container_name: leximate-frontend-dev
+  #   restart: no
+  #   ports:
+  #     - '5173:5173'
+  #   volumes:
+  #     - ../LEXIMATE-FRONTEND:/app
+  #     - /app/node_modules
+  #   networks:
+  #     - leximate-network
+  #   depends_on:
+  #     - backend
+  #   environment:
+  #     - NODE_ENV=development
+  #   stdin_open: true
+  #   tty: true
 
   n8n:
     image: n8nio/n8n:latest
