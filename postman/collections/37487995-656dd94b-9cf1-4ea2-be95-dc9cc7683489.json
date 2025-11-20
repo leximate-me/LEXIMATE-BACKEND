@@ -1921,7 +1921,7 @@
 		{
 			"listen": "prerequest",
 			"script": {
-				"id": "40da4217-078a-40e2-8e00-d12b2f7521ff",
+				"id": "e26947d5-3785-4c64-9cc4-b0c1eaaa86f6",
 				"type": "text/javascript",
 				"packages": {},
 				"requests": {},
@@ -1933,7 +1933,7 @@
 		{
 			"listen": "test",
 			"script": {
-				"id": "c6465c99-1d50-4cd7-8567-92e45ba340ba",
+				"id": "46aac32a-590a-41d6-b546-bc261c8615ad",
 				"type": "text/javascript",
 				"packages": {},
 				"requests": {},
@@ -1950,7 +1950,7 @@
 		},
 		{
 			"key": "host",
-			"value": "127.0.0.1"
+			"value": "localhost"
 		},
 		{
 			"key": "port",
