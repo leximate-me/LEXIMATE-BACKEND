@@ -4,4 +4,4 @@ export type {
   LogError,
   LogLevel,
   LoggerService,
-} from './logger.types';
+} from '../types/logger.types';

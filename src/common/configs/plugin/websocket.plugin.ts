@@ -88,20 +88,25 @@ export async function setupWebSocket(
       const chat = await chatService.getChatById(message.chatId);
       if (chat) {
         chat.users.forEach((u) => {
-          const connections = userConnections.get(u.id);
-          if (connections) {
-            connections.forEach((client) => {
-              if (client.readyState === 1) { // OPEN
-                client.send(
-                  JSON.stringify({
-                    type: 'chat_message',
-                    data: message,
-                  })
-                );
-              }
-            });
-          }
-        });
+  // 🔥 CORRECCIÓN 1: Convertir ID a String explícitamente
+  const userId = String(u.id); 
+  
+  // Ahora sí encontrará la conexión en el Map
+  const connections = userConnections.get(userId); 
+  
+  if (connections) {
+    connections.forEach((client) => {
+      if (client.readyState === 1) {
+        client.send(
+          JSON.stringify({
+            type: 'chat_message',
+            data: message,
+          })
+        );
+      }
+    });
+  }
+});
       }
     } catch (error) {
       console.error('Error broadcasting chat message:', error);
