@@ -67,6 +67,25 @@ export class CourseService {
     foundUser.courses = [...(foundUser.courses || []), courseData];
     await this.userRepository.save(foundUser);
 
+    // Emit real-time event
+    const updatedCourse = await this.courseRepository.findOne({
+      where: { id: courseData.id },
+      relations: ['users'],
+    });
+
+    if (updatedCourse) {
+      courseEventEmitter.emit('course_updated', {
+        course: {
+          id: updatedCourse.id,
+          name: updatedCourse.name,
+          description: updatedCourse.description,
+          class_code: updatedCourse.class_code,
+          updatedAt: updatedCourse.updated_at,
+        },
+        userIds: updatedCourse.users.map((u) => u.id),
+      });
+    }
+
     return courseData;
   }
 
@@ -86,6 +105,25 @@ export class CourseService {
       (c) => c.id !== courseId
     );
     await this.userRepository.save(foundUser);
+
+    // Emit real-time event
+    const updatedCourse = await this.courseRepository.findOne({
+      where: { id: courseId },
+      relations: ['users'],
+    });
+
+    if (updatedCourse) {
+      courseEventEmitter.emit('course_updated', {
+        course: {
+          id: updatedCourse.id,
+          name: updatedCourse.name,
+          description: updatedCourse.description,
+          class_code: updatedCourse.class_code,
+          updatedAt: updatedCourse.updated_at,
+        },
+        userIds: updatedCourse.users.map((u) => u.id),
+      });
+    }
 
     return courseData;
   }

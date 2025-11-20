@@ -16,7 +16,7 @@ export async function chatRouter(fastify: FastifyInstance) {
   );
 
   fastify.get(
-    '/',
+    '/user-chats',
     {
       preHandler: [authRequired],
     },
