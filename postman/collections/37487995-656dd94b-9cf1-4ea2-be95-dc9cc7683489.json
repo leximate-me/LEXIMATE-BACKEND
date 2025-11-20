@@ -1468,11 +1468,12 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{baseUrl}}/tool/extract-text-from-local-url?localUrl=C:/path/to/file.pdf",
+							"raw": "{{baseUrl}}/api/tool/extract-text-from-local-url?localUrl=C:/path/to/file.pdf",
 							"host": [
 								"{{baseUrl}}"
 							],
 							"path": [
+								"api",
 								"tool",
 								"extract-text-from-local-url"
 							],
@@ -1505,11 +1506,12 @@
 							"raw": "{\n  \"message\": \"Hola\"\n}"
 						},
 						"url": {
-							"raw": "{{baseUrl}}/tool/chat-bot-response",
+							"raw": "{{baseUrl}}/api/tool/chat-bot-response",
 							"host": [
 								"{{baseUrl}}"
 							],
 							"path": [
+								"api",
 								"tool",
 								"chat-bot-response"
 							]
