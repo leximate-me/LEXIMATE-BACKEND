@@ -41,7 +41,7 @@ export const uploadToStorage = async (
           const url = await uploadPdfToLocal(buffer, filename);
           fileProps = {
             fileUrl: url,
-            fileId: filename,
+            fileId: filename.toLocaleLowerCase(),
             fileType: part.mimetype,
           };
         } else {
@@ -88,7 +88,7 @@ export const uploadToStorage = async (
         const url = await uploadPdfToLocal(buffer, filename);
         fileProps = {
           fileUrl: url,
-          fileId: filename,
+          fileId: filename.toLocaleLowerCase(),
           fileType: file.mimetype,
         };
       } else {

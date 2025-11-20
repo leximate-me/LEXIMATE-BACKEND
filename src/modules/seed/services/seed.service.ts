@@ -5,8 +5,7 @@ import { BcryptAdapter } from '@common/adapters/hash.adapter';
 
 import { Course } from '@course/entities/course.entity';
 import { Post } from '@post/entities/post.entity';
-import { Task } from '@task/entities/task.entity';
-import { TaskFile } from '@task/entities/task-file.entity';
+import { Task,TaskFile } from '@task/entities';
 import { Comment } from '@comment/entities/comment.entity';
 import { Chat, Message } from '@chat/entities';
 import { Notification } from '@notification/entities';
@@ -51,7 +50,6 @@ export class SeedService {
     await this.roleRepository.delete({ id: Not(IsNull()) });
     await this.permissionRepository.delete({ id: Not(IsNull()) });
 
-    // 1. Permisos
     const permissionsData = [
       { name: 'manage_users', description: 'Gestionar usuarios' },
       { name: 'manage_courses', description: 'Gestionar cursos' },
@@ -71,7 +69,6 @@ export class SeedService {
       permissions.push(permission);
     }
 
-    // 2. Roles
     const rolesData = [
       { name: 'admin', description: 'Administrador', permissions },
       {
@@ -107,7 +104,6 @@ export class SeedService {
       roles.push(role);
     }
 
-    // 3. Usuarios
     const usersData = [
       {
         user_name: 'admin',
@@ -193,7 +189,7 @@ export class SeedService {
       }
       createdUsers.push(user);
 
-      // 4. User Files (Profile Images)
+      
       const userFile = this.fileUserRepository.create({
         file_id: `profile_${user.user_name}`,
         file_url: `https://api.dicebear.com/9.x/notionists/svg?seed=${user.id}&gestureProbability=50&beardProbability=30`,
@@ -207,7 +203,7 @@ export class SeedService {
     const student = createdUsers.find(u => u.user_name === 'student');
 
     if (teacher && student) {
-      // 5. Courses
+      
       const coursesData = [
         { name: 'Matemáticas Avanzadas', description: 'Curso de cálculo y álgebra', class_code: 'MATH101' },
         { name: 'Historia Universal', description: 'Historia del mundo desde 1900', class_code: 'HIST202' },
@@ -224,7 +220,6 @@ export class SeedService {
         });
         await this.courseRepository.save(course);
 
-        // 6. Posts & Comments
         const postsData = [
           {
             title: `Bienvenida a ${course.name}`,
@@ -245,7 +240,6 @@ export class SeedService {
           });
           await this.postRepository.save(post);
 
-          // 7. Comments
           const comment = this.commentRepository.create({
             content: '¡Gracias profesor! Estoy emocionado por comenzar.',
             post: post,
@@ -254,7 +248,6 @@ export class SeedService {
           await this.commentRepository.save(comment);
         }
 
-        // 8. Tasks
         const task = this.taskRepository.create({
           title: 'Tarea 1: Investigación',
           description: 'Investigar sobre el tema introductorio.',
@@ -263,7 +256,6 @@ export class SeedService {
         });
         await this.taskRepository.save(task);
 
-        // 9. Task Files
         const taskFile = this.fileTaskRepository.create({
           file_id: `task_${task.id}_file`,
           file_url: 'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf',
@@ -273,13 +265,11 @@ export class SeedService {
         await this.fileTaskRepository.save(taskFile);
       }
 
-      // 10. Chats
       const chat = this.chatRepository.create({
         users: [teacher, student],
       });
       await this.chatRepository.save(chat);
 
-      // 11. Messages
       const messagesData = [
         { content: 'Hola profesor, tengo una duda sobre la tarea.', sender: student },
         { content: 'Hola, dime, ¿en qué puedo ayudarte?', sender: teacher },
