@@ -382,6 +382,225 @@
 			"id": "37487995-33f0240e-fd69-4085-9898-526014da94f2"
 		},
 		{
+			"name": "Course",
+			"item": [
+				{
+					"name": "POST /",
+					"id": "37487995-61622049-e47d-4ed2-8e81-c5785d4abaac",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"name\": \"Course name\",\n  \"description\": \"Optional\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/course",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"course"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "POST /join",
+					"id": "37487995-5df7ab79-bf6e-445f-989d-68417044bc87",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"classCode\": \"ABC123\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/course/join",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"course",
+								"join"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "GET /user",
+					"id": "37487995-5912ef59-ee86-49b9-aed8-2a94831e7fb6",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/course/user",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"course",
+								"user"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "POST /:courseId/leave",
+					"id": "37487995-6730c5c4-b72e-443f-984a-1a1f1aa20d44",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/course/:courseId/leave",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"course",
+								":courseId",
+								"leave"
+							],
+							"variable": [
+								{
+									"id": "6e24352c-7c56-4677-941f-8b0f40bb072c",
+									"key": "courseId"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "GET /:courseId/user",
+					"id": "37487995-01f8b971-e0ab-45dd-aeed-ac881a631639",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/course/:courseId/user",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"course",
+								":courseId",
+								"user"
+							],
+							"variable": [
+								{
+									"id": "a969d64c-8132-4c2c-b199-b5496e1da501",
+									"key": "courseId"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "PUT /:courseId",
+					"id": "37487995-a9771c33-ac99-4204-9854-460167bd837a",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"name\": \"Updated name\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/course/:courseId",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"course",
+								":courseId"
+							],
+							"variable": [
+								{
+									"id": "58fe17e7-48d4-4663-9d6f-0b9bb6c2e222",
+									"key": "courseId"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "DELETE /:courseId",
+					"id": "37487995-d681e415-2ba6-4a2d-af89-f8f85c2a2391",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/course/:courseId",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"course",
+								":courseId"
+							],
+							"variable": [
+								{
+									"id": "f2bee616-6c44-4fc5-87f6-cfd18d3d4b23",
+									"key": "courseId"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"id": "37487995-d9711e15-75fe-412a-bda5-34aeab423d0a"
+		},
+		{
 			"name": "Task",
 			"item": [
 				{
@@ -1235,225 +1454,6 @@
 				}
 			],
 			"id": "37487995-fe33f67a-a3bb-420e-a11f-847975088a0f"
-		},
-		{
-			"name": "Course",
-			"item": [
-				{
-					"name": "POST /",
-					"id": "37487995-61622049-e47d-4ed2-8e81-c5785d4abaac",
-					"protocolProfileBehavior": {
-						"disableBodyPruning": true
-					},
-					"request": {
-						"method": "POST",
-						"header": [
-							{
-								"key": "Content-Type",
-								"value": "application/json"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n  \"name\": \"Course name\",\n  \"description\": \"Optional\"\n}"
-						},
-						"url": {
-							"raw": "{{baseUrl}}/api/course",
-							"host": [
-								"{{baseUrl}}"
-							],
-							"path": [
-								"api",
-								"course"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "POST /join",
-					"id": "37487995-5df7ab79-bf6e-445f-989d-68417044bc87",
-					"protocolProfileBehavior": {
-						"disableBodyPruning": true
-					},
-					"request": {
-						"method": "POST",
-						"header": [
-							{
-								"key": "Content-Type",
-								"value": "application/json"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n  \"classCode\": \"ABC123\"\n}"
-						},
-						"url": {
-							"raw": "{{baseUrl}}/api/course/join",
-							"host": [
-								"{{baseUrl}}"
-							],
-							"path": [
-								"api",
-								"course",
-								"join"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "GET /user",
-					"id": "37487995-5912ef59-ee86-49b9-aed8-2a94831e7fb6",
-					"protocolProfileBehavior": {
-						"disableBodyPruning": true
-					},
-					"request": {
-						"method": "GET",
-						"header": [],
-						"url": {
-							"raw": "{{baseUrl}}/api/course/user",
-							"host": [
-								"{{baseUrl}}"
-							],
-							"path": [
-								"api",
-								"course",
-								"user"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "POST /:courseId/leave",
-					"id": "37487995-6730c5c4-b72e-443f-984a-1a1f1aa20d44",
-					"protocolProfileBehavior": {
-						"disableBodyPruning": true
-					},
-					"request": {
-						"method": "POST",
-						"header": [],
-						"url": {
-							"raw": "{{baseUrl}}/api/course/:courseId/leave",
-							"host": [
-								"{{baseUrl}}"
-							],
-							"path": [
-								"api",
-								"course",
-								":courseId",
-								"leave"
-							],
-							"variable": [
-								{
-									"id": "6e24352c-7c56-4677-941f-8b0f40bb072c",
-									"key": "courseId"
-								}
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "GET /:courseId/user",
-					"id": "37487995-01f8b971-e0ab-45dd-aeed-ac881a631639",
-					"protocolProfileBehavior": {
-						"disableBodyPruning": true
-					},
-					"request": {
-						"method": "GET",
-						"header": [],
-						"url": {
-							"raw": "{{baseUrl}}/api/course/:courseId/user",
-							"host": [
-								"{{baseUrl}}"
-							],
-							"path": [
-								"api",
-								"course",
-								":courseId",
-								"user"
-							],
-							"variable": [
-								{
-									"id": "a969d64c-8132-4c2c-b199-b5496e1da501",
-									"key": "courseId"
-								}
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "PUT /:courseId",
-					"id": "37487995-a9771c33-ac99-4204-9854-460167bd837a",
-					"protocolProfileBehavior": {
-						"disableBodyPruning": true
-					},
-					"request": {
-						"method": "PUT",
-						"header": [
-							{
-								"key": "Content-Type",
-								"value": "application/json"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n  \"name\": \"Updated name\"\n}"
-						},
-						"url": {
-							"raw": "{{baseUrl}}/api/course/:courseId",
-							"host": [
-								"{{baseUrl}}"
-							],
-							"path": [
-								"api",
-								"course",
-								":courseId"
-							],
-							"variable": [
-								{
-									"id": "58fe17e7-48d4-4663-9d6f-0b9bb6c2e222",
-									"key": "courseId"
-								}
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "DELETE /:courseId",
-					"id": "37487995-d681e415-2ba6-4a2d-af89-f8f85c2a2391",
-					"protocolProfileBehavior": {
-						"disableBodyPruning": true
-					},
-					"request": {
-						"method": "DELETE",
-						"header": [],
-						"url": {
-							"raw": "{{baseUrl}}/api/course/:courseId",
-							"host": [
-								"{{baseUrl}}"
-							],
-							"path": [
-								"api",
-								"course",
-								":courseId"
-							],
-							"variable": [
-								{
-									"id": "f2bee616-6c44-4fc5-87f6-cfd18d3d4b23",
-									"key": "courseId"
-								}
-							]
-						}
-					},
-					"response": []
-				}
-			],
-			"id": "37487995-d9711e15-75fe-412a-bda5-34aeab423d0a"
 		},
 		{
 			"name": "Tool",
