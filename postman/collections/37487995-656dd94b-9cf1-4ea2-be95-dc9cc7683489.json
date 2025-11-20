@@ -1238,7 +1238,13 @@
 						}
 					},
 					"response": []
-				},
+				}
+			],
+			"id": "37487995-fe33f67a-a3bb-420e-a11f-847975088a0f"
+		},
+		{
+			"name": "Comment",
+			"item": [
 				{
 					"name": "POST /:courseId/post/:postId/comment",
 					"id": "37487995-18784cc5-603b-49c7-ad31-7be5bc98b5d4",
@@ -1453,7 +1459,7 @@
 					"response": []
 				}
 			],
-			"id": "37487995-fe33f67a-a3bb-420e-a11f-847975088a0f"
+			"id": "37487995-c753f9c7-83e6-45cf-8ad0-9b5c2c4874f4"
 		},
 		{
 			"name": "Tool",
@@ -1918,11 +1924,6 @@
 				}
 			],
 			"id": "37487995-0bfa8891-2deb-4b90-bcf2-93907e72ea74"
-		},
-		{
-			"name": "New Folder",
-			"item": [],
-			"id": "37487995-c753f9c7-83e6-45cf-8ad0-9b5c2c4874f4"
 		}
 	],
 	"event": [
