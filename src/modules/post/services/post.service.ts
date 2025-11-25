@@ -118,8 +118,7 @@ export class PostService {
       take: limit,
     });
 
-    return {
-      data: posts,
+    return Object.assign(posts, {
       pagination: {
         page,
         limit,
@@ -128,7 +127,7 @@ export class PostService {
         hasNextPage: page < Math.ceil(total / limit),
         hasPreviousPage: page > 1,
       },
-    };
+    });
   }
 
   async readOne(userId: string, courseId: string, postId: string) {

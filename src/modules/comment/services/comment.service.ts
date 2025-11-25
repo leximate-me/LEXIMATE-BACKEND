@@ -118,8 +118,7 @@ export class CommentService {
       take: limit,
     });
 
-    return {
-      data: comments,
+    return Object.assign(comments, {
       pagination: {
         page,
         limit,
@@ -128,7 +127,7 @@ export class CommentService {
         hasNextPage: page < Math.ceil(total / limit),
         hasPreviousPage: page > 1,
       },
-    };
+    });
   }
 
   async readOne(commentId: string) {

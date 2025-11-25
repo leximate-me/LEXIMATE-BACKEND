@@ -144,8 +144,7 @@ export class CourseService {
       .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
       .slice(skip, skip + limit);
 
-    return {
-      data: paginatedCourses,
+    return Object.assign(paginatedCourses, {
       pagination: {
         page,
         limit,
@@ -154,7 +153,7 @@ export class CourseService {
         hasNextPage: page < Math.ceil(total / limit),
         hasPreviousPage: page > 1,
       },
-    };
+    });
   }
 
   async getUsersByCourse(courseId: string) {

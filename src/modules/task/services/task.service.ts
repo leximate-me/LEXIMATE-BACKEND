@@ -285,8 +285,7 @@ export class TaskService {
       take: limit,
     });
 
-    return {
-      data: tasks,
+    return Object.assign(tasks, {
       pagination: {
         page,
         limit,
@@ -295,7 +294,7 @@ export class TaskService {
         hasNextPage: page < Math.ceil(total / limit),
         hasPreviousPage: page > 1,
       },
-    };
+    });
   }
 
   async getOne(taskId: string, userId: string) {
