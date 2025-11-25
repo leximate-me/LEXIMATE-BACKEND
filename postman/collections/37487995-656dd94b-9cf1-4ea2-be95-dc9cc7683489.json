@@ -140,7 +140,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n  \"email\": \"teacher@example.com\",\n  \"password\": \"Teacher_123\"\n}"
+							"raw": "{\n  \"email\": \"student@example.com\",\n  \"password\": \"Student_123\"\n}"
 						},
 						"url": {
 							"raw": "{{baseUrl}}/api/auth/login",
