@@ -618,8 +618,33 @@
 							}
 						],
 						"body": {
-							"mode": "raw",
-							"raw": "{\n  \"title\": \"Homework 1\",\n  \"description\": \"Solve problems 1-10\",\n  \"dueDate\": \"2025-12-31T23:59:59.000Z\"\n}"
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "file",
+									"type": "file",
+									"uuid": "3b11959b-0567-45b3-bb86-e4840e702112",
+									"value": null
+								},
+								{
+									"key": "title",
+									"value": "Homework 2",
+									"type": "text",
+									"uuid": "ad0e090d-3643-4d63-81a3-27bf5b319e1a"
+								},
+								{
+									"key": "description",
+									"value": "Solve problems 1-10",
+									"type": "text",
+									"uuid": "62b93201-0c5b-45f1-b335-fad4e164e5a1"
+								},
+								{
+									"key": "due_date",
+									"value": "2025-12-3",
+									"type": "text",
+									"uuid": "6d0c8c28-51a7-4696-aa0d-94b8bfe0fbd0"
+								}
+							]
 						},
 						"url": {
 							"raw": "{{baseUrl}}/api/course/:courseId/task",
@@ -634,8 +659,8 @@
 							],
 							"variable": [
 								{
-									"id": "8dcbf001-7ade-43bb-b444-2f3551cfa633",
-									"key": "courseId"
+									"key": "courseId",
+									"value": ""
 								}
 							]
 						}
@@ -664,8 +689,8 @@
 							],
 							"variable": [
 								{
-									"id": "711a56b4-aa77-4edf-bab1-c125e1555cd4",
-									"key": "courseId"
+									"key": "courseId",
+									"value": ""
 								}
 							]
 						}
@@ -1931,7 +1956,7 @@
 		{
 			"listen": "prerequest",
 			"script": {
-				"id": "ccca1376-b75a-445e-9e7f-ce326314877c",
+				"id": "1397c632-ff24-4703-b445-8e257ba065e3",
 				"type": "text/javascript",
 				"packages": {},
 				"requests": {},
@@ -1943,7 +1968,7 @@
 		{
 			"listen": "test",
 			"script": {
-				"id": "b3caabd0-be69-4683-9f8b-aa696390ebd6",
+				"id": "bc6ad5a5-0c6d-46fe-8610-324dab736f26",
 				"type": "text/javascript",
 				"packages": {},
 				"requests": {},
@@ -1964,7 +1989,7 @@
 		},
 		{
 			"key": "port",
-			"value": "80"
+			"value": "8080"
 		},
 		{
 			"key": "baseUrl",
