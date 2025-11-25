@@ -179,42 +179,38 @@ export class CommentService {
   async delete(commentId: string, userId: string) {
     const existingComment = await this.commentRepository.findOne({
       where: { id: commentId },
-      relations: ['user'],
+      relations: ['user', 'post', 'post.course', 'post.course.users'],
     });
     if (!existingComment) throw HttpError.notFound('Comment not found');
 
     const foundUser = await this.userRepository.findOne({
       where: { id: userId },
-      relations: ['role'],
+      relations: ['role', 'courses'],
     });
     if (!foundUser) throw HttpError.notFound('User not found');
 
     const isAuthor = existingComment.user.id === foundUser.id;
-
     const isAdmin = foundUser.role.name === 'admin';
+    
+    // Check if user is a teacher in the course where the comment was made
+    const isTeacherInCourse = 
+      foundUser.role.name === 'teacher' &&
+      foundUser.courses.some((course) => course.id === existingComment.post.course.id);
 
-    if (!isAuthor && !isAdmin) {
+    if (!isAuthor && !isAdmin && !isTeacherInCourse) {
       throw HttpError.forbidden(
         'You do not have permission to delete this comment.'
       );
     }
 
-    // Get course users before deletion
-    const commentWithCourse = await this.commentRepository.findOne({
-      where: { id: commentId },
-      relations: ['post', 'post.course', 'post.course.users'],
-    });
-
     await this.commentRepository.softDelete(existingComment);
 
     // Emit real-time event for WebSocket broadcast
-    if (commentWithCourse) {
-      commentEventEmitter.emit('comment_deleted', {
-        commentId,
-        postId: commentWithCourse.post.id,
-        userIds: commentWithCourse.post.course.users.map((u) => u.id),
-      });
-    }
+    commentEventEmitter.emit('comment_deleted', {
+      commentId,
+      postId: existingComment.post.id,
+      userIds: existingComment.post.course.users.map((u) => u.id),
+    });
 
     return { message: 'Comment successfully deleted' };
   }
