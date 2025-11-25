@@ -618,8 +618,33 @@
 							}
 						],
 						"body": {
-							"mode": "raw",
-							"raw": "{\n  \"title\": \"Homework 1\",\n  \"description\": \"Solve problems 1-10\",\n  \"dueDate\": \"2025-12-31T23:59:59.000Z\"\n}"
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "file",
+									"type": "file",
+									"uuid": "3b11959b-0567-45b3-bb86-e4840e702112",
+									"value": null
+								},
+								{
+									"key": "title",
+									"value": "Homework 2",
+									"type": "text",
+									"uuid": "ad0e090d-3643-4d63-81a3-27bf5b319e1a"
+								},
+								{
+									"key": "description",
+									"value": "Solve problems 1-10",
+									"type": "text",
+									"uuid": "62b93201-0c5b-45f1-b335-fad4e164e5a1"
+								},
+								{
+									"key": "due_date",
+									"value": "2025-12-3",
+									"type": "text",
+									"uuid": "6d0c8c28-51a7-4696-aa0d-94b8bfe0fbd0"
+								}
+							]
 						},
 						"url": {
 							"raw": "{{baseUrl}}/api/course/:courseId/task",
@@ -634,8 +659,8 @@
 							],
 							"variable": [
 								{
-									"id": "8dcbf001-7ade-43bb-b444-2f3551cfa633",
-									"key": "courseId"
+									"key": "courseId",
+									"value": ""
 								}
 							]
 						}
