@@ -185,11 +185,11 @@ export class App {
     try {
       const chatService = new ChatService();
       await setupWebSocket(this.instance, chatService);
-      this.instance.log.info('🧏‍♂️ WebSocket configurado para chat');
+      this.instance.log.info('🧏‍♂️ Configured WebSocket');
     } catch (error) {
       this.instance.log.error(
         { error },
-        '❌ Error inicializando RedisNotificationService'
+        '❌ Error initializing WebSocket'
       );
       throw error;
     }
