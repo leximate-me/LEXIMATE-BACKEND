@@ -257,7 +257,8 @@ export class TaskService {
     }
   }
 
-  async getAllByCourse(courseId: string, userId: string) {
+
+  async getAllByCourse(courseId: string, userId: string, page: number = 1, limit: number = 10) {
     const foundUser = await this.userRepository.findOne({
       where: { id: userId },
       relations: ['courses'],
@@ -274,12 +275,27 @@ export class TaskService {
     if (!isInCourse)
       throw HttpError.forbidden('The user does not belong to the class');
 
-    const tasks = await this.taskRepository.find({
+    const skip = (page - 1) * limit;
+
+    const [tasks, total] = await this.taskRepository.findAndCount({
       where: { course: { id: courseId } },
       relations: ['taskFiles'],
+      order: { due_date: 'ASC' },
+      skip,
+      take: limit,
     });
 
-    return tasks;
+    return {
+      data: tasks,
+      pagination: {
+        page,
+        limit,
+        total,
+        totalPages: Math.ceil(total / limit),
+        hasNextPage: page < Math.ceil(total / limit),
+        hasPreviousPage: page > 1,
+      },
+    };
   }
 
   async getOne(taskId: string, userId: string) {

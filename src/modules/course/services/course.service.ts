@@ -128,14 +128,33 @@ export class CourseService {
     return courseData;
   }
 
-  async getCoursesByUser(userId: string) {
+  async getCoursesByUser(userId: string, page: number = 1, limit: number = 10) {
     const foundUser = await this.userRepository.findOne({
       where: { id: userId },
       relations: ['courses'],
     });
     if (!foundUser) throw HttpError.notFound('User not found');
 
-    return foundUser.courses || [];
+    const courses = foundUser.courses || [];
+    
+    // Manual pagination since we're working with a loaded relation
+    const total = courses.length;
+    const skip = (page - 1) * limit;
+    const paginatedCourses = courses
+      .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
+      .slice(skip, skip + limit);
+
+    return {
+      data: paginatedCourses,
+      pagination: {
+        page,
+        limit,
+        total,
+        totalPages: Math.ceil(total / limit),
+        hasNextPage: page < Math.ceil(total / limit),
+        hasPreviousPage: page > 1,
+      },
+    };
   }
 
   async getUsersByCourse(courseId: string) {

@@ -90,7 +90,8 @@ export class PostService {
     return post;
   }
 
-  async readAll(courseId: string, userId: string) {
+
+  async readAll(courseId: string, userId: string, page: number = 1, limit: number = 10) {
     const existingCourse = await this.courseRepository.findOne({
       where: { id: courseId },
       relations: ['users'],
@@ -107,12 +108,27 @@ export class PostService {
     if (!isInCourse)
       throw HttpError.forbidden('The user does not belong to the class');
 
-    const posts = await this.postRepository.find({
+    const skip = (page - 1) * limit;
+
+    const [posts, total] = await this.postRepository.findAndCount({
       where: { course: { id: courseId } },
       relations: ['user', 'user.people', 'course'],
+      order: { created_at: 'DESC' },
+      skip,
+      take: limit,
     });
 
-    return posts;
+    return {
+      data: posts,
+      pagination: {
+        page,
+        limit,
+        total,
+        totalPages: Math.ceil(total / limit),
+        hasNextPage: page < Math.ceil(total / limit),
+        hasPreviousPage: page > 1,
+      },
+    };
   }
 
   async readOne(userId: string, courseId: string, postId: string) {

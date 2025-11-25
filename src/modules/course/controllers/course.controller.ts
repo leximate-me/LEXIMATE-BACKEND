@@ -49,10 +49,18 @@ export class CourseController {
     }
   }
 
-  async getClassesByUser(request: FastifyRequest, reply: FastifyReply) {
+  async getClassesByUser(
+    request: FastifyRequest<{
+      Querystring: { page?: string; limit?: string };
+    }>,
+    reply: FastifyReply
+  ) {
     try {
       const userId = (request.user as any)?.id;
-      const courses = await this.courseService.getCoursesByUser(userId);
+      const page = parseInt(request.query.page || '1', 10);
+      const limit = parseInt(request.query.limit || '10', 10);
+      
+      const courses = await this.courseService.getCoursesByUser(userId, page, limit);
       reply.code(200).send(courses);
     } catch (error) {
       reply.code(500).send({ message: (error as Error).message });

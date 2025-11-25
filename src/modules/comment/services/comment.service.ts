@@ -102,18 +102,33 @@ export class CommentService {
     return comment;
   }
 
-  async readAll(postId: string) {
+  async readAll(postId: string, page: number = 1, limit: number = 20) {
     const existingPost = await this.postRepository.findOne({
       where: { id: postId },
     });
     if (!existingPost) throw HttpError.notFound('Post not found');
 
-    const comments = await this.commentRepository.find({
+    const skip = (page - 1) * limit;
+
+    const [comments, total] = await this.commentRepository.findAndCount({
       where: { post: { id: existingPost.id } },
       relations: ['user', 'user.people', 'user.userFiles', 'post'],
+      order: { created_at: 'ASC' },
+      skip,
+      take: limit,
     });
 
-    return comments;
+    return {
+      data: comments,
+      pagination: {
+        page,
+        limit,
+        total,
+        totalPages: Math.ceil(total / limit),
+        hasNextPage: page < Math.ceil(total / limit),
+        hasPreviousPage: page > 1,
+      },
+    };
   }
 
   async readOne(commentId: string) {

@@ -25,14 +25,19 @@ export class PostController {
   }
 
   async readAll(
-    request: FastifyRequest<{ Params: { courseId: string } }>,
+    request: FastifyRequest<{ 
+      Params: { courseId: string };
+      Querystring: { page?: string; limit?: string };
+    }>,
     reply: FastifyReply
   ) {
     try {
       const courseId = request.params.courseId;
       const userId = (request.user as any)?.id;
+      const page = parseInt(request.query.page || '1', 10);
+      const limit = parseInt(request.query.limit || '10', 10);
 
-      const posts = await this.postService.readAll(courseId, userId);
+      const posts = await this.postService.readAll(courseId, userId, page, limit);
       reply.code(200).send(posts);
     } catch (error) {
       reply.code(500).send({ message: (error as Error).message });

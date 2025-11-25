@@ -26,11 +26,17 @@ export class CommentController {
   }
 
   async readAll(
-    request: FastifyRequest<{ Params: { postId: string } }>,
+    request: FastifyRequest<{ 
+      Params: { postId: string };
+      Querystring: { page?: string; limit?: string };
+    }>,
     reply: FastifyReply
   ) {
     const postId = request.params.postId;
-    const comments = await this.commentService.readAll(postId);
+    const page = parseInt(request.query.page || '1', 10);
+    const limit = parseInt(request.query.limit || '20', 10);
+    
+    const comments = await this.commentService.readAll(postId, page, limit);
     reply.code(200).send(comments);
   }
 

@@ -30,13 +30,18 @@ export class TaskController {
   }
 
   async getAllByCourse(
-    request: FastifyRequest<{ Params: { courseId: string } }>,
+    request: FastifyRequest<{ 
+      Params: { courseId: string };
+      Querystring: { page?: string; limit?: string };
+    }>,
     reply: FastifyReply
   ) {
-    const courseId = request.params.courseId; // ✅ Obtén courseId
+    const courseId = request.params.courseId;
     const userId = request.user.id;
+    const page = parseInt(request.query.page || '1', 10);
+    const limit = parseInt(request.query.limit || '10', 10);
 
-    const tasks = await this.taskService.getAllByCourse(courseId, userId);
+    const tasks = await this.taskService.getAllByCourse(courseId, userId, page, limit);
 
     reply.code(200).send(tasks);
   }
