@@ -22,7 +22,7 @@
     "docker:dev:logs": "docker-compose -f docker-compose.dev.yaml logs -f",
     "docker:dev:restart": "docker-compose -f docker-compose.dev.yaml restart",
     "docker:dev:rebuild": "docker-compose -f docker-compose.dev.yaml down && docker-compose -f docker-compose.dev.yaml up --build --no-cache",
-    "docker:prod:up": "docker-compose up --build",
+    "docker:prod:up": "docker-compose up -d",
     "docker:prod:down": "docker-compose down",
     "docker:prod:logs": "docker-compose logs -f",
     "docker:prod:rebuild": "docker-compose down && docker-compose up --build --no-cache",
