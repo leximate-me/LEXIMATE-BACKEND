@@ -16,7 +16,7 @@ export class CommentEventHandler {
 
     // Notify post author about new comment (if commenter is not the author)
     if (postAuthorId && comment.authorId !== postAuthorId) {
-      notificationEmitter.emit('create_notification', {
+      const notificationData = {
         userId: postAuthorId,
         type: NotificationEnum.COMMENT_ADDED,
         title: 'Nuevo comentario en tu post',
@@ -28,7 +28,10 @@ export class CommentEventHandler {
           commentId: comment.id,
           commenterName: comment.authorName,
         },
-      });
+      };
+
+      // Create persistent notification
+      notificationEmitter.emit('create_notification', notificationData);
     }
   }
 }

@@ -17,7 +17,7 @@ export class PostEventHandler {
     // Create notifications for all users except author
     userIds.forEach((userId: string) => {
       if (userId !== authorId) {
-        notificationEmitter.emit('create_notification', {
+        const notificationData = {
           userId,
           type: NotificationEnum.POST_CREATED,
           title: 'Nuevo post en el curso',
@@ -29,7 +29,10 @@ export class PostEventHandler {
             courseName: post.courseName,
             authorName: post.authorName,
           },
-        });
+        };
+
+        // Create persistent notification
+        notificationEmitter.emit('create_notification', notificationData);
       }
     });
   }

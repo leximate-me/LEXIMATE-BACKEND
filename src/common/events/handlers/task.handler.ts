@@ -18,7 +18,7 @@ export class TaskEventHandler {
     // Notify all students in the course about new task
     userIds.forEach((userId: string) => {
       if (userId !== authorId) {
-        notificationEmitter.emit('create_notification', {
+        const notificationData = {
           userId,
           type: NotificationEnum.TASK_ASSIGNED,
           title: 'Nueva tarea asignada',
@@ -29,7 +29,10 @@ export class TaskEventHandler {
             courseId: task.courseId,
             courseName: task.courseName,
           },
-        });
+        };
+
+        // Create persistent notification
+        notificationEmitter.emit('create_notification', notificationData);
       }
     });
   }
@@ -39,7 +42,7 @@ export class TaskEventHandler {
 
     // Notify teacher about new submission
     if (teacherId) {
-      notificationEmitter.emit('create_notification', {
+      const notificationData = {
         userId: teacherId,
         type: NotificationEnum.TASK_SUBMITTED,
         title: 'Nueva entrega de tarea',
@@ -52,7 +55,10 @@ export class TaskEventHandler {
           studentId: submission.studentId,
           studentName: submission.studentName,
         },
-      });
+      };
+
+      // Create persistent notification
+      notificationEmitter.emit('create_notification', notificationData);
     }
   }
 }

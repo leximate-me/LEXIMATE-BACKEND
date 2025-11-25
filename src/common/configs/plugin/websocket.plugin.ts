@@ -136,9 +136,6 @@ export async function setupWebSocket(
   });
 
   // Post events for real-time updates
-  postEventEmitter.removeAllListeners('post_created');
-  postEventEmitter.removeAllListeners('post_updated');
-  postEventEmitter.removeAllListeners('post_deleted');
 
   postEventEmitter.on('post_created', (payload: any) => {
     try {
@@ -210,9 +207,6 @@ export async function setupWebSocket(
   });
 
   // Comment events for real-time updates
-  commentEventEmitter.removeAllListeners('comment_created');
-  commentEventEmitter.removeAllListeners('comment_updated');
-  commentEventEmitter.removeAllListeners('comment_deleted');
 
   commentEventEmitter.on('comment_created', (payload: any) => {
     try {
@@ -281,9 +275,6 @@ export async function setupWebSocket(
   });
 
   // Course events for real-time updates
-  courseEventEmitter.removeAllListeners('course_created');
-  courseEventEmitter.removeAllListeners('course_updated');
-  courseEventEmitter.removeAllListeners('course_deleted');
 
   courseEventEmitter.on('course_created', (payload: any) => {
     try {
@@ -352,11 +343,6 @@ export async function setupWebSocket(
   });
 
   // Task events for real-time updates
-  taskEventEmitter.removeAllListeners('task_created');
-  taskEventEmitter.removeAllListeners('task_updated');
-  taskEventEmitter.removeAllListeners('task_deleted');
-  taskEventEmitter.removeAllListeners('task_assigned');
-  taskEventEmitter.removeAllListeners('task_submitted');
 
   taskEventEmitter.on('task_created', (payload: any) => {
     try {

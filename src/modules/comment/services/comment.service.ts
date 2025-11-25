@@ -65,7 +65,7 @@ export class CommentService {
           courseId: postWithDetails.course.id,
           createdAt: comment.created_at,
         },
-        userIds: postWithDetails.course.users.map((u) => u.id),
+        userIds: postWithDetails.course?.users?.map((u) => u.id) || [],
         postAuthorId: postWithDetails.user.id,
       });
     }
