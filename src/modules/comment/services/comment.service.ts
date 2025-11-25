@@ -8,8 +8,6 @@ import { Comment } from '@comment/entities/comment.entity';
 
 import { UpdateCommentDto, CreateCommentDto } from '@comment/dtos';
 
-import { notificationEmitter } from '@common/events/notification.events';
-import { NotificationEnum } from '@common/enums/notification.enum';
 import { commentEventEmitter } from '@common/events/comment.events';
 
 export class CommentService {
@@ -48,55 +46,28 @@ export class CommentService {
     });
     await this.commentRepository.save(comment);
 
-    // Notify post author about new comment
-    const postWithAuthor = await this.postRepository.findOne({
+    // Get post author and course info for event
+    const postWithDetails = await this.postRepository.findOne({
       where: { id: postId },
-      relations: ['user'],
+      relations: ['user', 'course', 'course.users'],
     });
 
-    if (postWithAuthor && postWithAuthor.user.id !== userId) {
-      notificationEmitter.emit('create_notification', {
-        userId: postWithAuthor.user.id,
-        type: NotificationEnum.COMMENT_ADDED,
-        title: 'Nuevo comentario en tu post',
-        message: `${foundUser.user_name} comentó en tu post: "${postWithAuthor.title}"`,
-        data: {
-          url: `/courses/${existingPost.course.id}/post/${postWithAuthor.id}`,
-          postId: postWithAuthor.id,
-          courseId: existingPost.course.id,
-          commentId: comment.id,
-          commenterName: foundUser.user_name,
+    // Emit domain event - handler will create notifications
+    if (postWithDetails) {
+      commentEventEmitter.emit('comment_created', {
+        comment: {
+          id: comment.id,
+          content: comment.content,
+          postId: existingPost.id,
+          postTitle: postWithDetails.title,
+          authorId: foundUser.id,
+          authorName: foundUser.user_name,
+          courseId: postWithDetails.course.id,
+          createdAt: comment.created_at,
         },
+        userIds: postWithDetails.course.users.map((u) => u.id),
+        postAuthorId: postWithDetails.user.id,
       });
-    }
-
-    // Emit real-time event for WebSocket broadcast
-    const courseWithUsers = await this.postRepository.findOne({
-      where: { id: postId },
-      relations: ['course'],
-    });
-
-    console.log(courseWithUsers);
-    if (courseWithUsers?.course) {
-      // Cargar usuarios del curso por separado
-      const courseWithUsersLoaded = await this.courseRepository.findOne({
-        where: { id: courseWithUsers.course.id },
-        relations: ['users'],
-      });
-
-      if (courseWithUsersLoaded?.users) {
-        commentEventEmitter.emit('comment_created', {
-          comment: {
-            id: comment.id,
-            content: comment.content,
-            postId: existingPost.id,
-            authorId: foundUser.id,
-            authorName: foundUser.user_name,
-            createdAt: comment.created_at,
-          },
-          userIds: courseWithUsersLoaded.users.map((u) => u.id),
-        });
-      }
     }
 
     return comment;

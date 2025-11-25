@@ -7,8 +7,6 @@ import { Post } from '@post/entities/post.entity';
 
 import { CreatePostDto, UpdatePostDto } from '@post/dtos';
 
-import { notificationEmitter } from '@common/events/notification.events';
-import { NotificationEnum } from '@common/enums/notification.enum';
 import { postEventEmitter } from '@common/events/post.events';
 
 export class PostService {
@@ -53,26 +51,7 @@ export class PostService {
     });
     await this.postRepository.save(post);
 
-    // Notify all users in the course about new post
-    existingCourse.users.forEach((user) => {
-      if (user.id !== userId) {
-        notificationEmitter.emit('create_notification', {
-          userId: user.id,
-          type: NotificationEnum.POST_CREATED,
-          title: 'Nuevo post en el curso',
-          message: `${foundUser.user_name} publicó: "${post.title}" en ${existingCourse.name}`,
-          data: {
-            url: `/courses/${existingCourse.id}/post/${post.id}`,
-            postId: post.id,
-            courseId: existingCourse.id,
-            courseName: existingCourse.name,
-            authorName: foundUser.user_name,
-          },
-        });
-      }
-    });
-
-    // Emit real-time event for WebSocket broadcast
+    // Emit domain event - handler will create notifications
     postEventEmitter.emit('post_created', {
       post: {
         id: post.id,
@@ -85,6 +64,7 @@ export class PostService {
         createdAt: post.created_at,
       },
       userIds: existingCourse.users.map((u) => u.id),
+      authorId: userId,
     });
 
     return post;

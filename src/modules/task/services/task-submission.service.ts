@@ -11,8 +11,6 @@ import {
   UpdateTaskSubmissionDto,
 } from '@task/dtos';
 
-import { notificationEmitter } from '@common/events/notification.events';
-import { NotificationEnum } from '@common/enums/notification.enum';
 import { taskEventEmitter } from '@common/events/task.events';
 
 export class TaskSubmissionService {
@@ -85,26 +83,10 @@ export class TaskSubmissionService {
 
       await queryRunner.commitTransaction();
 
-      // Notify teacher about new submission
+      // Find teacher for notification
       const teacher = course.users.find(u => u.role?.name === 'teacher');
-      if (teacher) {
-        notificationEmitter.emit('create_notification', {
-          userId: teacher.id,
-          type: NotificationEnum.TASK_SUBMITTED,
-          title: 'Nueva entrega de tarea',
-          message: `${user.user_name} ha enviado la tarea: ${task.title}`,
-          data: {
-            url: `/courses/${courseId}/task/${task.id}`,
-            taskId: task.id,
-            courseId: courseId,
-            submissionId: submission.id,
-            studentId: user.id,
-            studentName: user.user_name,
-          },
-        });
-      }
 
-      // Emit real-time event for WebSocket broadcast
+      // Emit domain event - handler will create notifications
       taskEventEmitter.emit('task_submitted', {
         submission: {
           id: submission.id,
@@ -114,8 +96,10 @@ export class TaskSubmissionService {
           studentName: user.user_name,
           comment: submission.comment,
           status: submission.status,
+          courseId: courseId,
         },
         userIds: course.users.map((u) => u.id),
+        teacherId: teacher?.id,
       });
 
       return submission;

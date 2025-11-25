@@ -12,8 +12,6 @@ import {
   UpdateTaskDto,
 } from '@task/dtos';
 
-import { notificationEmitter } from '@common/events/notification.events';
-import { NotificationEnum } from '@common/enums/notification.enum';
 import { taskEventEmitter } from '@common/events/task.events';
 
 export class TaskService {
@@ -72,25 +70,7 @@ export class TaskService {
 
       await queryRunner.commitTransaction();
 
-      // Notify all students in the course about new task
-      courseData.users.forEach((user) => {
-        if (user.id !== userId) {
-          notificationEmitter.emit('create_notification', {
-            userId: user.id,
-            type: NotificationEnum.TASK_ASSIGNED,
-            title: 'Nueva tarea asignada',
-            message: `Se ha asignado una nueva tarea: ${newTask.title}`,
-            data: {
-              url: `/courses/${courseData.id}/task/${newTask.id}`,
-              taskId: newTask.id,
-              courseId: courseData.id,
-              courseName: courseData.name,
-            },
-          });
-        }
-      });
-
-      // Emit real-time event for WebSocket broadcast
+      // Emit domain event - handler will create notifications
       taskEventEmitter.emit('task_created', {
         task: {
           id: newTask.id,
@@ -102,6 +82,7 @@ export class TaskService {
           createdAt: newTask.created_at,
         },
         userIds: courseData.users.map((u) => u.id),
+        authorId: userId,
       });
 
       return newTask;

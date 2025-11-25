@@ -24,6 +24,13 @@ import { chatRouter } from '@chat/routes/chat.route';
 import { notificationRouter } from '@notification/routes/notification.route';
 import { ChatService } from '@chat/services/chat.service';
 
+// Event Handlers
+import {
+  PostEventHandler,
+  TaskEventHandler,
+  CommentEventHandler,
+} from '@common/events/handlers';
+
 export class App {
   private instance: FastifyInstance;
 
@@ -170,6 +177,13 @@ export class App {
     this.setErrorHandler();
   }
 
+  private initializeEventHandlers() {
+    new PostEventHandler();
+    new TaskEventHandler();
+    new CommentEventHandler();
+    this.instance.log.info('✅ Event handlers initialized');
+  }
+
   public async setupRoutes() {
     const config = this.instance.config;
 
@@ -181,6 +195,9 @@ export class App {
       },
       '⚙️  Application configured'
     );
+
+    // Initialize event handlers
+    this.initializeEventHandlers();
 
     try {
       const chatService = new ChatService();
