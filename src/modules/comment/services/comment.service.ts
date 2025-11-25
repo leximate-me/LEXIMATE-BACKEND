@@ -49,25 +49,37 @@ export class CommentService {
     // Get post author and course info for event
     const postWithDetails = await this.postRepository.findOne({
       where: { id: postId },
-      relations: ['user', 'course', 'course.users'],
+      relations: ['user', 'course'],
     });
 
     // Emit domain event - handler will create notifications
     if (postWithDetails) {
-      commentEventEmitter.emit('comment_created', {
-        comment: {
-          id: comment.id,
-          content: comment.content,
-          postId: existingPost.id,
-          postTitle: postWithDetails.title,
-          authorId: foundUser.id,
-          authorName: foundUser.user_name,
-          courseId: postWithDetails.course.id,
-          createdAt: comment.created_at,
-        },
-        userIds: postWithDetails.course?.users?.map((u) => u.id) || [],
-        postAuthorId: postWithDetails.user.id,
+      // Fetch course with users explicitly to ensure we have the list
+      const courseWithUsers = await this.courseRepository.findOne({
+        where: { id: postWithDetails.course.id },
+        relations: ['users'],
       });
+
+      if (courseWithUsers) {
+        console.log('🔍 Debug CommentService:');
+        console.log('Course ID:', courseWithUsers.id);
+        console.log('Users found in course:', courseWithUsers.users?.length);
+        
+        commentEventEmitter.emit('comment_created', {
+          comment: {
+            id: comment.id,
+            content: comment.content,
+            postId: existingPost.id,
+            postTitle: postWithDetails.title,
+            authorId: foundUser.id,
+            authorName: foundUser.user_name,
+            courseId: postWithDetails.course.id,
+            createdAt: comment.created_at,
+          },
+          userIds: courseWithUsers.users.map((u) => u.id),
+          postAuthorId: postWithDetails.user.id,
+        });
+      }
     }
 
     return comment;

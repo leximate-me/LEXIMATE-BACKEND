@@ -30,6 +30,7 @@ import {
   TaskEventHandler,
   CommentEventHandler,
 } from '@common/events/handlers';
+import { NotificationService } from '@notification/services/notification.service';
 
 export class App {
   private instance: FastifyInstance;
@@ -181,6 +182,7 @@ export class App {
     new PostEventHandler();
     new TaskEventHandler();
     new CommentEventHandler();
+    new NotificationService(); // Initialize to setup listeners
     this.instance.log.info('✅ Event handlers initialized');
   }
 

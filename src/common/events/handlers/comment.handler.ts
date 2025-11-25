@@ -12,10 +12,15 @@ export class CommentEventHandler {
   }
 
   private handleCommentCreated(data: any) {
+    console.log('👂 CommentEventHandler received comment_created');
     const { comment, postAuthorId } = data;
+    
+    console.log(`📊 Comment Data: Author=${comment.authorId}, PostAuthor=${postAuthorId}`);
+    console.log(`🧐 Comparison: ${comment.authorId} !== ${postAuthorId} is ${comment.authorId !== postAuthorId}`);
 
     // Notify post author about new comment (if commenter is not the author)
     if (postAuthorId && comment.authorId !== postAuthorId) {
+      console.log('✅ Condition met: Creating notification for post author');
       const notificationData = {
         userId: postAuthorId,
         type: NotificationEnum.COMMENT_ADDED,

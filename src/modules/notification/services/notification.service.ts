@@ -7,11 +7,16 @@ import { CreateNotificationDto } from '@notification/dtos';
 import { NotificationEnum } from '@common/enums/notification.enum';
 
 export class NotificationService {
-  private notificationRepository: Repository<Notification>;
+  private static instance: NotificationService;
+  private readonly notificationRepository = AppDataSource.getRepository(Notification);
 
   constructor() {
-    this.notificationRepository = AppDataSource.getRepository(Notification);
+    if (NotificationService.instance) {
+      return NotificationService.instance;
+    }
+
     this.setupListeners();
+    NotificationService.instance = this;
   }
 
   private setupListeners() {
