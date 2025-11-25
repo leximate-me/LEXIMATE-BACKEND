@@ -689,8 +689,8 @@
 							],
 							"variable": [
 								{
-									"id": "711a56b4-aa77-4edf-bab1-c125e1555cd4",
-									"key": "courseId"
+									"key": "courseId",
+									"value": ""
 								}
 							]
 						}
