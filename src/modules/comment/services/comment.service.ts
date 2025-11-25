@@ -61,7 +61,9 @@ export class CommentService {
         title: 'Nuevo comentario en tu post',
         message: `${foundUser.user_name} comentó en tu post: "${postWithAuthor.title}"`,
         data: {
+          url: `/courses/${existingPost.course.id}/post/${postWithAuthor.id}`,
           postId: postWithAuthor.id,
+          courseId: existingPost.course.id,
           commentId: comment.id,
           commenterName: foundUser.user_name,
         },

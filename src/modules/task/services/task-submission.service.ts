@@ -94,7 +94,9 @@ export class TaskSubmissionService {
           title: 'Nueva entrega de tarea',
           message: `${user.user_name} ha enviado la tarea: ${task.title}`,
           data: {
+            url: `/courses/${courseId}/task/${task.id}`,
             taskId: task.id,
+            courseId: courseId,
             submissionId: submission.id,
             studentId: user.id,
             studentName: user.user_name,

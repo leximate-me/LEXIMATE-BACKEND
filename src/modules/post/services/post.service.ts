@@ -62,6 +62,7 @@ export class PostService {
           title: 'Nuevo post en el curso',
           message: `${foundUser.user_name} publicó: "${post.title}" en ${existingCourse.name}`,
           data: {
+            url: `/courses/${existingCourse.id}/post/${post.id}`,
             postId: post.id,
             courseId: existingCourse.id,
             courseName: existingCourse.name,

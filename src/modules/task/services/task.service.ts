@@ -81,6 +81,7 @@ export class TaskService {
             title: 'Nueva tarea asignada',
             message: `Se ha asignado una nueva tarea: ${newTask.title}`,
             data: {
+              url: `/courses/${courseData.id}/task/${newTask.id}`,
               taskId: newTask.id,
               courseId: courseData.id,
               courseName: courseData.name,
