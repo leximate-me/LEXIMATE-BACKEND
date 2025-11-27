@@ -2,6 +2,7 @@ import { Repository, In } from 'typeorm';
 import { AppDataSource } from '@database/db';
 import { Chat, Message } from '@chat/entities';
 import { User } from '@user/entities/user.entity';
+import { RoleEnum } from '@common/enums/role.enum';
 import { HttpError } from '@common/libs/http-error';
 import { chatEventEmitter } from '@common/events/chat.events';
 import { CreateChatDto, SendMessageDto } from '@chat/dtos';
@@ -54,6 +55,11 @@ export class ChatService {
 
     if (users.length !== uniqueUserIds.length) {
       throw HttpError.notFound('One or more users not found');
+    }
+
+    const studentCount = users.filter(user => user.role.name === RoleEnum.STUDENT).length;
+    if (studentCount > 1) {
+      throw HttpError.forbidden('Students cannot chat with each other');
     }
 
     const chat = this.chatRepository.create({
