@@ -22,9 +22,9 @@ export class AppDataSourceManager {
       });
       try {
         await AppDataSourceManager.dataSource.initialize();
-        log.info('🔧 Database connection established successfully.');
+        AppDataSourceManager.logger.info('🔧 Database connection established successfully.');
       } catch (error) {
-        log.error(`Error connecting to the database: ${String(error)}`);
+        AppDataSourceManager.logger.error(`Error connecting to the database: ${String(error)}`);
         throw error;
       }
     }
@@ -33,7 +33,7 @@ export class AppDataSourceManager {
 
   static getDataSource(): DataSource {
     if (!AppDataSourceManager.dataSource) {
-      throw new Error('Database not initialized. Call initialize() first.');
+      AppDataSourceManager.logger.error('Database not initialized. Call initialize() first.');
     }
     return AppDataSourceManager.dataSource;
   }
