@@ -413,6 +413,18 @@
 						}
 					},
 					"response": []
+				},
+				{
+					"name": "GET /unverified-users",
+					"id": "37487995-b281a5f8-93fa-408a-b113-00c553b5fed8",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": []
+					},
+					"response": []
 				}
 			],
 			"id": "37487995-33f0240e-fd69-4085-9898-526014da94f2"
