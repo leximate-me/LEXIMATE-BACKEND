@@ -398,7 +398,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n  \"userIds\": [\"730b9958-5fd5-4bf9-96f7-634e13bf5aa8\"],\n  \"roleName\": \"teacher\"\n}"
+							"raw": "{\n  \"userIds\": [\"730b9958-5fd5-4bf9-96f7-634e13bf5aa8\", \"3b45b318-34b3-462b-9ed3-914079e0e17b\"],\n  \"roleName\": \"teacher\"\n}"
 						},
 						"url": {
 							"raw": "{{baseUrl}}/api/auth/verify-user",
@@ -422,7 +422,27 @@
 					},
 					"request": {
 						"method": "GET",
-						"header": []
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"email\": \"student@example.com\",\n  \"password\": \"Student_123\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/auth/unverified-users",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"auth",
+								"unverified-users"
+							]
+						}
 					},
 					"response": []
 				}
