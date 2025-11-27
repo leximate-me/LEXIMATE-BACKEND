@@ -1,13 +1,11 @@
-import { PDFParse, TextResult } from 'pdf-parse';
 import fs from 'fs';
 import FormData from 'form-data';
 import axios from 'axios';
 import path from 'path';
 import { HttpError } from '@common/libs/http-error';
-import { error } from 'console';
 
 export class ToolService {
-  async extractTextFromLocalPath(localUrl: string): Promise<TextResult> {
+  async extractTextFromLocalPath<T>(localUrl: string): Promise<T> {
     if (!localUrl) {
       throw HttpError.badRequest('La URL local del PDF es requerida');
     }
@@ -15,12 +13,9 @@ export class ToolService {
     let filePath: string;
     let isTemp = false;
 
-    // Check if it's a remote URL
     if (localUrl.startsWith('http://') || localUrl.startsWith('https://')) {
       let downloadUrl = localUrl;
 
-      // Convert Google Drive Viewer URL to Download URL
-      // Matches /file/d/ID/view or just /d/ID
       const gDriveMatch = localUrl.match(/\/d\/([a-zA-Z0-9_-]+)/);
       if (gDriveMatch && localUrl.includes('drive.google.com')) {
         downloadUrl = `https://drive.google.com/uc?export=download&id=${gDriveMatch[1]}`;
@@ -33,7 +28,7 @@ export class ToolService {
       const fileName = `temp_${Date.now()}.pdf`;
       filePath = path.join(tempDir, fileName);
 
-      console.log(`Downloading remote file from ${downloadUrl} to ${filePath}`);
+
 
       try {
         const response = await axios.get(downloadUrl, { responseType: 'stream' });
@@ -50,7 +45,6 @@ export class ToolService {
         throw HttpError.internalServerError('Error descargando el archivo remoto');
       }
     } else {
-      // Handle local path
       const decodedUrl = decodeURIComponent(localUrl);
       filePath = path.resolve(
         process.cwd(),
@@ -102,9 +96,7 @@ export class ToolService {
       );
 
       const jobId = uploadResponse.data.id;
-      console.log('Job ID:', jobId);
 
-      // Polling para verificar el estado del trabajo
       let status = 'PENDING';
       let pagesResult: any[] = [];
       const maxAttempts = 60;
@@ -122,7 +114,7 @@ export class ToolService {
           }
         );
         status = statusResponse.data.status;
-        console.log('Job Status:', status);
+        status = statusResponse.data.status;
 
         if (status === 'SUCCESS') {
           const resultUrl = `https://api.cloud.llamaindex.ai/api/v1/parsing/job/${jobId}/result/json`;
@@ -141,7 +133,9 @@ export class ToolService {
       if (!pagesResult || pagesResult.length === 0) {
         throw HttpError.internalServerError('No pages found in the PDF or job timed out/failed');
       }
-      console.log(pagesResult);
+      if (!pagesResult || pagesResult.length === 0) {
+        throw HttpError.internalServerError('No pages found in the PDF or job timed out/failed');
+      }
 
       const text = pagesResult.map(p => p.md).join('\n\n');
       const pages = pagesResult.map((p) => ({
@@ -149,7 +143,6 @@ export class ToolService {
         text: p.md
       }));
       const numPages = pagesResult.map(p => p.page).length;
-      console.log('Total pages:', numPages);
 
       return {
         text,
@@ -166,7 +159,6 @@ export class ToolService {
       }
       throw HttpError.internalServerError('Error procesando el archivo PDF');
     } finally {
-      // Cleanup temp file
       if (isTemp && fs.existsSync(filePath)) {
         fs.unlink(filePath, (err) => {
           if (err) console.error('Error deleting temp file:', err);

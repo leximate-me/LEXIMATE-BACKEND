@@ -61,10 +61,6 @@ export class CommentService {
       });
 
       if (courseWithUsers) {
-        console.log('🔍 Debug CommentService:');
-        console.log('Course ID:', courseWithUsers.id);
-        console.log('Users found in course:', courseWithUsers.users?.length);
-
         commentEventEmitter.emit('comment_created', {
           comment: {
             id: comment.id,

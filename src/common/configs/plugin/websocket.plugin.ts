@@ -33,7 +33,6 @@ export async function setupWebSocket(
       }
 
       const userId = String(rawUserId);
-      console.log(`🔌 WS Connection attempt: ${userId}`);
 
       // Heartbeat logic
       (socket as any).isAlive = true;
@@ -296,15 +295,10 @@ export async function setupWebSocket(
 
   commentEventEmitter.on('comment_created', (payload: any) => {
     try {
-      console.log('🔌 WebSocket Plugin: Received comment_created', {
-        userIdsCount: payload.userIds?.length,
-        firstUserId: payload.userIds?.[0]
-      });
 
       payload.userIds.forEach((userId: string) => {
         const strUserId = String(userId);
         const connections = userConnections.get(strUserId);
-        console.log(`🔌 Checking connection for user ${strUserId}: ${connections ? 'FOUND' : 'NOT FOUND'}`);
 
         if (connections) {
           connections.forEach((client) => {

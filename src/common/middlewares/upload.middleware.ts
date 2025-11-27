@@ -20,7 +20,10 @@ export const uploadToStorage = async (
         const buffer = await part.toBuffer();
 
         if (
-          part.mimetype === 'application/pdf' &&
+          (part.mimetype === 'application/pdf' ||
+            part.mimetype === 'application/msword' ||
+            part.mimetype ===
+              'application/vnd.openxmlformats-officedocument.wordprocessingml.document') &&
           request.url.includes('/task')
         ) {
           const toolService = new ToolService();
@@ -35,8 +38,13 @@ export const uploadToStorage = async (
             request.cookies?.token as string
           );
         }
-        // Sube el PDF de forma local usando el adapter
-        if (part.mimetype === 'application/pdf') {
+        // Sube el PDF o Word de forma local usando el adapter
+        if (
+          part.mimetype === 'application/pdf' ||
+          part.mimetype === 'application/msword' ||
+          part.mimetype ===
+            'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
+        ) {
           const filename = `${Date.now()}_${part.filename}`;
           const url = await uploadPdfToLocal(buffer, filename);
           fileProps = {
@@ -67,7 +75,10 @@ export const uploadToStorage = async (
       let fileProps = null;
 
       if (
-        file.mimetype === 'application/pdf' &&
+        (file.mimetype === 'application/pdf' ||
+          file.mimetype === 'application/msword' ||
+          file.mimetype ===
+            'application/vnd.openxmlformats-officedocument.wordprocessingml.document') &&
         request.url.includes('/task')
       ) {
         const toolService = new ToolService();
@@ -82,8 +93,13 @@ export const uploadToStorage = async (
           request.cookies?.token as string
         );
       }
-      // Sube el PDF de forma local usando el adapter
-      if (file.mimetype === 'application/pdf') {
+      // Sube el PDF o Word de forma local usando el adapter
+      if (
+        file.mimetype === 'application/pdf' ||
+        file.mimetype === 'application/msword' ||
+        file.mimetype ===
+          'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
+      ) {
         const filename = `${Date.now()}_${file.filename}`;
         const url = await uploadPdfToLocal(buffer, filename);
         fileProps = {

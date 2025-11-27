@@ -46,12 +46,8 @@ export class AuthController {
   async verifyToken(request: FastifyRequest, reply: FastifyReply) {
     const token =
       request.cookies?.token || request.headers.authorization?.split(' ')[1];
-    console.log('este es el token del controlador verify token', token);
-    reply.log.info(token);
 
     const decoded = await this.authService.verifyToken(token);
-
-    reply.log.info(decoded, 'Token verificado');
 
     reply.code(200).send(decoded);
   }
