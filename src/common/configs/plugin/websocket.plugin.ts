@@ -35,16 +35,47 @@ export async function setupWebSocket(
       const userId = String(rawUserId);
       console.log(`🔌 WS Connection attempt: ${userId}`);
 
+      // Heartbeat logic
+      (socket as any).isAlive = true;
+      socket.on('pong', () => {
+        (socket as any).isAlive = true;
+      });
+
       if (!userConnections.has(userId)) {
         userConnections.set(userId, new Set());
+
+        // Broadcast user_online to all other users
+        const onlineUserIds = Array.from(userConnections.keys());
+        onlineUserIds.forEach(id => {
+          if (id !== userId) {
+            const connections = userConnections.get(id);
+            connections?.forEach(client => {
+              if (client.readyState === 1) {
+                client.send(JSON.stringify({
+                  type: 'user_online',
+                  userId
+                }));
+              }
+            });
+          }
+        });
       }
       userConnections.get(userId)?.add(socket);
 
+      // Send current online users to the new connection
+      const onlineUsers = Array.from(userConnections.keys());
       socket.send(
         JSON.stringify({
           type: 'connected',
           userId,
           timestamp: new Date().toISOString(),
+        })
+      );
+
+      socket.send(
+        JSON.stringify({
+          type: 'online_users',
+          userIds: onlineUsers
         })
       );
 
@@ -71,6 +102,20 @@ export async function setupWebSocket(
           userConnections.get(userId)?.delete(socket);
           if (userConnections.get(userId)?.size === 0) {
             userConnections.delete(userId);
+
+            // Broadcast user_offline
+            const onlineUserIds = Array.from(userConnections.keys());
+            onlineUserIds.forEach(id => {
+              const connections = userConnections.get(id);
+              connections?.forEach(client => {
+                if (client.readyState === 1) {
+                  client.send(JSON.stringify({
+                    type: 'user_offline',
+                    userId
+                  }));
+                }
+              });
+            });
           }
         }
       });
@@ -79,10 +124,48 @@ export async function setupWebSocket(
         console.error('WebSocket error:', err);
         if (userConnections.has(userId)) {
           userConnections.get(userId)?.delete(socket);
+          // Same offline logic if needed, but close usually fires too
         }
       });
     }
   );
+
+  // Heartbeat interval
+  const interval = setInterval(() => {
+    userConnections.forEach((connections, userId) => {
+      connections.forEach((socket) => {
+        if ((socket as any).isAlive === false) {
+          socket.terminate();
+          connections.delete(socket);
+          if (connections.size === 0) {
+            userConnections.delete(userId);
+            // Broadcast user_offline
+            const onlineUserIds = Array.from(userConnections.keys());
+            onlineUserIds.forEach(id => {
+              const conns = userConnections.get(id);
+              conns?.forEach(client => {
+                if (client.readyState === 1) {
+                  client.send(JSON.stringify({
+                    type: 'user_offline',
+                    userId
+                  }));
+                }
+              });
+            });
+          }
+          return;
+        }
+
+        (socket as any).isAlive = false;
+        socket.ping();
+      });
+    });
+  }, 30000);
+
+  fastify.addHook('onClose', (instance, done) => {
+    clearInterval(interval);
+    done();
+  });
 
   chatEventEmitter.removeAllListeners('new_message');
 
