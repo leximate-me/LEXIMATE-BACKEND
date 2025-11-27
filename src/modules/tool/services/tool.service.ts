@@ -41,7 +41,7 @@ export class ToolService {
         response.data.pipe(writer);
 
         await new Promise((resolve, reject) => {
-          writer.on('finish', resolve);
+          writer.on('finish', () => resolve(true));
           writer.on('error', reject);
         });
         isTemp = true;
@@ -51,11 +51,17 @@ export class ToolService {
       }
     } else {
       // Handle local path
+      const decodedUrl = decodeURIComponent(localUrl);
       filePath = path.resolve(
         process.cwd(),
         'public',
-        localUrl.replace(/^public\/+/, '').replace(/^\/+/, '')
+        decodedUrl.replace(/^public\/+/, '').replace(/^\/+/, '')
       );
+
+      if (!fs.existsSync(filePath)) {
+        console.error(`File not found at path: ${filePath}`);
+        throw HttpError.notFound(`Archivo no encontrado en: ${decodedUrl}`);
+      }
     }
 
     try {
@@ -153,6 +159,12 @@ export class ToolService {
         metadata: null,
         version: null,
       } as any;
+    } catch (error) {
+      console.error('Error in extractTextFromLocalPath:', error);
+      if (error instanceof HttpError) {
+        throw error;
+      }
+      throw HttpError.internalServerError('Error procesando el archivo PDF');
     } finally {
       // Cleanup temp file
       if (isTemp && fs.existsSync(filePath)) {
