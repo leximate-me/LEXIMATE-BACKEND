@@ -1,5 +1,6 @@
 import { FastifyRequest, FastifyReply } from 'fastify';
 import { CreatePostDto, UpdatePostDto } from '@post/dtos';
+import { PaginationDto } from '@common/dtos/pagination.dto';
 import { PostService } from '@post/services/post.service';
 
 export class PostController {
@@ -27,15 +28,14 @@ export class PostController {
   async readAll(
     request: FastifyRequest<{ 
       Params: { courseId: string };
-      Querystring: { page?: string; limit?: string };
+      Querystring: PaginationDto;
     }>,
     reply: FastifyReply
   ) {
     try {
       const courseId = request.params.courseId;
       const userId = (request.user as any)?.id;
-      const page = parseInt(request.query.page || '1', 10);
-      const limit = parseInt(request.query.limit || '10', 10);
+      const { page = 1, limit = 10 } = request.query;
 
       const posts = await this.postService.readAll(courseId, userId, page, limit);
       reply.code(200).send(posts);

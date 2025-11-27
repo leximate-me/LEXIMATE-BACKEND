@@ -4,6 +4,7 @@ import {
   CreateTaskDto,
   UpdateTaskDto,
 } from '@task/dtos';
+import { PaginationDto } from '@common/dtos/pagination.dto';
 
 export class TaskController {
   private taskService = new TaskService();
@@ -32,14 +33,13 @@ export class TaskController {
   async getAllByCourse(
     request: FastifyRequest<{ 
       Params: { courseId: string };
-      Querystring: { page?: string; limit?: string };
+      Querystring: PaginationDto;
     }>,
     reply: FastifyReply
   ) {
     const courseId = request.params.courseId;
     const userId = request.user.id;
-    const page = parseInt(request.query.page || '1', 10);
-    const limit = parseInt(request.query.limit || '10', 10);
+    const { page = 1, limit = 10 } = request.query;
 
     const tasks = await this.taskService.getAllByCourse(courseId, userId, page, limit);
 

@@ -5,6 +5,7 @@ import { requireRole } from '@common/middlewares/auth.middleware';
 import { taskSubmissionRouter } from '@task/routes/task-submission.route';
 import { TaskController } from '@task/controllers/task.controller';
 import { createTaskSchema, updateTaskSchema } from '@task/schemas';
+import { paginationSchema } from '@common/schemas/pagination.schema';
 
 
 export async function taskRouter(fastify: FastifyInstance) {
@@ -18,6 +19,7 @@ export async function taskRouter(fastify: FastifyInstance) {
   });
 
   fastify.get('/', {
+    schema: paginationSchema,
     preHandler: [requireRole(['teacher', 'student', 'admin'])],
     handler: taskController.getAllByCourse.bind(taskController),
   });

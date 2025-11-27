@@ -5,6 +5,8 @@ import { verifyUserRequired } from '@common/middlewares/user.middleware';
 import { uploadToStorage } from '@common/middlewares/upload.middleware';
 import { registerAuthSchema } from '@auth/schemas/register-auth.schema';
 import { loginAuthSchema } from '@auth/schemas/login-auth.schema';
+import { requireRole } from '@common/middlewares';
+import { RoleEnum } from '@common/enums/role.enum';
 
 export async function authRouter(fastify: FastifyInstance) {
   const authController = new AuthController();
@@ -52,12 +54,12 @@ export async function authRouter(fastify: FastifyInstance) {
   });
 
   fastify.post('/verify-user', {
-    preHandler: [authRequired],
+    preHandler: [authRequired, requireRole(RoleEnum.ADMIN)],
     handler: authController.verifyUser.bind(authController),
   });
 
   fastify.get('/unverified-users', {
-    preHandler: [authRequired],
+    preHandler: [authRequired, requireRole(RoleEnum.ADMIN)],
     handler: authController.getUnverifiedUsers.bind(authController),
   });
 }

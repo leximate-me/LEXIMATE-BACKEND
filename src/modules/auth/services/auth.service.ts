@@ -23,6 +23,11 @@ export class AuthService {
   async registerUser(dto: RegisterAuthDto) {
     try {
       const defaultRole = await this.userService.findRoleByName(RoleEnum.GUEST);
+      
+      const birthDate = new Date(dto.birth_date);
+      if (birthDate > new Date()) {
+        throw HttpError.badRequest('La fecha de nacimiento no puede ser mayor a la fecha actual');
+      }
 
       const newPerson = await this.userService.createPerson({
         first_name: dto.first_name,
@@ -212,14 +217,6 @@ export class AuthService {
     return updatedUser;
   }
 
-  private handleDbException(error: any): never {
-    if (error.code === '23505') {
-      throw HttpError.badRequest(error.detail);
-    }
-
-    throw HttpError.internalServerError('Database error');
-  }
-
   async verifyUser(userId: string, roleName: RoleEnum) {
     return this.userService.verifyUser(userId, roleName);
   }
@@ -227,4 +224,13 @@ export class AuthService {
   async getUnverifiedUsers() {
     return this.userService.findUnverifiedUsers();
   }
+  
+  private handleDbException(error: any): never {
+    if (error.code === '23505') {
+      throw HttpError.badRequest(error.detail);
+    }
+    
+    throw HttpError.internalServerError('Database error');
+  }
+
 }

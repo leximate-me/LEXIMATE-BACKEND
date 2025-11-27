@@ -9,6 +9,7 @@ import { postRouter } from '@post/routes/post.route';
 import { taskRouter } from '@task/routes/task.route';
 
 import { createCourseSchema, updateCourseSchema } from '@course/schemas';
+import { paginationSchema } from '@common/schemas/pagination.schema';
 
 import { CourseController } from '@modules/course/controllers/course.controller';
 
@@ -39,7 +40,10 @@ export async function courseRouter(fastify: FastifyInstance) {
 
   fastify.get(
     '/user',
-    courseController.getClassesByUser.bind(courseController)
+    {
+      schema: paginationSchema,
+      handler: courseController.getClassesByUser.bind(courseController),
+    }
   );
 
   fastify.get(

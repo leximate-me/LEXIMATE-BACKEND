@@ -4,6 +4,7 @@ import {
   CreateTaskSubmissionDto,
   UpdateTaskSubmissionDto,
 } from '@task/dtos';
+import { PaginationDto } from '@common/dtos/pagination.dto';
 
 export class TaskSubmissionController {
   private submissionService = new TaskSubmissionService();
@@ -33,12 +34,14 @@ export class TaskSubmissionController {
   async getSubmissionsByTask(
     request: FastifyRequest<{
       Params: { courseId: string; taskId: string };
+      Querystring: PaginationDto;
     }>,
     reply: FastifyReply
   ) {
     const { taskId } = request.params;
+    const { page = 1, limit = 10 } = request.query;
 
-    const submissions = await this.submissionService.getSubmissionsByTask(taskId);
+    const submissions = await this.submissionService.getSubmissionsByTask(taskId, page, limit);
 
     reply.code(200).send(submissions);
   }

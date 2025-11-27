@@ -5,6 +5,7 @@ import {
   verifyUserRequired,
 } from '@common/middlewares';
 import { createCommentSchema, updateCommentSchema } from '@comment/schemas';
+import { paginationSchema } from '@common/schemas/pagination.schema';
 import { CommentController } from '@modules/comment/controllers/comment.controller';
 
 export async function commentRouter(fastify: FastifyInstance) {
@@ -22,7 +23,10 @@ export async function commentRouter(fastify: FastifyInstance) {
   });
 
   // Obtener todos los comentarios
-  fastify.get('/', commentController.readAll.bind(commentController));
+  fastify.get('/', {
+    schema: paginationSchema,
+    handler: commentController.readAll.bind(commentController),
+  });
 
   // Obtener un comentario por ID
   fastify.get('/:commentId', commentController.readOne.bind(commentController));

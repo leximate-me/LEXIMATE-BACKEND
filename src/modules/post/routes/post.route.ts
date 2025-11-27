@@ -8,6 +8,7 @@ import { CreatePostDto } from '../dtos/create-post.dto';
 import { UpdatePostDto } from '../dtos/update-post.dto';
 import { createPostSchema } from '../schemas/create-post.schema';
 import { updatePostSchema } from '../schemas/update-post.schema';
+import { paginationSchema } from '@common/schemas/pagination.schema';
 
 export async function postRouter(fastify: FastifyInstance) {
   const postController = new PostController();
@@ -24,7 +25,10 @@ export async function postRouter(fastify: FastifyInstance) {
   });
 
   // Obtener todos los posts
-  fastify.get('/', postController.readAll.bind(postController));
+  fastify.get('/', {
+    schema: paginationSchema,
+    handler: postController.readAll.bind(postController),
+  });
 
   // Obtener un post por ID
   fastify.get('/:postId', postController.readOne.bind(postController));

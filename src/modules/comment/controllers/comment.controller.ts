@@ -1,5 +1,6 @@
 import { FastifyRequest, FastifyReply } from 'fastify';
 import { CreateCommentDto, UpdateCommentDto } from '@comment/dtos';
+import { PaginationDto } from '@common/dtos/pagination.dto';
 import { CommentService } from '@comment/services/comment.service';
 
 export class CommentController {
@@ -28,13 +29,12 @@ export class CommentController {
   async readAll(
     request: FastifyRequest<{ 
       Params: { postId: string };
-      Querystring: { page?: string; limit?: string };
+      Querystring: PaginationDto;
     }>,
     reply: FastifyReply
   ) {
     const postId = request.params.postId;
-    const page = parseInt(request.query.page || '1', 10);
-    const limit = parseInt(request.query.limit || '20', 10);
+    const { page = 1, limit = 20 } = request.query;
     
     const comments = await this.commentService.readAll(postId, page, limit);
     reply.code(200).send(comments);

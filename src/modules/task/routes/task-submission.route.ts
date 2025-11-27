@@ -3,6 +3,7 @@ import { uploadToStorage } from '../../../common/middlewares/upload.middleware';
 import { requireRole } from '../../../common/middlewares/auth.middleware';
 
 import { createTaskSubmissionSchema, updateTaskSubmissionSchema } from '../schemas';
+import { paginationSchema } from '@common/schemas/pagination.schema';
 import { TaskSubmissionController } from '../controllers/task-submission.controller';
 
 export async function taskSubmissionRouter(fastify: FastifyInstance) {
@@ -16,6 +17,7 @@ export async function taskSubmissionRouter(fastify: FastifyInstance) {
   });
 
   fastify.get('/:taskId/submissions', {
+    schema: paginationSchema,
     preHandler: [requireRole(['teacher', 'student', 'admin'])],
     handler: submissionController.getSubmissionsByTask.bind(submissionController),
   });

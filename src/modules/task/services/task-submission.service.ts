@@ -179,13 +179,28 @@ export class TaskSubmissionService {
     return updatedSubmission;
   }
 
-  async getSubmissionsByTask(taskId: string) {
+  async getSubmissionsByTask(taskId: string, page: number = 1, limit: number = 10) {
     const task = await this.taskRepository.findOne({ where: { id: taskId } });
     if (!task) throw HttpError.notFound('Task not found');
 
-    return this.submissionRepository.find({
+    const skip = (page - 1) * limit;
+
+    const [submissions, total] = await this.submissionRepository.findAndCount({
       where: { task: { id: taskId } },
       relations: ['user', 'submissionFiles'],
+      skip,
+      take: limit,
+    });
+
+    return Object.assign(submissions, {
+      pagination: {
+        page,
+        limit,
+        total,
+        totalPages: Math.ceil(total / limit),
+        hasNextPage: page < Math.ceil(total / limit),
+        hasPreviousPage: page > 1,
+      },
     });
   }
 

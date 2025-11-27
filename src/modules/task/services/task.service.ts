@@ -261,7 +261,7 @@ export class TaskService {
     const [tasks, total] = await this.taskRepository.findAndCount({
       where: { course: { id: courseId } },
       relations: ['taskFiles'],
-      order: { due_date: 'ASC' },
+      order: { due_date: 'DESC' },
       skip,
       take: limit,
     });
