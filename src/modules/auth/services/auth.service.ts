@@ -8,6 +8,7 @@ import { TokenPayload } from '@common/interfaces/token-payload.interface';
 import { BcryptAdapter } from '@common/adapters/hash.adapter';
 
 import { User, UserFile } from '@user/entities';
+import { RoleEnum } from '@common/enums/role.enum';
 import { RegisterAuthDto, LoginAuthDto } from '@auth/dtos';
 import { UpdateUserDto } from '@user/dtos/update-user.dto';
 
@@ -21,7 +22,7 @@ export class AuthService {
 
   async registerUser(dto: RegisterAuthDto) {
     try {
-      const defaultRole = await this.userService.findRoleByName('guest');
+      const defaultRole = await this.userService.findRoleByName(RoleEnum.GUEST);
 
       const newPerson = await this.userService.createPerson({
         first_name: dto.first_name,
@@ -217,5 +218,9 @@ export class AuthService {
     }
 
     throw HttpError.internalServerError('Database error');
+  }
+
+  async verifyUser(userId: string, roleName: RoleEnum) {
+    return this.userService.verifyUser(userId, roleName);
   }
 }

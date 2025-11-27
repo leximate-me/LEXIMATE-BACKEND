@@ -2,6 +2,7 @@ import { HttpError } from '@common/libs/http-error';
 import { AppDataSource } from '@database/db';
 import { User, People, Role } from '@user/entities';
 import { CreateUserDto, UpdateUserDto } from '@user/dtos';
+import { RoleEnum } from '@common/enums/role.enum';
 
 export class UserService {
   private readonly userRepository = AppDataSource.getRepository(User);
@@ -23,7 +24,7 @@ export class UserService {
     return this.peopleRepository.findOne({ where: { dni } });
   }
 
-  async findRoleByName(role: string) {
+  async findRoleByName(role: RoleEnum) {
     return this.roleRepository.findOne({ where: { name: role } });
   }
 
@@ -54,7 +55,7 @@ export class UserService {
     if (updateUserDto.password) user.password = updateUserDto.password;
     if (updateUserDto.role) {
       const role = await this.roleRepository.findOne({
-        where: { name: updateUserDto.role },
+        where: { name: updateUserDto.role as RoleEnum },
       });
       if (role) user.role = role;
     }
@@ -73,6 +74,19 @@ export class UserService {
       if (updateUserDto.dni) user.people.dni = updateUserDto.dni;
       await this.peopleRepository.save(user.people);
     }
+
+    return this.userRepository.save(user);
+  }
+
+  async verifyUser(userId: string, roleName: RoleEnum) {
+    const user = await this.userRepository.findOne({ where: { id: userId } });
+    if (!user) throw new HttpError(404, 'Usuario no encontrado');
+
+    const role = await this.roleRepository.findOne({ where: { name: roleName } });
+    if (!role) throw new HttpError(404, 'Rol no encontrado');
+
+    user.verified = true;
+    user.role = role;
 
     return this.userRepository.save(user);
   }

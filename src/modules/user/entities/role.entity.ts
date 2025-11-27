@@ -7,6 +7,7 @@ import {
   ManyToMany,
   JoinTable,
 } from 'typeorm';
+import { RoleEnum } from '@common/enums/role.enum';
 import { User, Permission } from '.';
 
 @Entity()
@@ -14,8 +15,8 @@ export class Role {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @Column({ type: 'varchar', length: 50 })
-  name: string;
+  @Column({ type: 'enum', enum: RoleEnum, default: RoleEnum.GUEST })
+  name: RoleEnum;
 
   @Column({ type: 'varchar', length: 100 })
   description!: string;

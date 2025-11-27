@@ -50,4 +50,9 @@ export async function authRouter(fastify: FastifyInstance) {
     preHandler: [authRequired, uploadToStorage, verifyUserRequired],
     handler: authController.updateProfile.bind(authController),
   });
+
+  fastify.post('/verify-user', {
+    preHandler: [authRequired],
+    handler: authController.verifyUser.bind(authController),
+  });
 }

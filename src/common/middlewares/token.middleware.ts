@@ -28,6 +28,6 @@ export const authRequired = async (
   } catch (error) {
     throw error instanceof HttpError
       ? error
-      : HttpError.unauthorized('No autorizado');
+      : HttpError.unauthorized('Unauthorized access');
   }
 };

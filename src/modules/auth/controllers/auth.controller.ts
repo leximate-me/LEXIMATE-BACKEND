@@ -1,6 +1,8 @@
 import { FastifyRequest, FastifyReply } from 'fastify';
-import { RegisterAuthDto, LoginAuthDto } from '@auth/dtos';
+import { RegisterAuthDto, LoginAuthDto, VerifyUserDto } from '@auth/dtos';
 import { AuthService } from '@auth/services/auth.service';
+import { HttpError } from '@common/libs/http-error';
+import { RoleEnum } from '@common/enums/role.enum';
 
 export class AuthController {
   private authService: AuthService = new AuthService();
@@ -119,6 +121,22 @@ export class AuthController {
       userData,
       imageProps
     );
+
+    reply.code(200).send(updatedUser);
+  }
+
+  async verifyUser(
+    request: FastifyRequest<{ Body: VerifyUserDto }>,
+    reply: FastifyReply
+  ) {
+    const { userId, roleName } = request.body;
+    const userRole = request.user.rol
+
+    if (userRole !== RoleEnum.ADMIN) {
+      throw HttpError.forbidden('Requires administrator privileges');
+    }
+
+    const updatedUser = await this.authService.verifyUser(userId, roleName);
 
     reply.code(200).send(updatedUser);
   }

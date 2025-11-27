@@ -1,6 +1,7 @@
 import { Not, IsNull } from 'typeorm';
 import { AppDataSource } from '@database/db';
 import { User, People, Permission, Role, UserFile } from '@user/entities';
+import { RoleEnum } from '@common/enums/role.enum';
 import { BcryptAdapter } from '@common/adapters/hash.adapter';
 
 import { Course } from '@course/entities/course.entity';
@@ -70,19 +71,19 @@ export class SeedService {
     }
 
     const rolesData = [
-      { name: 'admin', description: 'Administrador', permissions },
+      { name: RoleEnum.ADMIN, description: 'Administrador', permissions },
       {
-        name: 'teacher',
+        name: RoleEnum.TEACHER,
         description: 'Profesor',
         permissions: permissions.filter((p) => p.name !== 'manage_users'),
       },
       {
-        name: 'student',
+        name: RoleEnum.STUDENT,
         description: 'Estudiante',
         permissions: permissions.filter((p) => p.name === 'view_content'),
       },
       {
-        name: 'guest',
+        name: RoleEnum.GUEST,
         description: 'Invitado',
         permissions: permissions.filter((p) => p.name === 'view_content'),
       },
@@ -115,7 +116,7 @@ export class SeedService {
         institute: 'Main',
         phone_number: '1111111111',
         birth_date: new Date('1990-01-01'),
-        role: roles.find((r) => r.name === 'admin'),
+        role: roles.find((r) => r.name === RoleEnum.ADMIN),
       },
       {
         user_name: 'teacher',
@@ -127,7 +128,7 @@ export class SeedService {
         institute: 'Main',
         phone_number: '2222222222',
         birth_date: new Date('1991-01-01'),
-        role: roles.find((r) => r.name === 'teacher'),
+        role: roles.find((r) => r.name === RoleEnum.TEACHER),
       },
       {
         user_name: 'student',
@@ -139,7 +140,7 @@ export class SeedService {
         institute: 'Main',
         phone_number: '3333333333',
         birth_date: new Date('1992-01-01'),
-        role: roles.find((r) => r.name === 'student'),
+        role: roles.find((r) => r.name === RoleEnum.STUDENT),
       },
       {
         user_name: 'guest',
@@ -151,7 +152,7 @@ export class SeedService {
         institute: 'Main',
         phone_number: '4444444444',
         birth_date: new Date('1993-01-01'),
-        role: roles.find((r) => r.name === 'guest'),
+        role: roles.find((r) => r.name === RoleEnum.GUEST),
       },
     ];
 

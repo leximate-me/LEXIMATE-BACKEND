@@ -48,7 +48,7 @@ export class HttpError extends Error {
     return new HttpError(429, message);
   }
 
-  static internalServerError(message: any = 'Error interno del servidor') {
+  static internalServerError(message: any = 'Internal server error') {
     return new HttpError(500, message);
   }
 
