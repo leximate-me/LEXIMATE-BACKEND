@@ -217,8 +217,8 @@ export class AuthService {
     return updatedUser;
   }
 
-  async verifyUser(userId: string, roleName: RoleEnum) {
-    return this.userService.verifyUser(userId, roleName);
+  async verifyUsers(userIds: string[], roleName: RoleEnum) {
+    return this.userService.verifyUsers(userIds, roleName);
   }
 
   async getUnverifiedUsers() {

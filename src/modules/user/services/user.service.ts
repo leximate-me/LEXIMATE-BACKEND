@@ -1,3 +1,4 @@
+import { In } from 'typeorm';
 import { HttpError } from '@common/libs/http-error';
 import { AppDataSource } from '@database/db';
 import { User, People, Role } from '@user/entities';
@@ -78,17 +79,25 @@ export class UserService {
     return this.userRepository.save(user);
   }
 
-  async verifyUser(userId: string, roleName: RoleEnum) {
-    const user = await this.userRepository.findOne({ where: { id: userId } });
-    if (!user) throw new HttpError(404, 'Usuario no encontrado');
-
+  async verifyUsers(userIds: string[], roleName: RoleEnum) {
     const role = await this.roleRepository.findOne({ where: { name: roleName } });
     if (!role) throw new HttpError(404, 'Rol no encontrado');
 
-    user.verified = true;
-    user.role = role;
+    const users = await this.userRepository.find({
+      where: { id: In(userIds) },
+    });
 
-    return this.userRepository.save(user);
+    if (users.length === 0) throw new HttpError(404, 'Usuarios no encontrados');
+
+    const updatedUsers = await Promise.all(
+      users.map(async (user) => {
+        user.verified = true;
+        user.role = role;
+        return this.userRepository.save(user);
+      })
+    );
+
+    return updatedUsers;
   }
 
   async findUnverifiedUsers() {

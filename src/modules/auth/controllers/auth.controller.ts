@@ -125,16 +125,16 @@ export class AuthController {
     request: FastifyRequest<{ Body: VerifyUserDto }>,
     reply: FastifyReply
   ) {
-    const { userId, roleName } = request.body;
-    const userRole = request.user.rol
+    const { userIds, roleName } = request.body;
+    const userRole = (request.user as any).rol;
 
     if (userRole !== RoleEnum.ADMIN) {
       throw HttpError.forbidden('Requires administrator privileges');
     }
 
-    const updatedUser = await this.authService.verifyUser(userId, roleName);
+    const updatedUsers = await this.authService.verifyUsers(userIds, roleName);
 
-    reply.code(200).send(updatedUser);
+    reply.code(200).send(updatedUsers);
   }
 
   async getUnverifiedUsers(request: FastifyRequest, reply: FastifyReply) {
