@@ -40,6 +40,14 @@ export async function chatRouter(fastify: FastifyInstance) {
     controller.sendMessage.bind(controller)
   );
 
+  fastify.patch(
+    '/:chatId/read',
+    {
+      preHandler: [authRequired],
+    },
+    controller.markChatAsRead.bind(controller)
+  );
+
   fastify.get(
     '/:chatId',
     {

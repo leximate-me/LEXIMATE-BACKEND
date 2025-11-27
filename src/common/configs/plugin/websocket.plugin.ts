@@ -24,13 +24,16 @@ export async function setupWebSocket(
       preHandler: [authRequired],
     },
     (socket, req: FastifyRequest) => {
-      const userId = (req as any).user?.id;
+      const rawUserId = (req as any).user?.id;
 
-      if (!userId) {
+      if (!rawUserId) {
         socket.send(JSON.stringify({ type: 'error', message: 'Unauthorized' }));
         socket.close();
         return;
       }
+
+      const userId = String(rawUserId);
+      console.log(`🔌 WS Connection attempt: ${userId}`);
 
       if (!userConnections.has(userId)) {
         userConnections.set(userId, new Set());
@@ -53,9 +56,9 @@ export async function setupWebSocket(
             case 'ping':
               socket.send(JSON.stringify({ type: 'pong' }));
               break;
-            
+
             default:
-              
+
               break;
           }
         } catch (err) {
@@ -82,31 +85,31 @@ export async function setupWebSocket(
   );
 
   chatEventEmitter.removeAllListeners('new_message');
-  
+
   chatEventEmitter.on('new_message', async (message: any) => {
     try {
       const chat = await chatService.getChatById(message.chatId);
       if (chat) {
         chat.users.forEach((u) => {
-  // 🔥 CORRECCIÓN 1: Convertir ID a String explícitamente
-  const userId = String(u.id); 
-  
-  // Ahora sí encontrará la conexión en el Map
-  const connections = userConnections.get(userId); 
-  
-  if (connections) {
-    connections.forEach((client) => {
-      if (client.readyState === 1) {
-        client.send(
-          JSON.stringify({
-            type: 'chat_message',
-            data: message,
-          })
-        );
-      }
-    });
-  }
-});
+          // 🔥 CORRECCIÓN 1: Convertir ID a String explícitamente
+          const userId = String(u.id);
+
+          // Ahora sí encontrará la conexión en el Map
+          const connections = userConnections.get(userId);
+
+          if (connections) {
+            connections.forEach((client) => {
+              if (client.readyState === 1) {
+                client.send(
+                  JSON.stringify({
+                    type: 'chat_message',
+                    data: message,
+                  })
+                );
+              }
+            });
+          }
+        });
       }
     } catch (error) {
       console.error('Error broadcasting chat message:', error);
@@ -114,7 +117,7 @@ export async function setupWebSocket(
   });
 
   notificationEmitter.removeAllListeners('notification_created');
-  
+
   notificationEmitter.on('notification_created', (notification: any) => {
     try {
       const connections = userConnections.get(notification.userId);
@@ -210,16 +213,16 @@ export async function setupWebSocket(
 
   commentEventEmitter.on('comment_created', (payload: any) => {
     try {
-      console.log('🔌 WebSocket Plugin: Received comment_created', { 
+      console.log('🔌 WebSocket Plugin: Received comment_created', {
         userIdsCount: payload.userIds?.length,
-        firstUserId: payload.userIds?.[0] 
+        firstUserId: payload.userIds?.[0]
       });
-      
+
       payload.userIds.forEach((userId: string) => {
         const strUserId = String(userId);
         const connections = userConnections.get(strUserId);
         console.log(`🔌 Checking connection for user ${strUserId}: ${connections ? 'FOUND' : 'NOT FOUND'}`);
-        
+
         if (connections) {
           connections.forEach((client) => {
             if (client.readyState === 1) {

@@ -19,10 +19,10 @@ export class ChatService {
 
   async createChat(createChatDto: CreateChatDto, currentUserId: string): Promise<Chat> {
     const { userIds } = createChatDto;
-        
+
     const allUserIds = userIds.includes(currentUserId) ? userIds : [...userIds, currentUserId];
     const uniqueUserIds = [...new Set(allUserIds)];
-        
+
     if (uniqueUserIds.length < 2) {
       throw HttpError.badRequest('A chat must have at least 2 participants');
     }
@@ -39,9 +39,9 @@ export class ChatService {
       for (const chat of existingChats) {
         const chatUserIds = chat.users.map(u => u.id).sort();
         const requestUserIds = uniqueUserIds.sort();
-        
-        if (chatUserIds.length === requestUserIds.length && 
-            chatUserIds.every((id, index) => id === requestUserIds[index])) {
+
+        if (chatUserIds.length === requestUserIds.length &&
+          chatUserIds.every((id, index) => id === requestUserIds[index])) {
           return chat;
         }
       }
@@ -51,7 +51,7 @@ export class ChatService {
         id: In(uniqueUserIds)
       }
     });
-    
+
     if (users.length !== uniqueUserIds.length) {
       throw HttpError.notFound('One or more users not found');
     }
@@ -61,22 +61,40 @@ export class ChatService {
     });
 
     const savedChat = await this.chatRepository.save(chat);
-    
+
     return savedChat;
   }
 
-  async getUserChats(userId: string): Promise<Chat[]> {
-    return await this.chatRepository.find({
+  async getUserChats(userId: string): Promise<any[]> {
+    const chats = await this.chatRepository.find({
       where: {
         users: {
           id: userId,
         },
       },
-      relations: ['users', 'messages'],
+      relations: ['users', 'messages', 'messages.sender'],
       order: {
         updatedAt: 'DESC',
       },
     });
+
+    // Calculate unread count for each chat
+    const chatsWithUnread = chats.map(chat => {
+      const unreadCount = chat.messages.filter(
+        msg => !msg.readAt && msg.senderId !== userId
+      ).length;
+
+      // Get the other user
+      const otherUser = chat.users.find(u => u.id !== userId);
+
+      return {
+        ...chat,
+        unreadCount,
+        otherUser
+      };
+    });
+
+    return chatsWithUnread;
   }
 
   async getChatMessages(chatId: string): Promise<Message[]> {
@@ -93,7 +111,7 @@ export class ChatService {
 
   async sendMessage(chatId: string, senderId: string, sendMessageDto: SendMessageDto): Promise<Message> {
     const { content } = sendMessageDto;
-    
+
     const chat = await this.chatRepository.findOne({
       where: { id: chatId },
       relations: ['users'],
@@ -122,11 +140,23 @@ export class ChatService {
 
     return savedMessage;
   }
-  
+
   async getChatById(chatId: string): Promise<Chat | null> {
-      return await this.chatRepository.findOne({
-          where: { id: chatId },
-          relations: ['users']
-      });
+    return await this.chatRepository.findOne({
+      where: { id: chatId },
+      relations: ['users']
+    });
+  }
+
+  async markChatAsRead(chatId: string, userId: string): Promise<void> {
+    // Update all messages in this chat that are NOT sent by the current user and are unread
+    await this.messageRepository
+      .createQueryBuilder()
+      .update(Message)
+      .set({ readAt: new Date() })
+      .where("chatId = :chatId", { chatId })
+      .andWhere("senderId != :userId", { userId })
+      .andWhere("readAt IS NULL")
+      .execute();
   }
 }
