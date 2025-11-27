@@ -64,7 +64,7 @@ export class CommentService {
         console.log('🔍 Debug CommentService:');
         console.log('Course ID:', courseWithUsers.id);
         console.log('Users found in course:', courseWithUsers.users?.length);
-        
+
         commentEventEmitter.emit('comment_created', {
           comment: {
             id: comment.id,
@@ -96,7 +96,7 @@ export class CommentService {
     const [comments, total] = await this.commentRepository.findAndCount({
       where: { post: { id: existingPost.id } },
       relations: ['user', 'user.people', 'user.userFiles', 'post'],
-      order: { created_at: 'ASC' },
+      order: { created_at: 'DESC' },
       skip,
       take: limit,
     });
@@ -188,9 +188,9 @@ export class CommentService {
 
     const isAuthor = existingComment.user.id === foundUser.id;
     const isAdmin = foundUser.role.name === 'admin';
-    
+
     // Check if user is a teacher in the course where the comment was made
-    const isTeacherInCourse = 
+    const isTeacherInCourse =
       foundUser.role.name === 'teacher' &&
       foundUser.courses.some((course) => course.id === existingComment.post.course.id);
 
