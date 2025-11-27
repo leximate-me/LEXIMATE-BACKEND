@@ -379,7 +379,7 @@
 					"response": []
 				},
 				{
-					"name": "New Request",
+					"name": "POST /verify-user",
 					"id": "37487995-2fe74650-b26c-475d-8c25-ba756c4313d6",
 					"protocolProfileBehavior": {
 						"disableBodyPruning": true
