@@ -377,6 +377,42 @@
 						}
 					},
 					"response": []
+				},
+				{
+					"name": "POST /verify-user",
+					"id": "37487995-2fe74650-b26c-475d-8c25-ba756c4313d6",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"userIds\": [\"651343e1-37b2-47fb-b82a-635b0fbfa713\"]\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/auth/verify-user",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"auth",
+								"verify-user"
+							]
+						}
+					},
+					"response": []
 				}
 			],
 			"id": "37487995-33f0240e-fd69-4085-9898-526014da94f2"
