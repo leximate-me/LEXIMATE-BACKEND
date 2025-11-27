@@ -140,4 +140,16 @@ export class AuthController {
 
     reply.code(200).send(updatedUser);
   }
+
+  async getUnverifiedUsers(request: FastifyRequest, reply: FastifyReply) {
+    const userRole = (request.user as any)?.rol;
+
+    if (userRole !== RoleEnum.ADMIN) {
+      throw HttpError.forbidden('Requires administrator privileges');
+    }
+
+    const unverifiedUsers = await this.authService.getUnverifiedUsers();
+
+    reply.code(200).send(unverifiedUsers);
+  }
 }

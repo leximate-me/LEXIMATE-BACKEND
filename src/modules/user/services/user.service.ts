@@ -90,4 +90,25 @@ export class UserService {
 
     return this.userRepository.save(user);
   }
+
+  async findUnverifiedUsers() {
+    return this.userRepository.find({
+      where: { verified: false },
+      relations: ['people', 'role'],
+      select: {
+        id: true,
+        user_name: true,
+        email: true,
+        verified: true,
+        people: {
+          first_name: true,
+          last_name: true,
+          dni: true,
+        },
+        role: {
+          name: true,
+        },
+      },
+    });
+  }
 }

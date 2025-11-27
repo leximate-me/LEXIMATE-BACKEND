@@ -55,4 +55,9 @@ export async function authRouter(fastify: FastifyInstance) {
     preHandler: [authRequired],
     handler: authController.verifyUser.bind(authController),
   });
+
+  fastify.get('/unverified-users', {
+    preHandler: [authRequired],
+    handler: authController.getUnverifiedUsers.bind(authController),
+  });
 }
