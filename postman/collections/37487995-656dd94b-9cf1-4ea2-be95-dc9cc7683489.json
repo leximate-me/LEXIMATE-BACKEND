@@ -398,7 +398,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n  \"userIds\": [\"651343e1-37b2-47fb-b82a-635b0fbfa713\"],\n  \"roleName\": \"student\"\n}"
+							"raw": "{\n  \"userIds\": [\"730b9958-5fd5-4bf9-96f7-634e13bf5aa8\"],\n  \"roleName\": \"teacher\"\n}"
 						},
 						"url": {
 							"raw": "{{baseUrl}}/api/auth/verify-user",
