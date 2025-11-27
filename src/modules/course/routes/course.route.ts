@@ -29,12 +29,12 @@ export async function courseRouter(fastify: FastifyInstance) {
   });
 
   fastify.post('/join', {
-    preHandler: [requireRole(['student'])],
+    preHandler: [requireRole(['student', 'teacher'])],
     handler: courseController.join.bind(courseController),
   });
 
   fastify.post('/:courseId/leave', {
-    preHandler: [requireRole(['student'])],
+    preHandler: [requireRole(['student', 'teacher'])],
     handler: courseController.leave.bind(courseController),
   });
 
