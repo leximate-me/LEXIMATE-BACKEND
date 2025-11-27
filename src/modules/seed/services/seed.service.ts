@@ -5,7 +5,7 @@ import { BcryptAdapter } from '@common/adapters/hash.adapter';
 
 import { Course } from '@course/entities/course.entity';
 import { Post } from '@post/entities/post.entity';
-import { Task,TaskFile } from '@task/entities';
+import { Task, TaskFile } from '@task/entities';
 import { Comment } from '@comment/entities/comment.entity';
 import { Chat, Message } from '@chat/entities';
 import { Notification } from '@notification/entities';
@@ -189,7 +189,7 @@ export class SeedService {
       }
       createdUsers.push(user);
 
-      
+
       const userFile = this.fileUserRepository.create({
         file_id: `profile_${user.user_name}`,
         file_url: `https://api.dicebear.com/9.x/notionists/svg?seed=${user.id}&gestureProbability=50&beardProbability=30`,
@@ -203,7 +203,11 @@ export class SeedService {
     const student = createdUsers.find(u => u.user_name === 'student');
 
     if (teacher && student) {
-      
+
+      let refCourse: Course | null = null;
+      let refPost: Post | null = null;
+      let refTask: Task | null = null;
+
       const coursesData = [
         { name: 'Matemáticas Avanzadas', description: 'Curso de cálculo y álgebra', class_code: 'MATH101' },
         { name: 'Historia Universal', description: 'Historia del mundo desde 1900', class_code: 'HIST202' },
@@ -219,6 +223,7 @@ export class SeedService {
           users: [teacher, student], // Teacher and Student are in the course
         });
         await this.courseRepository.save(course);
+        refCourse = course;
 
         const postsData = [
           {
@@ -239,6 +244,7 @@ export class SeedService {
             user: teacher,
           });
           await this.postRepository.save(post);
+          refPost = post;
 
           const comment = this.commentRepository.create({
             content: '¡Gracias profesor! Estoy emocionado por comenzar.',
@@ -255,6 +261,7 @@ export class SeedService {
           course: course,
         });
         await this.taskRepository.save(task);
+        refTask = task;
 
         const taskFile = this.fileTaskRepository.create({
           file_id: `task_${task.id}_file`,
@@ -285,34 +292,36 @@ export class SeedService {
       }
 
       // 12. Notifications
-      const notificationsData = [
-        {
-          userId: student.id,
-          type: NotificationEnum.TASK_ASSIGNED,
-          title: 'Nueva tarea asignada',
-          message: 'Se ha asignado una nueva tarea: Tarea 1: Investigación',
-          data: { url: '/courses/course-id/task/task-id', taskId: 'task-id', courseId: 'course-id', courseName: 'Matemáticas Avanzadas' },
-        },
-        {
-          userId: teacher.id,
-          type: NotificationEnum.COMMENT_ADDED,
-          title: 'Nuevo comentario en tu post',
-          message: 'student comentó en tu post: "Bienvenida a Matemáticas Avanzadas"',
-          data: { url: '/courses/course-id/post/post-id', postId: 'post-id', courseId: 'course-id', commenterName: 'student' },
-        },
-        {
-          userId: student.id,
-          type: NotificationEnum.POST_CREATED,
-          title: 'Nuevo post en el curso',
-          message: 'teacher publicó: "Material de estudio - Historia Universal" en Historia Universal',
-          data: { url: '/courses/course-id/post/post-id', postId: 'post-id', courseId: 'course-id', courseName: 'Historia Universal' },
-          read: true,
-        },
-      ];
+      if (refCourse && refTask && refPost) {
+        const notificationsData = [
+          {
+            userId: student.id,
+            type: NotificationEnum.TASK_ASSIGNED,
+            title: 'Nueva tarea asignada',
+            message: `Se ha asignado una nueva tarea: ${refTask.title}`,
+            data: { url: `/courses/${refCourse.id}/task/${refTask.id}`, taskId: refTask.id, courseId: refCourse.id, courseName: refCourse.name },
+          },
+          {
+            userId: teacher.id,
+            type: NotificationEnum.COMMENT_ADDED,
+            title: 'Nuevo comentario en tu post',
+            message: `student comentó en tu post: "${refPost.title}"`,
+            data: { url: `/courses/${refCourse.id}/post/${refPost.id}`, postId: refPost.id, courseId: refCourse.id, commenterName: 'student' },
+          },
+          {
+            userId: student.id,
+            type: NotificationEnum.POST_CREATED,
+            title: 'Nuevo post en el curso',
+            message: `teacher publicó: "${refPost.title}" en ${refCourse.name}`,
+            data: { url: `/courses/${refCourse.id}/post/${refPost.id}`, postId: refPost.id, courseId: refCourse.id, courseName: refCourse.name },
+            read: true,
+          },
+        ];
 
-      for (const notifData of notificationsData) {
-        const notification = this.notificationRepository.create(notifData);
-        await this.notificationRepository.save(notification);
+        for (const notifData of notificationsData) {
+          const notification = this.notificationRepository.create(notifData);
+          await this.notificationRepository.save(notification);
+        }
       }
     }
 

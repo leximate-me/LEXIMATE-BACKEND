@@ -29,4 +29,5 @@ export async function toolRouter(fastify: FastifyInstance) {
     '/get-markdown',
     toolController.getMarkdownUrl.bind(toolController)
   );
+
 }

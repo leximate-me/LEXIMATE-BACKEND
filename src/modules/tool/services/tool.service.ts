@@ -1,5 +1,5 @@
 import { PDFParse, TextResult } from 'pdf-parse';
-import { promises as fs } from 'fs';
+import fs from 'fs';
 import FormData from 'form-data';
 import axios from 'axios';
 import path from 'path';
@@ -8,95 +8,112 @@ import { error } from 'console';
 
 export class ToolService {
   async extractTextFromLocalPath(localUrl: string): Promise<TextResult> {
-      if (!localUrl) {
-        throw HttpError.badRequest('La URL local del PDF es requerida');
+    if (!localUrl) {
+      throw HttpError.badRequest('La URL local del PDF es requerida');
+    }
+    const filePath = path.resolve(
+      process.cwd(),
+      'public',
+      localUrl.replace(/^public\/+/, '').replace(/^\/+/, '')
+    );
+
+    const apiKey = process.env.LLAMA_CLOUD_API_KEY;
+    if (!apiKey) {
+      throw HttpError.internalServerError('LLAMA_CLOUD_API_KEY no configurada');
+    }
+
+    const formData = new FormData();
+    formData.append('file', await fs.promises.readFile(filePath), {
+      filename: path.basename(filePath),
+    });
+    formData.append('max_pages', 25);
+    formData.append('parse_mode', 'parse_page_with_agent');
+    formData.append('model', 'openai-gpt-4o-mini');
+    formData.append('high_res_ocr', 'true');
+    formData.append('adaptive_long_table', 'true');
+    formData.append('outlined_table_extraction', 'true');
+    formData.append('output_tables_as_HTML', 'true');
+    formData.append('precise_bounding_box', 'true');
+    formData.append('file', fs.createReadStream(filePath)); // Changed to use filePath and fs.createReadStream
+    formData.append('user_prompt', `Reformat and summarize the content following these rules:
+- Use left alignment.
+- Use short, simple sentences in active voice.
+- Avoid dense paragraphs; use bullet points where possible.
+- Avoid double negatives.
+- Be concise.
+- Output in Spanish.
+- IMPORTANT: Remove all headers, footers, and page numbers. Do not include metadata like 'Page X of Y'.`);
+
+    const uploadResponse = await axios.post( // Renamed resultResponse to uploadResponse for clarity
+      'https://api.cloud.llamaindex.ai/api/v1/parsing/upload',
+      formData,
+      {
+        headers: {
+          ...formData.getHeaders(),
+          Authorization: `Bearer ${apiKey}`,
+        },
       }
-      const filePath = path.resolve(
-        process.cwd(),
-        'public',
-        localUrl.replace(/^public\/+/, '').replace(/^\/+/, '')
-      );
+    );
 
-      const apiKey = process.env.LLAMA_CLOUD_API_KEY;
-      if (!apiKey) {
-        throw HttpError.internalServerError('LLAMA_CLOUD_API_KEY no configurada');
-      }
+    const jobId = uploadResponse.data.id; // Changed resultResponse to uploadResponse
+    console.log('Job ID:', jobId);
 
-      const formData = new FormData();
-      formData.append('file', await fs.readFile(filePath), {
-        filename: path.basename(filePath),
-      });
-      formData.append('max_pages', 25);
-      formData.append('parse_mode', 'parse_page_with_agent');
-      formData.append('model', 'openai-gpt-4o-mini');
-      formData.append('high_res_ocr', 'true');
-      formData.append('adaptive_long_table', 'true');
-      formData.append('outlined_table_extraction', 'true');
-      formData.append('output_tables_as_HTML', 'true');
-      formData.append('precise_bounding_box', 'true');
+    // Polling para verificar el estado del trabajo
+    let status = 'PENDING';
+    let pagesResult: any[] = [];
+    const maxAttempts = 60; // Added maxAttempts for polling loop
+    let attempts = 0; // Added attempts counter
 
-      const uploadResponse = await axios.post(
-        'https://api.cloud.llamaindex.ai/api/v1/parsing/upload',
-        formData,
+    while ((status === 'PENDING' || status === 'STARTED') && attempts < maxAttempts) { // Added attempts condition
+      attempts++;
+      await new Promise((resolve) => setTimeout(resolve, 2000)); // Esperar 2 segundos
+      const statusResponse = await axios.get(
+        `https://api.cloud.llamaindex.ai/api/v1/parsing/job/${jobId}`,
         {
           headers: {
-            ...formData.getHeaders(),
             Authorization: `Bearer ${apiKey}`,
           },
         }
       );
+      status = statusResponse.data.status;
+      console.log('Job Status:', status);
 
-      const jobId = uploadResponse.data.id;
-
-      let pagesResult: any[] = [];
-      let attempts = 0;
-      const maxAttempts = 60;
-
-      while (attempts < maxAttempts) {
-        attempts++;
-        await new Promise((resolve) => setTimeout(resolve, 5000));
-
-        try {
-          const resultResponse = await axios.get(
-            `https://api.cloud.llamaindex.ai/api/v1/parsing/job/${jobId}/result/json`,
-            {
-              headers: {
-                Authorization: `Bearer ${apiKey}`,
-              },
-            }
-          );
-
-          pagesResult = resultResponse.data.pages;
-          break;
-        } catch (error: any) {
-          if (error.response && (error.response.status === 400 || error.response.status === 404)) {
-             continue;
-          }
-          throw error;
-        }
+      if (status === 'SUCCESS') {
+        const resultUrl = `https://api.cloud.llamaindex.ai/api/v1/parsing/job/${jobId}/result/json`;
+        const resultResponse = await axios.get(resultUrl, {
+          headers: {
+            Authorization: `Bearer ${apiKey}`,
+          },
+        });
+        pagesResult = resultResponse.data.pages;
+        break; // Exit loop on success
+      } else if (status === 'ERROR') {
+        throw HttpError.internalServerError('Error parsing PDF with LlamaIndex');
       }
+    }
 
-      if (!pagesResult || pagesResult.length === 0) {
-        throw HttpError.internalServerError('No pages found in the PDF');
-      }
-      console.log(pagesResult);
+    if (!pagesResult || pagesResult.length === 0) {
+      throw HttpError.internalServerError('No pages found in the PDF or job timed out/failed'); // Updated error message
+    }
+    console.log(pagesResult);
 
-      const text = pagesResult.map(p => p.md ).join('\n\n');
-      const pages = pagesResult.map((p) => ({
-        page: p.page,
-        text: p.md
-      }));
-      const numPages = pagesResult.map(p => p.page).length;
-      console.log('Total pages:', numPages);
+    const text = pagesResult.map(p => p.md).join('\n\n');
+    const pages = pagesResult.map((p) => ({
+      page: p.page,
+      text: p.md
+      // Removed images mapping
+    }));
+    const numPages = pagesResult.map(p => p.page).length;
+    console.log('Total pages:', numPages);
 
-      return {
-        text,
-        pages,
-        numpages: numPages,
-        info: null,
-        metadata: null,
-        version: null,
-      } as any;
+    return {
+      text,
+      pages,
+      numpages: numPages,
+      info: null,
+      metadata: null,
+      version: null,
+    } as any;
   }
 
   async getMarkdownUrl(url: string) {
@@ -164,4 +181,7 @@ export class ToolService {
 
     return response.data;
   }
+
+
 }
+
