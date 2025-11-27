@@ -10,7 +10,7 @@ import 'reflect-metadata';
 
 import { applyMiddlewares } from '@common/middlewares/app.middleware';
 import { HttpError } from '@common/libs/http-error';
-import { envSchema } from '@common/configs/env-schema.config';
+import { envSchema } from '@common/schemas/env.schema';
 import { logger } from '@common/configs/logger.config';
 import { setupWebSocket } from '@common/configs/plugin/websocket.plugin';
 import loggerPlugin from '@common/configs/plugin/logger.plugin';
