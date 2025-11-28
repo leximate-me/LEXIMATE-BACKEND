@@ -42,6 +42,15 @@ services:
     stdin_open: true
     tty: true
 
+  frontend:
+    build: ../LEXIMATE-FRONTEND
+    container_name: leximate-frontend
+    restart: always
+    volumes:
+      - frontend_build:/app/dist
+    networks:
+      - leximate-network
+
   nginx:
     image: nginx:alpine
     container_name: leximate-nginx
@@ -50,9 +59,10 @@ services:
       - '80:80'
     volumes:
       - ./nginx/nginx.conf:/etc/nginx/conf.d/default.conf:ro
-      - ../LEXIMATE-FRONTEND/dist:/usr/share/nginx/html:ro
+      - frontend_build:/usr/share/nginx/html:ro
     depends_on:
       - backend
+      - frontend
     networks:
       - leximate-network
 
@@ -84,14 +94,14 @@ services:
     volumes:
       - ../LEXIMATE-MOBILE:/app
       - /app/node_modules
-    networks:
-      - leximate-network
+    network_mode: host
     stdin_open: true
     tty: true
 
 volumes:
   postgres_data:
   n8n_data:
+  frontend_build:
 
 
 networks:
