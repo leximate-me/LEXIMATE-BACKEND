@@ -81,10 +81,11 @@ services:
   mobile:
     build: ../LEXIMATE-MOBILE
     container_name: leximate-mobile
-    network_mode: host
     volumes:
       - ../LEXIMATE-MOBILE:/app
       - /app/node_modules
+    networks:
+      - leximate-network
     stdin_open: true
     tty: true
 
