@@ -3,6 +3,7 @@ import FormData from 'form-data';
 import axios from 'axios';
 import path from 'path';
 import { HttpError } from '@common/libs/http-error';
+import { LlamaParseReader } from 'llama-cloud-services';
 
 export class ToolService {
   async extractTextFromLocalPath<T>(localUrl: string): Promise<T> {
@@ -27,8 +28,6 @@ export class ToolService {
       }
       const fileName = `temp_${Date.now()}.pdf`;
       filePath = path.join(tempDir, fileName);
-
-
 
       try {
         const response = await axios.get(downloadUrl, { responseType: 'stream' });
@@ -59,90 +58,31 @@ export class ToolService {
     }
 
     try {
-      const apiKey = process.env.LLAMA_CLOUD_API_KEY;
-      if (!apiKey) {
-        throw HttpError.internalServerError('LLAMA_CLOUD_API_KEY no configurada');
-      }
 
-      const formData = new FormData();
-      // Use stream for efficiency
-      formData.append('file', fs.createReadStream(filePath));
-      formData.append('max_pages', 25);
-      formData.append('parse_mode', 'parse_page_with_agent');
-      formData.append('model', 'openai-gpt-4o-mini');
-      formData.append('high_res_ocr', 'true');
-      formData.append('adaptive_long_table', 'true');
-      formData.append('outlined_table_extraction', 'true');
-      formData.append('output_tables_as_HTML', 'true');
-      formData.append('precise_bounding_box', 'true');
-      formData.append('user_prompt', `Reformat and summarize the content following these rules:
-- Use left alignment.
-- Use short, simple sentences in active voice.
-- Avoid dense paragraphs; use bullet points where possible.
-- Avoid double negatives.
-- Be concise.
-- Output in Spanish.
-- IMPORTANT: Remove all headers, footers, and page numbers. Do not include metadata like 'Page X of Y'.`);
+      const reader = new LlamaParseReader({
+        resultType: "markdown",
+        parsingInstruction: `Reformat and summarize the content following these rules:
+        - Use left alignment.
+        - Use short, simple sentences in active voice.
+        - Avoid dense paragraphs; use bullet points where possible.
+        - Avoid double negatives.
+        - Be concise.
+        - Output in Spanish.
+        - IMPORTANT: Remove all headers, footers, and page numbers. Do not include metadata like 'Page X of Y'.`
+      });
 
-      const uploadResponse = await axios.post(
-        'https://api.cloud.llamaindex.ai/api/v1/parsing/upload',
-        formData,
-        {
-          headers: {
-            ...formData.getHeaders(),
-            Authorization: `Bearer ${apiKey}`,
-          },
-        }
-      );
+      const documents = await reader.loadData(filePath);
 
-      const jobId = uploadResponse.data.id;
-
-      let status = 'PENDING';
-      let pagesResult: any[] = [];
-      const maxAttempts = 60;
-      let attempts = 0;
-
-      while ((status === 'PENDING' || status === 'STARTED') && attempts < maxAttempts) {
-        attempts++;
-        await new Promise((resolve) => setTimeout(resolve, 2000)); // Esperar 2 segundos
-        const statusResponse = await axios.get(
-          `https://api.cloud.llamaindex.ai/api/v1/parsing/job/${jobId}`,
-          {
-            headers: {
-              Authorization: `Bearer ${apiKey}`,
-            },
-          }
-        );
-        status = statusResponse.data.status;
-        status = statusResponse.data.status;
-
-        if (status === 'SUCCESS') {
-          const resultUrl = `https://api.cloud.llamaindex.ai/api/v1/parsing/job/${jobId}/result/json`;
-          const resultResponse = await axios.get(resultUrl, {
-            headers: {
-              Authorization: `Bearer ${apiKey}`,
-            },
-          });
-          pagesResult = resultResponse.data.pages;
-          break; // Exit loop on success
-        } else if (status === 'ERROR') {
-          throw HttpError.internalServerError('Error parsing PDF with LlamaIndex');
-        }
-      }
-
-      if (!pagesResult || pagesResult.length === 0) {
-        throw HttpError.internalServerError('No pages found in the PDF or job timed out/failed');
-      }
-      if (!pagesResult || pagesResult.length === 0) {
+      if (!documents || documents.length === 0) {
         throw HttpError.internalServerError('No pages found in the PDF or job timed out/failed');
       }
 
-      const text = pagesResult.map(p => p.md).join('\n\n');
-      const pages = pagesResult.map((p) => ({
-        page: p.page,
-        text: p.md
+      const text = documents.map(doc => doc.text).join('\n\n');
+      const pages = documents.map((doc, index) => ({
+        page: index + 1, // LlamaParseReader might not return page numbers directly in the same way, assuming sequential
+        text: doc.text
       }));
-      const numPages = pagesResult.map(p => p.page).length;
+      const numPages = documents.length;
 
       return {
         text,
