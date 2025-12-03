@@ -61,14 +61,6 @@ export class ToolService {
 
       const reader = new LlamaParseReader({
         resultType: "markdown",
-        parsingInstruction: `Reformat and summarize the content following these rules:
-        - Use left alignment.
-        - Use short, simple sentences in active voice.
-        - Avoid dense paragraphs; use bullet points where possible.
-        - Avoid double negatives.
-        - Be concise.
-        - Output in Spanish.
-        - IMPORTANT: Remove all headers, footers, and page numbers. Do not include metadata like 'Page X of Y'.`
       });
 
       const documents = await reader.loadData(filePath);

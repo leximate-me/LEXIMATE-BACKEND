@@ -1,4 +1,5 @@
 import crypto from 'crypto';
+import { In } from 'typeorm';
 import { AppDataSource } from '@database/db';
 import { HttpError } from '@common/libs/http-error';
 
@@ -6,6 +7,7 @@ import { Course } from '@course/entities/course.entity';
 import { Post } from '@post/entities/post.entity';
 import { User } from '@user/entities';
 import { Task } from '@task/entities/task.entity';
+import { Comment } from '@comment/entities/comment.entity';
 
 import { CreateCourseDto } from '@course/dtos/create-course.dto';
 import { UpdateCourseDto } from '@course/dtos/update-course.dto';
@@ -16,6 +18,7 @@ export class CourseService {
   private readonly courseRepository = AppDataSource.getRepository(Course);
   private readonly postRepository = AppDataSource.getRepository(Post);
   private readonly taskRepository = AppDataSource.getRepository(Task);
+  private readonly commentRepository = AppDataSource.getRepository(Comment);
 
   async create(createCourseDto: CreateCourseDto, userId: string) {
     const foundUser = await this.userRepository.findOne({
@@ -136,7 +139,7 @@ export class CourseService {
     if (!foundUser) throw HttpError.notFound('User not found');
 
     const courses = foundUser.courses || [];
-    
+
     // Manual pagination since we're working with a loaded relation
     const total = courses.length;
     const skip = (page - 1) * limit;
@@ -230,6 +233,18 @@ export class CourseService {
     await this.courseRepository.save(courseFound);
 
     await this.taskRepository.delete({ course: { id: courseId } });
+
+    // Delete comments associated with posts of this course
+    const posts = await this.postRepository.find({
+      where: { course: { id: courseId } },
+      select: ['id'],
+    });
+
+    if (posts.length > 0) {
+      const postIds = posts.map((p) => p.id);
+      await this.commentRepository.delete({ post: { id: In(postIds) } });
+    }
+
     await this.postRepository.delete({ course: { id: courseId } });
 
     await this.courseRepository.delete({ id: courseId });
