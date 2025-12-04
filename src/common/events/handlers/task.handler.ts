@@ -10,6 +10,7 @@ export class TaskEventHandler {
   private setupListeners() {
     taskEventEmitter.on('task_created', this.handleTaskCreated.bind(this));
     taskEventEmitter.on('task_submitted', this.handleTaskSubmitted.bind(this));
+    taskEventEmitter.on('submission_qualified', this.handleSubmissionQualified.bind(this));
   }
 
   private handleTaskCreated(data: any) {
@@ -54,6 +55,29 @@ export class TaskEventHandler {
           submissionId: submission.id,
           studentId: submission.studentId,
           studentName: submission.studentName,
+        },
+      };
+
+      // Create persistent notification
+      notificationEmitter.emit('create_notification', notificationData);
+    }
+  }
+  private handleSubmissionQualified(data: any) {
+    const { submission } = data;
+
+    // Notify student about qualification
+    if (submission.studentId) {
+      const notificationData = {
+        userId: submission.studentId,
+        type: NotificationEnum.TASK_QUALIFIED,
+        title: 'Tarea calificada',
+        message: `Tu entrega para la tarea "${submission.taskTitle}" ha sido calificada. Nota: ${submission.qualification}`,
+        data: {
+          url: `/courses/${submission.courseId}/task/${submission.taskId}`,
+          taskId: submission.taskId,
+          courseId: submission.courseId,
+          submissionId: submission.id,
+          qualification: submission.qualification,
         },
       };
 

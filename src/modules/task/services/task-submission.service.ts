@@ -97,6 +97,15 @@ export class TaskSubmissionService {
           comment: submission.comment,
           status: submission.status,
           courseId: courseId,
+          submissionFiles: fileProps
+            ? [
+              {
+                file_url: fileProps.fileUrl,
+                file_id: fileProps.fileId,
+                file_type: fileProps.fileType,
+              },
+            ]
+            : [],
         },
         userIds: course.users.map((u) => u.id),
         teacherId: teacher?.id,
