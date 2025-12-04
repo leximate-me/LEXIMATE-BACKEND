@@ -17,7 +17,7 @@ services:
     networks:
       - leximate-network
     healthcheck:
-      test: ['CMD-SHELL', 'pg_isready -U ${DB_USER} -d ${DB_NAME}']
+      test: [ 'CMD-SHELL', 'pg_isready -U ${DB_USER} -d ${DB_NAME}' ]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -39,7 +39,7 @@ services:
     networks:
       - leximate-network
     healthcheck:
-      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:8080"]
+      test: [ "CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:8080" ]
       interval: 5s
       timeout: 3s
       retries: 5
@@ -68,9 +68,20 @@ services:
     volumes:
       - n8n_data:/home/node/.n8n
 
+  mobile:
+    build: ../LEXIMATE-MOBILE
+    container_name: leximate-mobile
+    volumes:
+      - ../LEXIMATE-MOBILE:/app
+      - /app/node_modules
+    network_mode: host
+    stdin_open: true
+    tty: true
+
 volumes:
   postgres_data:
   n8n_data:
+
 
 networks:
   leximate-network:
